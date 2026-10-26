@@ -20,7 +20,7 @@ test('v2.4 monta os docks com componentes canônicos, sem novos editores paralel
 test('v2.4 jornada usa atividades reais e oferece acesso à edição',()=>{
  const s=text('app/environments-ui.mjs');
  assert.match(s,/function renderHybridJourney\(doc,selected\)/);
- assert.match(s,/doc\.nodes\.filter\(n=>n\.environmentId===room\.id\)/);
+ assert.match(s,/buildJourneyGraph\(doc\)/);
  assert.match(s,/data-hybrid-step/);
  assert.match(s,/openTask\(hybridStep\.dataset\.hybridStep\)/);
 });
