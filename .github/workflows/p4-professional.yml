@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'app/**'
+      - 'scripts/build-vercel.mjs'
+      - 'vercel.json'
       - 'tests/**'
       - '.github/workflows/p4-professional.yml'
 permissions:
@@ -26,6 +28,12 @@ jobs:
         run: |
           python3 scripts/build-css.py
           git diff --exit-code -- app/styles-bundle.css
+      - name: Build exact Vercel static output
+        run: |
+          node scripts/build-vercel.mjs
+          test -f dist/index.html
+          test -f dist/app/index.html
+          test -f dist/vendor/three/three.module.min.js
       - name: Install Chromium
         run: |
           python3 -m pip install playwright==1.56.0
@@ -36,3 +44,4 @@ jobs:
           python3 tests/p2_room3d_browser.py
           python3 tests/p3_journey_browser.py
           python3 tests/p4_professional_browser.py
+          python3 tests/p4_deployment_browser.py
