@@ -1,0 +1,42 @@
+name: Blue Ocean 3D · P7.1 UX Consolidation
+on:
+  push:
+    branches: [feat/blueocean3d-p71-ux-consolidation]
+  pull_request:
+    paths: [app/**, tests/**, scripts/**, .github/workflows/p71-ux.yml]
+permissions:
+  contents: read
+jobs:
+  ux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Syntax, contracts and full tests
+        run: |
+          node --check app/site-overview.mjs
+          node --check app/p71-overview.mjs
+          node --check app/environments-ui.mjs
+          npm test
+      - name: Reproducible CSS and static production build
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+          node scripts/build-vercel.mjs
+          test -f dist/index.html
+          test -f dist/app/index.html
+      - name: Install Chromium
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Browser tests P0–P7.1
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
+          python3 tests/p3_journey_browser.py
+          python3 tests/p4_professional_browser.py
+          python3 tests/blue_light_browser.py
+          python3 tests/p6_workflow_browser.py
+          python3 tests/p7_workspace_browser.py
+          python3 tests/p71_ux_browser.py
+          python3 tests/p4_deployment_browser.py
