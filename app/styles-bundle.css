@@ -1369,3 +1369,104 @@ body.sb-hybrid-active #rooms-view :is(.floor-editor-inspector input,.floor-edito
  body.sb-hybrid-active #rooms-view .workspace-reopen{transition:none!important}
 }
 
+
+/* SOURCE: journey-ux.css */
+/* P3 — single-source journey (service graph + calculated event timeline). */
+body.sb-hybrid-active #rooms-view .hybrid-journey{position:relative;flex-basis:164px!important;transition:flex-basis .18s ease;min-height:110px}
+body.sb-hybrid-active #rooms-view .hybrid-journey.is-expanded{flex-basis:min(43vh,380px)!important}
+body.sb-hybrid-active #rooms-view .hybrid-journey-title{min-height:37px!important;gap:12px}
+body.sb-hybrid-active #rooms-view .hybrid-journey-title strong{font-size:14px!important;flex-shrink:0}
+body.sb-hybrid-active #rooms-view .hybrid-journey-title span{font-size:12px!important;color:#bed7d0!important}
+body.sb-hybrid-active #rooms-view #hybrid-journey-expand,
+body.sb-hybrid-active #rooms-view #hybrid-preview{min-height:36px!important;padding:7px 11px!important;font-size:12px!important}
+body.sb-hybrid-active #rooms-view .hybrid-journey-list{
+ display:flex!important;flex-wrap:nowrap;align-items:stretch;gap:12px;
+ overflow-x:auto!important;overflow-y:auto!important;scrollbar-gutter:stable;
+ padding:3px 3px 10px!important;min-height:0;scroll-snap-type:x proximity;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-group{
+ flex:0 0 auto!important;min-width:220px!important;max-width:none!important;max-height:none;
+ gap:8px!important;padding:0 8px 0 0;border-right:1px solid #325349;scroll-snap-align:start;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-level{
+ min-height:22px;color:#d5efe7;font-size:12px;font-weight:750;white-space:normal;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-level small{
+ font-size:11px;font-weight:400;color:#b2cbc3;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-tasks{gap:8px!important;align-items:stretch;min-height:0}
+body.sb-hybrid-active #rooms-view .hybrid-journey-step{
+ border:1px solid color-mix(in srgb,var(--journey-color),#1a3431 35%);
+ border-top:3px solid var(--journey-color);
+ background:#142f29;border-radius:9px;min-width:151px;width:151px;max-width:225px;
+ display:flex;flex-direction:column;overflow:hidden;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-step .hybrid-journey-task{
+ background:transparent!important;border:0!important;min-width:0!important;max-width:none!important;
+ width:100%;min-height:73px!important;box-shadow:none!important;display:flex;flex-direction:column;
+ text-align:left;padding:9px 10px!important;gap:6px;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-task strong{font-size:13px!important;line-height:1.36!important}
+body.sb-hybrid-active #rooms-view .hybrid-journey-task small{font-size:11px!important;line-height:1.4!important;color:#bed8ce!important}
+body.sb-hybrid-active #rooms-view .hybrid-journey-location,
+body.sb-hybrid-active #rooms-view .hybrid-journey-orphan{
+ display:block;text-align:left;padding:7px 10px!important;width:100%;margin-top:auto;
+ font-size:11px!important;line-height:1.3;color:#a8e7de!important;
+ background:#173c34!important;border:0!important;border-top:1px solid #31564a!important;
+ white-space:normal;min-height:30px!important;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-orphan{color:#eac69f!important}
+body.sb-hybrid-active #rooms-view .hybrid-journey-step button:hover{background:#24534a!important}
+body.sb-hybrid-active #rooms-view .hybrid-journey-step button:focus-visible,
+body.sb-hybrid-active #rooms-view #hybrid-journey-expand:focus-visible{
+ outline:3px solid #92e5d6!important;outline-offset:-3px!important;
+}
+/* Simulation: planned tasks vs read-only deterministic scenario events. */
+#simulation-view .sim-journey{
+ margin:14px 0 18px;padding:16px;background:#f6fafc;color:#183947;
+ border:1px solid #c9dbe1;border-radius:14px;box-shadow:0 2px 8px #1235;
+}
+#simulation-view .sim-journey[hidden]{display:none!important}
+#simulation-view .sim-journey-head{
+ display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:12px;
+}
+#simulation-view .sim-journey-head h2{font-size:19px!important;margin:3px 0 6px;color:#173c4c}
+#simulation-view .sim-journey-head p{max-width:740px;font-size:13px;line-height:1.45;color:#4a6471;margin:0}
+#simulation-view .sim-journey-head label{font-size:13px;font-weight:700;display:flex;align-items:center;gap:10px;white-space:nowrap}
+#simulation-view .sim-journey-head select{min-width:88px;min-height:42px;padding:8px;border-radius:8px;border:1px solid #92b3bf;background:white;color:#153d4e}
+#simulation-view .sim-journey-steps{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 14px;scroll-snap-type:x proximity}
+#simulation-view .sim-journey-step{
+ flex:0 0 164px;min-height:152px;display:flex;flex-direction:column;align-items:stretch;
+ gap:5px;text-align:left;padding:12px;border:1px solid #bfd2d9;
+ border-top:4px solid #7597ac;border-radius:10px;background:#fff;color:#214654;
+ scroll-snap-align:start;cursor:pointer;
+}
+#simulation-view .sim-journey-step strong{font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+#simulation-view .sim-journey-step small{font-size:11px;line-height:1.4;color:#486575}
+#simulation-view .sim-journey-order{font-size:11px;font-weight:750;color:#657f8e}
+#simulation-view .sim-journey-state{margin-top:auto;font-weight:700!important}
+#simulation-view .sim-journey-step[data-journey-status="running"]{border-color:#157b8c;border-top-color:#137ea0;background:#e7f6fc}
+#simulation-view .sim-journey-step[data-journey-status="waiting"]{border-color:#cb9650;border-top-color:#c58a36;background:#fff6e5}
+#simulation-view .sim-journey-step[data-journey-status="complete"]{border-top-color:#23807c;background:#edf8f4}
+#simulation-view .sim-journey-step.is-selected{outline:3px solid #125b88;outline-offset:2px}
+#simulation-view .sim-journey-insights{
+ display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:10px 0;
+ border-top:1px solid #d1e1e5;color:#315565;font-size:12px;
+}
+#simulation-view .sim-journey-insights button{
+ border:1px solid #bc913f;background:#fff3d9;color:#69490f;
+ padding:8px 10px;border-radius:8px;font-size:12px;min-height:36px;cursor:pointer;
+}
+#simulation-view .sim-journey-disclaimer{font-size:12px;line-height:1.5;color:#526a78;margin:6px 0 0}
+#simulation-view :is(.sim-journey-step,.sim-journey-insights button,.sim-journey-head select):focus-visible{
+ outline:3px solid #2262a5;outline-offset:2px;
+}
+@media(max-width:760px){
+ #simulation-view .sim-journey{padding:10px}
+ #simulation-view .sim-journey-head{align-items:stretch;flex-direction:column}
+ #simulation-view .sim-journey-step{flex-basis:144px}
+ body.sb-hybrid-active #rooms-view .hybrid-journey.is-expanded{flex-basis:46vh!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.sb-hybrid-active #rooms-view .hybrid-journey{transition:none}
+}
