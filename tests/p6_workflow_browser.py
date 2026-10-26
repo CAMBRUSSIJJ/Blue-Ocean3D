@@ -41,7 +41,7 @@ with sync_playwright() as playwright:
  expect(page.locator('#bo-workflow-service')).to_have_attribute('aria-current','page')
  page.locator('#hybrid-simulate').click()
  expect(page.locator('#simulation-view')).to_be_visible()
- expect(page.locator('#sim-run')).to_be_visible()
+ expect(page.locator('#p7-start')).to_be_visible()
  page.locator('#bo-workflow-analyze').click()
  expect(page.locator('#bo-workflow-analyze')).to_have_attribute('aria-current','page')
  page.locator('#hybrid-construct').click()
