@@ -11,7 +11,12 @@ with sync_playwright() as playwright:
  page=context.new_page()
  errors=[]
  page.on('pageerror',lambda error:errors.append(str(error)))
- page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
+ # Use a realistic secure origin: localStorage is unavailable to about:blank
+ # and would give a false failure for a browser-local layout reference.
+ html=inline_app(ROOT)
+ page.route('https://blue-ocean.test/**',lambda route:route.fulfill(
+  status=200,content_type='text/html; charset=utf-8',body=html))
+ page.goto('https://blue-ocean.test/app/',wait_until='domcontentloaded')
  expect(page.locator('#hybrid-layout-compare')).to_be_visible(timeout=15000)
  page.locator('#hybrid-layout-compare').click()
  dialog=page.locator('#p4-layout-dialog')
