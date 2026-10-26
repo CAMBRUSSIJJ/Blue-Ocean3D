@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createDocument} from '../app/core.mjs';
 import {FURNITURE,putFurniture,linkFurniture} from '../app/floorplan.mjs';
 import {normalizeCatalogText,matchesFurniture} from '../app/catalog-filter.mjs';
+import {blockedCells} from '../app/floorplan-navigation.mjs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('P7: six independent tabs are wired to single workspace and preserved modes',()=>{
  const text=read('app/environments-ui.mjs');
@@ -39,6 +40,10 @@ test('P7: static people cannot become service activities or calculated client ev
  doc.environments=[{id:'room-p7',name:'Sala de teste'}];
  const obj=putFurniture(doc,{roomId:'room-p7',kind:'person_client_standing',x:2,y:2});
  assert.equal(obj.nodeId,'');
+ assert.equal(blockedCells(doc,'room-p7').size,0,'Illustrative people must not block pedestrian routes');
+ putFurniture(doc,{roomId:'room-p7',kind:'chair',x:2,y:2});
+ assert.ok(blockedCells(doc,'room-p7').size>0,'Physical chairs remain obstacles');
+
  doc.nodes.push({id:'task-p7',title:'Acolher cliente',environmentId:'room-p7',type:'activity'});
  assert.throws(()=>linkFurniture(doc,obj.id,'task-p7'),/ilustrativas/);
  assert.throws(()=>putFurniture(doc,{roomId:'room-p7',kind:'person_professional',x:4,y:4,nodeId:'task-p7'}),/ilustrativa/);
