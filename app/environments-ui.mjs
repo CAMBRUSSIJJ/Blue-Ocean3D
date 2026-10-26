@@ -5,7 +5,7 @@ import {insertComponent} from './build.mjs';
 import {reviewServiceFlow} from './simulation-insights.mjs';
 import {initFloorEditor} from './floorplan-ui.mjs';
 import {initRoom3D} from './room3d.mjs';
-import {initSiteOverview} from './site-overview.mjs';
+import {initSiteOverview,roomSpot} from './site-overview.mjs';
 import {confirmAction} from './confirm-dialog.mjs';
 import {initWorkspaceControls} from './workspace-controls.mjs';
 import {buildJourneyGraph} from './journey-flow.mjs';
