@@ -21,6 +21,9 @@ export function installP7SimulationLayout(root){
 
  const report=document.createElement('section');report.id='p7-analysis';report.className='p7-analysis';
  report.innerHTML='<header class="p7-analysis-header"><div><span class="p7-eyebrow">RESULTADOS DO CENÁRIO</span><h1>Analisar desempenho</h1><p>Indicadores estimados, utilização, gargalos e comparações do último cenário calculado.</p></div><div class="p7-analysis-actions"><button type="button" id="p7-go-simulation">Ver simulação</button></div></header><div class="p7-no-result" id="p7-no-result" hidden>Execute um cenário na aba Simular para consultar indicadores e análises.</div>';
+ const exportTools=hero.querySelector('.sim-export');
+ if(exportTools)report.querySelector('.p7-analysis-actions').append(exportTools);
+ const backButton=hero.querySelector('#sim-back');if(backButton){backButton.hidden=true;header.append(backButton)}
  const charts=document.createElement('section');charts.id='p7-analysis-charts';charts.className='p7-analysis-charts';charts.setAttribute('aria-label','Comparação das esperas entre atividades');report.append(charts);
  const stage=root.querySelector('.sim-floor-card');
  const playbar=root.querySelector('.sim-playbar');
