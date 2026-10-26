@@ -19,6 +19,7 @@ const short=(s,n=45)=>String(s||'').length>n?String(s).slice(0,n-1)+'…':String
 /** Hybrid layout: reparent existing working controls instead of creating duplicate editors. */
 function installHybridLayout(root){
  const shell=root.querySelector('.rooms-shell');
+ document.body.classList.add('bo-ocean');
  const main=shell.querySelector('.rooms-main');
  const left=document.createElement('aside');left.className='hybrid-left-dock';left.setAttribute('aria-label','Ambientes e móveis do projeto');
  left.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Navegação lateral"><button id="hybrid-tab-rooms" type="button" role="tab" aria-selected="true">Ambientes</button><button id="hybrid-tab-furniture" type="button" role="tab" aria-selected="false">Móveis</button></div><p class="hybrid-side-caption">Ambientes deste serviço</p>`;
@@ -52,8 +53,22 @@ function installHybridLayout(root){
  right.querySelector('#hybrid-tab-object').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')==='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('object')});
  right.querySelector('#hybrid-tab-environment').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')!=='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('environment')});
  root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){move.classList.toggle('active',!root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));}});
- initWorkspaceControls({shell,main,left,right});
- return {tabs,rightTabs};
+ const workspace=initWorkspaceControls({shell,main,left,right});
+ const controls=document.createElement('div');controls.className='bo-canvas-tools';
+ controls.innerHTML='<button type="button" id="bo-catalog-tool" aria-label="Alternar entre biblioteca e ambientes" aria-pressed="false" title="Biblioteca de móveis">▦ <span>Biblioteca</span></button><button type="button" id="bo-inspector-tool" aria-expanded="false" title="Abrir ou recolher propriedades">☷ <span>Propriedades</span></button>';
+ const toolbar=main.querySelector('.floor-editor-toolbar');
+ toolbar?.insertBefore(controls,toolbar.lastElementChild);
+ controls.querySelector('#bo-catalog-tool').addEventListener('click',()=>{
+  const open=!shell.classList.contains('hybrid-furniture-active');
+  tabs(open?'furniture':'rooms');
+  workspace.setCollapsed('left',false);
+  controls.querySelector('#bo-catalog-tool').setAttribute('aria-pressed',String(open));
+ });
+ controls.querySelector('#bo-inspector-tool').addEventListener('click',()=>{
+  workspace.setCollapsed('right',!workspace.state.rightCollapsed);
+  controls.querySelector('#bo-inspector-tool').setAttribute('aria-expanded',String(!workspace.state.rightCollapsed));
+ });
+ return {tabs,rightTabs,workspace};
 }
 function renderHybridJourney(doc,selected){
  const list=document.querySelector('#hybrid-journey-list');if(!list)return;
@@ -104,7 +119,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    const replacement=[...event.currentTarget.querySelectorAll(selector)].find(b=>(b.dataset.roomTab||b.dataset.roomDisplay)===identity);
    replacement?.focus();
  }
- function studioMode(){syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
+ function studioMode(){root.querySelector('.rooms-shell').dataset.currentDisplay=ui.display;syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
    if(is3d)studio3d.activate();else studio3d.deactivate();if(isCards){floor.hide();root.querySelector('.room-workflow-drawer').open=true;}else if(isOverview){floor.hide();overview.render()}else floor.show();
  }
  function renderTabs(){const d=getDocument(),nav=$('#room-tab-nav');nav.innerHTML=(d.environments||[]).map(r=>`<button type="button" data-room-tab="${esc(r.id)}" class="room-tab ${ui.selected===r.id?'active':''}" role="tab" aria-selected="${ui.selected===r.id?'true':'false'}" tabindex="${ui.selected===r.id?0:-1}" aria-controls="floor-editor"><span class="room-tab-icon" style="--tab-color:${esc(r.color||'#228b75')}">${esc(r.icon)}</span>${esc(short(r.name,23))}<small>${d.nodes.filter(n=>n.environmentId===r.id).length} atividades</small></button>`).join('')+`<button type="button" class="room-tab-add" id="room-tab-add">＋ Novo ambiente</button>`;
@@ -113,9 +128,9 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  }
  
  function status(s){$('#room-live').textContent=s}
- function setFurniture(open){const shell=root.querySelector('.rooms-shell');shell.classList.toggle('hybrid-furniture-active',open);hybrid.tabs(open?'furniture':'rooms');shell.classList.toggle('show-furniture',open);$('#room-toggle-library').setAttribute('aria-expanded',String(open));}
- function setObjectInspector(open){if(open){setDetails(false);if(window.matchMedia('(max-width:900px)').matches){root.querySelector('.rooms-shell').classList.add('hybrid-mobile-right-open');root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open');}}root.querySelector('.rooms-shell').classList.toggle('show-object-inspector',open);$('#room-toggle-object-inspector').setAttribute('aria-expanded',String(open));}
- function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
+ function setFurniture(open){const shell=root.querySelector('.rooms-shell');root.querySelector('#bo-catalog-tool')?.setAttribute('aria-pressed',String(open));shell.classList.toggle('hybrid-furniture-active',open);hybrid.tabs(open?'furniture':'rooms');shell.classList.toggle('show-furniture',open);$('#room-toggle-library').setAttribute('aria-expanded',String(open));}
+ function setObjectInspector(open){if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');setDetails(false);if(window.matchMedia('(max-width:900px)').matches){root.querySelector('.rooms-shell').classList.add('hybrid-mobile-right-open');root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open');}}root.querySelector('.rooms-shell').classList.toggle('show-object-inspector',open);$('#room-toggle-object-inspector').setAttribute('aria-expanded',String(open));}
+ function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');}if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
  function apply(change,message){try{mutate(change);draw();status(message||'Ambientes atualizados.');}catch(e){status('Não foi possível: '+e.message);console.error('Erro ao atualizar ambiente:',e)}}
