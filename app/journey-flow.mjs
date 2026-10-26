@@ -37,7 +37,7 @@ export function buildJourneyGraph(doc){
   for(const n of nodes.filter(n=>degrees.get(n.id)>0).sort(compare))sorted.push(n);
  }
  const rooms=new Map((doc.environments||[]).map(r=>[r.id,r]));
- const tasks=sorted.filter(n=>n.type==='activity'||n.type==='decision').map(n=>{
+ const steps=sorted.map(n=>{
   const room=rooms.get(n.environmentId);
   return {id:n.id,title:n.title,type:n.type,stage:n.stage,roomId:room?.id||null,
    roomName:room?.name||'Sem ambiente',roomColor:room?.color||'#81939b',
@@ -45,8 +45,10 @@ export function buildJourneyGraph(doc){
    incoming:incoming.get(n.id).length,outgoing:outgoing.get(n.id).length,
    isolated:incoming.get(n.id).length===0&&outgoing.get(n.id).length===0};
  });
- // Nonconnected activities can execute in parallel: they are NOT a customer path.
- return {tasks,cyclic,precedenceCount:links.filter(e=>JOURNEY_PRECEDENCE_TYPES.includes(e.type)&&byId.has(e.from)&&byId.has(e.to)).length,
+ const tasks=steps.filter(n=>n.type==='activity'||n.type==='decision');
+ // All original components remain available to the journey, including evidence and touchpoints.
+ // Nonconnected activities may execute in parallel: screen order is not a guaranteed customer path.
+ return {steps,tasks,cyclic,precedenceCount:links.filter(e=>JOURNEY_PRECEDENCE_TYPES.includes(e.type)&&byId.has(e.from)&&byId.has(e.to)).length,
   unassignedCount:tasks.filter(t=>!t.roomId).length,isolatedCount:tasks.filter(t=>t.isolated).length,
   branchCount:tasks.filter(t=>t.outgoing>1).length,parallelPossible:tasks.filter(t=>t.incoming===0).length>1};
 }
@@ -64,7 +66,7 @@ export function journeySimulationSummary(doc,result,time,caseIndex=1){
   const wait=Math.max(0,Number(e.wait)||0);
   stat.total+=wait;stat.count++;stat.max=Math.max(stat.max,wait);waitByNode.set(e.nodeId,stat);
  }
- const rows=graph.tasks.map(task=>{
+ const rows=graph.steps.map(task=>{
   const event=byCase.get(task.id),aggregate=waitByNode.get(task.id);
   const status=!event?'not-executed':event.end<=at?'complete':
    event.start<=at&&event.end>at?'running':
