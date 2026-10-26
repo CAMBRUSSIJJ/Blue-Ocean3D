@@ -29,9 +29,12 @@ try:
   for path in ('/','/app/'):
    page.goto(url+path,wait_until='domcontentloaded')
    expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
-   page.locator('#bo-workflow-mount').click()
-   page.locator('#hybrid-journey-expand').click()
+   page.locator('#bo-workflow-service').click()
+   if page.locator('#hybrid-journey-expand').get_attribute('aria-expanded')!='true':
+    page.locator('#hybrid-journey-expand').click()
    expect(page.locator('#hybrid-journey-list')).to_be_visible(timeout=15000)
+   page.locator('#bo-workflow-mount').click()
+   page.locator('.bo-toolbar-more summary').click()
    expect(page.locator('#hybrid-layout-compare')).to_be_visible()
    assert page.evaluate("getComputedStyle(document.querySelector('.rooms-shell')).display")!='none'
    assert page.locator('link[href="./styles-bundle.css"]').count()==1
