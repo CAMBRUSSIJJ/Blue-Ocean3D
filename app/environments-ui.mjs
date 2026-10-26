@@ -95,6 +95,7 @@ function installHybridLayout(root){
   if(button)extras.querySelector('.bo-toolbar-menu').appendChild(button);
  }
  extras.addEventListener('click',event=>{if(event.target.closest('button'))extras.open=false;});
+ const compare=journey.querySelector('#hybrid-layout-compare');if(compare)extras.querySelector('.bo-toolbar-menu').append(compare);
  actionGroup?.appendChild(extras);
 
  return {tabs,rightTabs,workspace};
