@@ -1308,3 +1308,95 @@ body.sb-hybrid-active #rooms-view :is(.floor-editor-inspector input,.floor-edito
  body.sb-hybrid-active #rooms-view .workspace-reopen{transition:none!important}
 }
 
+
+/* SOURCE: journey-flow.css */
+/* P2 · Jornada do cliente conectada ao grafo real do serviço. */
+body.sb-hybrid-active #rooms-view .hybrid-journey{
+ height:clamp(178px,26vh,288px)!important;flex:0 0 auto!important;
+ min-height:178px!important;padding:10px 14px!important;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-title{gap:10px;margin-bottom:9px!important}
+body.sb-hybrid-active #rooms-view #hybrid-journey-summary{
+ min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ font-size:12px!important;color:#accdbf!important;
+}
+body.sb-hybrid-active #rooms-view .hybrid-journey-list{
+ display:flex!important;gap:10px!important;align-items:stretch!important;
+ overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-column{
+ display:flex;flex:0 0 252px;flex-direction:column;gap:6px;
+ min-height:0;min-width:220px;max-width:320px;
+ padding:7px;border:1px solid #2f5448;border-radius:10px;background:#102b25;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-column-head{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;flex:0 0 auto;
+ padding:3px 4px 5px;border-bottom:1px solid #32584a;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-column-head strong{
+ font-size:12px;line-height:1.3;color:#eafbf3;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-column-head small{
+ font-size:11px;white-space:nowrap;color:#a7c7ba;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-cards{
+ display:flex;flex:1 1 auto;flex-direction:column;gap:7px;min-height:0;
+ overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;padding:1px 3px 4px 1px;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-card{
+ flex:0 0 auto;min-width:0;background:#173930;border:1px solid #396455;
+ border-left:3px solid var(--journey-color);border-radius:8px;overflow:hidden;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-card.is-selected-room{border-color:#8dd9c2}
+body.sb-hybrid-active #rooms-view .hybrid-flow-open{
+ display:flex;flex-direction:column;gap:4px;width:100%;min-width:0;
+ text-align:left;border:0!important;border-radius:0!important;
+ background:transparent!important;color:#f1fff8!important;
+ padding:9px 10px!important;cursor:pointer;min-height:64px!important;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-open:hover{background:#245244!important}
+body.sb-hybrid-active #rooms-view .hybrid-flow-open strong{
+ font-size:13px!important;line-height:1.38!important;overflow-wrap:anywhere;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-room{
+ color:#b5d6c7!important;font-size:11px!important;overflow-wrap:anywhere;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-meta{
+ color:#c3ded1!important;font-size:11px!important;line-height:1.4!important;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-links{
+ display:flex;flex-direction:column;gap:3px;padding:5px 8px 7px;
+ border-top:1px solid #315a4c;background:#112d26;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-link{
+ display:flex;align-items:baseline;gap:6px;min-height:30px!important;
+ font-size:11px!important;line-height:1.35;white-space:normal;
+ color:#e7f6ef!important;background:transparent!important;
+ border:0!important;border-radius:5px!important;
+ text-align:left!important;padding:5px 3px!important;cursor:pointer;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-link small{flex:0 0 auto;color:#7be3ca!important}
+body.sb-hybrid-active #rooms-view .hybrid-flow-link:hover{background:#245244!important}
+body.sb-hybrid-active #rooms-view .hybrid-flow-column.is-unlinked{
+ border-style:dashed;border-color:#967f4a;background:#292b23;
+}
+body.sb-hybrid-active #rooms-view .hybrid-flow-column.is-cycle{
+ border-color:#c17d70;background:#33251f;
+}
+body.sb-hybrid-active #rooms-view :is(.hybrid-flow-open,.hybrid-flow-link):focus-visible{
+ outline:3px solid #a8f5e1!important;outline-offset:-3px!important;
+}
+@media(max-width:900px){
+ body.sb-hybrid-active #rooms-view .hybrid-journey{
+  height:190px!important;min-height:190px!important;flex-basis:auto!important;
+  padding:7px!important;
+ }
+ body.sb-hybrid-active #rooms-view .hybrid-flow-column{flex-basis:220px;min-width:195px}
+ body.sb-hybrid-active #rooms-view .hybrid-journey-title{flex-wrap:wrap}
+ body.sb-hybrid-active #rooms-view #hybrid-journey-summary{display:block!important;flex:1 1 55%;font-size:11px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.sb-hybrid-active #rooms-view .hybrid-flow-column,
+ body.sb-hybrid-active #rooms-view .hybrid-flow-card{scroll-behavior:auto!important}
+}
+
