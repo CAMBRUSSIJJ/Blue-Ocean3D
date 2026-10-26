@@ -14,7 +14,7 @@ with sync_playwright() as pw:
  expect(page.locator('#rooms-view')).to_be_visible(timeout=15000)
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
  page.locator('#bo-workflow-mount').click()
- expect(page.locator('#bo-catalog-tool')).to_be_visible()
+ expect(page.locator('#hybrid-tab-furniture')).to_be_visible()
  shell=page.locator('#rooms-view .rooms-shell')
  assert page.evaluate("document.body.classList.contains('bo-ocean')")
  assert page.evaluate("getComputedStyle(document.querySelector('.topbar')).backgroundColor")=='rgb(255, 255, 255)'
@@ -31,14 +31,14 @@ with sync_playwright() as pw:
  assert sizes['ratio']>.70,sizes
  assert sizes['journey']<=120,sizes
  # Compact contextual library and right-hand properties.
- page.locator('#bo-catalog-tool').click()
+ page.locator('#hybrid-tab-furniture').click()
  assert 'hybrid-furniture-active' in shell.get_attribute('class').split()
  expect(page.locator('.hybrid-left-dock .floor-palette')).to_be_visible()
- page.locator('#bo-catalog-tool').click()
+ page.locator('#hybrid-tab-rooms').click()
  expect(page.locator('#room-tab-nav')).to_be_visible()
- page.locator('#bo-inspector-tool').click()
+ page.locator('.workspace-reopen-right').click()
  expect(page.locator('.hybrid-right-dock')).to_be_visible()
- page.locator('#bo-inspector-tool').click()
+ page.locator('.hybrid-right-dock .workspace-collapse').click()
  assert 'workspace-right-collapsed' in shell.get_attribute('class').split()
  # Secondary actions remain accessible, but no longer add toolbar noise.
  menu=page.locator('.bo-toolbar-more')
@@ -50,14 +50,16 @@ with sync_playwright() as pw:
  menu.locator('summary').click()
  # Journey remains one graph, available in expanded mode.
  journey=page.locator('#hybrid-journey')
+ page.locator('#bo-workflow-service').click()
  page.locator('#hybrid-journey-expand').click()
  assert 'is-expanded' in journey.get_attribute('class').split()
  expect(page.locator('#hybrid-journey-list [data-hybrid-step]').first).to_be_visible()
  page.locator('#hybrid-journey-expand').click()
+ page.locator('#bo-workflow-mount').click()
  # Previous scene modes and service data remain untouched.
  original=page.evaluate('doc.nodes.length')
- page.locator('[data-room-display="visual"]').click()
- page.locator('[data-room-display="three"]').click()
+ page.locator('#bo-workflow-floor').click()
+ page.locator('#bo-workflow-mount').click()
  assert page.evaluate('doc.nodes.length')==original
  # At high desktop resolution, controls are still reachable.
  page.set_viewport_size({'width':1920,'height':1080})
