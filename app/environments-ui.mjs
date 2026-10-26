@@ -22,7 +22,7 @@ function installHybridLayout(root){
  document.body.classList.add('bo-ocean');
  const main=shell.querySelector('.rooms-main');
  const left=document.createElement('aside');left.className='hybrid-left-dock';left.setAttribute('aria-label','Ambientes e móveis do projeto');
- left.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Navegação lateral"><button id="hybrid-tab-rooms" type="button" role="tab" aria-selected="true">Ambientes</button><button id="hybrid-tab-furniture" type="button" role="tab" aria-selected="false">Móveis</button></div><p class="hybrid-side-caption">Ambientes deste serviço</p>`;
+ left.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Navegação lateral"><button id="hybrid-tab-rooms" type="button" role="tab" aria-selected="true">Ambientes</button><button id="hybrid-tab-furniture" type="button" role="tab" aria-selected="false">Móveis</button><button id="hybrid-tab-people" type="button" role="tab" aria-selected="false">Pessoas</button></div><p class="hybrid-side-caption">Ambientes deste serviço</p>`;
  shell.insertBefore(left,main);
  left.appendChild(document.querySelector('#room-tab-nav'));
  left.appendChild(document.querySelector('#room-furniture-palette'));
@@ -43,9 +43,20 @@ function installHybridLayout(root){
  document.querySelector('.topbar')?.insertBefore(switcher,document.querySelector('.top-actions'));
  switcher.addEventListener('click',event=>{const button=event.target.closest('[data-bo-stage]');if(!button)return;root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:button.dataset.boStage}}));});
  const move=document.createElement('button');move.type='button';move.className='hybrid-move active';move.textContent='↖ Mover';move.addEventListener('click',()=>{const active=root.querySelector('.room3d-structure-bar [aria-pressed="true"]');if(active)active.click();root.querySelector('#floor-clear-selection')?.click();move.classList.add('active');});document.querySelector('.room3d-structure-bar')?.prepend(move);
- const tabs=(type)=>{const furniture=type==='furniture';shell.classList.toggle('hybrid-furniture-active',furniture);left.querySelector('#hybrid-tab-rooms').setAttribute('aria-selected',String(!furniture));left.querySelector('#hybrid-tab-furniture').setAttribute('aria-selected',String(furniture));left.querySelector('.hybrid-side-caption').textContent=furniture?'Biblioteca de móveis':'Ambientes deste serviço';};
+ const tabs=(type)=>{
+  const furniture=type!=='rooms',people=type==='people';
+  shell.classList.toggle('hybrid-furniture-active',furniture);
+  shell.classList.toggle('p7-people-library',people);
+  left.querySelector('#hybrid-tab-rooms').setAttribute('aria-selected',String(!furniture));
+  left.querySelector('#hybrid-tab-furniture').setAttribute('aria-selected',String(type==='furniture'));
+  left.querySelector('#hybrid-tab-people').setAttribute('aria-selected',String(people));
+  left.querySelector('.hybrid-side-caption').textContent=people?'Pessoas ilustrativas':furniture?'Biblioteca de móveis e equipamentos':'Ambientes deste serviço';
+  const category=left.querySelector('#floor-library-category');
+  if(category){if(people){category.value='Pessoas'}else if(category.value==='Pessoas'){category.value=''}category.dispatchEvent(new Event('change'))}
+ };
  left.querySelector('#hybrid-tab-rooms').addEventListener('click',()=>tabs('rooms'));
  left.querySelector('#hybrid-tab-furniture').addEventListener('click',()=>tabs('furniture'));
+ left.querySelector('#hybrid-tab-people').addEventListener('click',()=>tabs('people'));
  mobileNav.querySelector('#hybrid-mobile-rooms').addEventListener('click',()=>{tabs('rooms');shell.classList.toggle('hybrid-mobile-left-open');shell.classList.remove('hybrid-mobile-right-open')});
  mobileNav.querySelector('#hybrid-mobile-furniture').addEventListener('click',()=>{tabs('furniture');shell.classList.add('hybrid-mobile-left-open');shell.classList.remove('hybrid-mobile-right-open')});
  mobileNav.querySelector('#hybrid-mobile-properties').addEventListener('click',()=>{shell.classList.toggle('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open')});
