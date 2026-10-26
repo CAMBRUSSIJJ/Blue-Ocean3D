@@ -125,13 +125,13 @@ export function initSimulator({getDocument,onBack,onEdit}){
   const panel=q('#sim-journey'),container=q('#sim-journey-steps'),insights=q('#sim-journey-insights');
   const report=journeySimulationSummary(getDocument(),ui.result,ui.time,ui.journeyCase);
   panel.hidden=false;
-  const signature=ui.result.createdAt+'|'+ui.journeyCase+'|'+report.tasks.map(t=>t.id).join(',');
+  const signature=ui.result.createdAt+'|'+ui.journeyCase+'|'+report.steps.map(t=>t.id).join(',');
   if(signature!==journeySignature){
    journeySignature=signature;
-   container.innerHTML=report.tasks.map((task,index)=>`<button type="button" class="sim-journey-step" data-sim-journey-step="${esc(task.id)}" data-journey-status="upcoming" title="${esc(task.title)} · ir para a atividade no ambiente">
+   container.innerHTML=report.steps.map((task,index)=>`<button type="button" class="sim-journey-step" data-sim-journey-step="${esc(task.id)}" data-journey-status="upcoming" title="${esc(task.title)} · ir para a atividade no ambiente">
     <span class="sim-journey-order">${index+1}</span><strong>${esc(clip(task.title,45))}</strong>
     <small class="sim-journey-room">${esc(task.roomName)}</small>
-    <small class="sim-journey-time">${task.duration>0?`${compact(task.duration)} min previstos`:'Marco sem duração'}</small>
+    <small class="sim-journey-time">${['activity','decision'].includes(task.type)?(task.duration>0?`${compact(task.duration)} min previstos`:'Marco sem duração'):'Componente informativo'}</small>
     <small class="sim-journey-state">Aguardando</small>
    </button>`).join('')||'<p>Nenhuma atividade cadastrada para esta jornada.</p>';
   }
