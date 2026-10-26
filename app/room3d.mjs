@@ -97,21 +97,21 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
   const fullHeight=wallSceneHeight(doc,roomId,cellMeters(doc,roomId));
   const height=view.cutaway?(front?.24:(boundary?fullHeight*.78:fullHeight*.55)):fullHeight,thin=.095;
   const x=e.axis==='h'?e.x+.5:e.x,z=e.axis==='v'?e.y+.5:e.y;
-  if(e.type==='wall'){cub(world,e.axis==='h'?1.01:thin,height,e.axis==='v'?1.01:thin,x,height/2,z,front?0xa2b6ae:0xb9cac1);return}
+  if(e.type==='wall'){cub(world,e.axis==='h'?1.01:thin,height,e.axis==='v'?1.01:thin,x,height/2,z,document.body.classList.contains('bo-ocean')?0xe0e9f5:(front?0xa2b6ae:0xb9cac1));return}
   if(e.type==='door'){
    // Abertura transitável: soleira e batente ao invés de uma parede sólida.
-   cub(world,e.axis==='h'?.96:thin,.035,e.axis==='v'?.96:thin,x,.036,z,0x3cab88);
+   cub(world,e.axis==='h'?.96:thin,.035,e.axis==='v'?.96:thin,x,.036,z,document.body.classList.contains('bo-ocean')?0x4b9dc8:0x3cab88);
    const h=view.cutaway&&front?.24:Math.min(2.55,fullHeight),dx=e.axis==='h'?.43:0,dz=e.axis==='v'?.43:0;
-   for(const s of [-1,1])cub(world,.085,h,.085,x+dx*s,h/2,z+dz*s,0x328f7c);
+   for(const s of [-1,1])cub(world,.085,h,.085,x+dx*s,h/2,z+dz*s,document.body.classList.contains('bo-ocean')?0x3b76b4:0x328f7c);
   }
  }
  function renderRoom(){
   if(!ready||!active)return;
   ghost=null;ghostKey='';structurePreview=null;structurePreviewKey='';resizePreview=null;disposeGroup(world);const doc=getDocument(),room=(doc.environments||[]).find(r=>r.id===getRoomId());
   if(!room){say('Adicione ou selecione um ambiente para iniciar a construção 3D.');renderer.render(scene,camera);return}
-  const dark=document.body.classList.contains('sb-hybrid-active');const base=new THREE.Color(room.color||'#278b77').lerp(new THREE.Color(dark?'#334e49':'#ffffff'),dark?.86:.88);
+  const ocean=document.body.classList.contains('bo-ocean');const dark=document.body.classList.contains('sb-hybrid-active')&&!ocean;const base=new THREE.Color(room.color||'#155eef').lerp(new THREE.Color(dark?'#334e49':ocean?'#f6f9fe':'#ffffff'),dark?.86:ocean?.94:.88);
   cub(world,GRID.columns,.12,GRID.rows,GRID.columns/2,-.08,GRID.rows/2,base);
-  const grid=new THREE.GridHelper(48,48,dark?0x365d58:0xc1d7cc,dark?0x284842:0xe0ece5);grid.scale.set(.25,1,.25);grid.position.set(GRID.columns/2,.004,GRID.rows/2);world.add(grid);
+  const grid=new THREE.GridHelper(48,48,dark?0x365d58:ocean?0xc0d2e6:0xc1d7cc,dark?0x284842:ocean?0xe2ebf6:0xe0ece5);grid.scale.set(.25,1,.25);grid.position.set(GRID.columns/2,.004,GRID.rows/2);world.add(grid);
   for(const edge of roomEdges(doc,room.id))makeWall(edge,doc,room.id);
   const objects=validFurniture(doc).filter(o=>o.roomId===room.id);
  const selectedIds=getSelections?.()||[getSelection()];

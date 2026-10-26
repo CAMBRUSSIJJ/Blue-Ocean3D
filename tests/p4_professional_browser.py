@@ -17,6 +17,8 @@ with sync_playwright() as playwright:
  page.route('https://blue-ocean.test/**',lambda route:route.fulfill(
   status=200,content_type='text/html; charset=utf-8',body=html))
  page.goto('https://blue-ocean.test/app/',wait_until='domcontentloaded')
+ expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
+ page.locator('#bo-workflow-mount').click()
  expect(page.locator('#hybrid-layout-compare')).to_be_visible(timeout=15000)
  page.locator('#hybrid-layout-compare').click()
  dialog=page.locator('#p4-layout-dialog')

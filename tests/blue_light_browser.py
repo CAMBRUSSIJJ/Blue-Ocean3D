@@ -12,6 +12,8 @@ with sync_playwright() as pw:
  page.on('pageerror',lambda error:errors.append(str(error)))
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  expect(page.locator('#rooms-view')).to_be_visible(timeout=15000)
+ expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
+ page.locator('#bo-workflow-mount').click()
  expect(page.locator('#bo-catalog-tool')).to_be_visible()
  shell=page.locator('#rooms-view .rooms-shell')
  assert page.evaluate("document.body.classList.contains('bo-ocean')")

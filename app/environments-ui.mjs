@@ -30,18 +30,18 @@ function installHybridLayout(root){
  const right=document.createElement('aside');right.className='hybrid-right-dock';right.setAttribute('aria-label','Propriedades da seleção');
  right.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Propriedades"><button type="button" id="hybrid-tab-object" role="tab" aria-selected="true">Objeto</button><button type="button" id="hybrid-tab-environment" role="tab" aria-selected="false">Ambiente</button></div>`;
  main.after(right);right.appendChild(document.querySelector('#floor-editor-inspector'));right.appendChild(document.querySelector('#room-detail'));
- const preview=document.createElement('button');preview.type='button';preview.className='hybrid-sim-action';preview.textContent='▶ Simular a partir daqui';preview.addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());right.appendChild(preview);
+ const preview=document.createElement('button');preview.type='button';preview.className='hybrid-sim-action';preview.textContent='▶ Simular a partir daqui';preview.addEventListener('click',()=>root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:'scenario'}})));right.appendChild(preview);
  const breadcrumb=document.createElement('button');breadcrumb.type='button';breadcrumb.className='hybrid-breadcrumb';breadcrumb.innerHTML='Planta geral <span>›</span> <strong>Ambiente</strong>';breadcrumb.title='Abrir visão geral física';breadcrumb.addEventListener('click',()=>root.querySelector('[data-room-display="overview"]')?.click());main.querySelector('.floor-editor-toolbar').prepend(breadcrumb);
  const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-note">Ordem baseada nas conexões de execução</span><button type="button" id="hybrid-journey-expand" aria-expanded="false" aria-controls="hybrid-journey-list">Expandir</button><button type="button" id="hybrid-layout-compare">Comparar layouts</button><button type="button" id="hybrid-preview">▶ Simular</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" role="region" aria-label="Atividades ordenadas pelas conexões de execução" tabindex="0"></div>';
- shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());
+ shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:'scenario'}})));
  journey.querySelector('#hybrid-journey-expand').addEventListener('click',e=>{
   const expanded=journey.classList.toggle('is-expanded');
   e.currentTarget.setAttribute('aria-expanded',String(expanded));
   e.currentTarget.textContent=expanded?'Recolher':'Expandir';
  });
- const switcher=document.createElement('nav');switcher.className='hybrid-top-modes';switcher.setAttribute('aria-label','Modo do Service Builder');switcher.innerHTML='<button type="button" id="hybrid-construct" class="active" aria-current="page">Construir</button><button type="button" id="hybrid-simulate">Simular</button>';
+ const switcher=document.createElement('nav');switcher.className='hybrid-top-modes bo-workflow-steps';switcher.setAttribute('aria-label','Etapas do planejamento do serviço');switcher.innerHTML='<button type="button" id="hybrid-construct" data-bo-stage="plan" class="active" aria-current="step">1 Planejar</button><button type="button" id="bo-workflow-mount" data-bo-stage="mount">2 Montar</button><button type="button" id="bo-workflow-service" data-bo-stage="service">3 Funcionamento</button><button type="button" id="hybrid-simulate" data-bo-stage="scenario">4 Cenário</button><button type="button" id="bo-workflow-analyze" data-bo-stage="analyze">5 Analisar</button>';
  document.querySelector('.topbar')?.insertBefore(switcher,document.querySelector('.top-actions'));
- switcher.querySelector('#hybrid-construct').addEventListener('click',()=>document.querySelector('.rail-btn[data-view="rooms"]')?.click());switcher.querySelector('#hybrid-simulate').addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());
+ switcher.addEventListener('click',event=>{const button=event.target.closest('[data-bo-stage]');if(!button)return;root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:button.dataset.boStage}}));});
  const move=document.createElement('button');move.type='button';move.className='hybrid-move active';move.textContent='↖ Mover';move.addEventListener('click',()=>{const active=root.querySelector('.room3d-structure-bar [aria-pressed="true"]');if(active)active.click();root.querySelector('#floor-clear-selection')?.click();move.classList.add('active');});document.querySelector('.room3d-structure-bar')?.prepend(move);
  const tabs=(type)=>{const furniture=type==='furniture';shell.classList.toggle('hybrid-furniture-active',furniture);left.querySelector('#hybrid-tab-rooms').setAttribute('aria-selected',String(!furniture));left.querySelector('#hybrid-tab-furniture').setAttribute('aria-selected',String(furniture));left.querySelector('.hybrid-side-caption').textContent=furniture?'Biblioteca de móveis':'Ambientes deste serviço';};
  left.querySelector('#hybrid-tab-rooms').addEventListener('click',()=>tabs('rooms'));
@@ -54,6 +54,14 @@ function installHybridLayout(root){
  right.querySelector('#hybrid-tab-environment').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')!=='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('environment')});
  root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){const active=Boolean(root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));move.classList.toggle('active',!active);root.classList.toggle('bo-structure-active',active);}});
  const workspace=initWorkspaceControls({shell,main,left,right});
+ const cameraExtra=document.createElement('button');cameraExtra.type='button';cameraExtra.id='bo-camera-options';cameraExtra.textContent='Ângulos';
+ cameraExtra.setAttribute('aria-label','Mostrar ou ocultar controles de rotação da câmera');
+ cameraExtra.setAttribute('aria-pressed','false');
+ root.querySelector('.room3d-buttons')?.append(cameraExtra);
+ cameraExtra.addEventListener('click',()=>{
+  const expanded=root.classList.toggle('bo-camera-extra-open');
+  cameraExtra.setAttribute('aria-pressed',String(expanded));
+ });
  const controls=document.createElement('div');controls.className='bo-canvas-tools';
  controls.innerHTML='<button type="button" id="bo-catalog-tool" aria-label="Alternar entre biblioteca e ambientes" aria-pressed="false" title="Biblioteca de móveis">▦ <span>Biblioteca</span></button><button type="button" id="bo-inspector-tool" aria-expanded="false" title="Abrir ou recolher propriedades">☷ <span>Propriedades</span></button>';
  const toolbar=main.querySelector('.floor-editor-toolbar');
@@ -99,12 +107,12 @@ function renderHybridJourney(doc,selected){
 }
 
 export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
- const root=$('#rooms-view'),hybrid=installHybridLayout(root),ui={active:false,selected:null,editing:null,search:'',stage:0,kitTab:'catalog',display:'three'};
+ const root=$('#rooms-view'),hybrid=installHybridLayout(root),ui={active:false,selected:null,editing:null,search:'',stage:0,kitTab:'catalog',display:'overview'};
  const layoutReview=initLayoutReview({root,getDocument,getRoomId:()=>ui.selected});
  root.querySelector('#hybrid-layout-compare').addEventListener('click',()=>layoutReview.open());
  root.querySelector('.rooms-shell').classList.add('studio-full','show-object-inspector');
  window.matchMedia('(max-width:1050px)').addEventListener('change',e=>{if(e.matches)setFurniture(false)});
- const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
+ const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
  const floor=initFloorEditor({getDocument,mutate,onEdit:id=>openTask(id),onSelectRoom:id=>{ui.selected=id;renderInspector();}});
  const studio3d=initRoom3D({element:$('#room-3d-stage'),getDocument,getRoomId:()=>ui.selected,getSelection:()=>floor.state.selected,getSelections:()=>[...floor.state.selectedIds],getPlacing:()=>floor.state.placing,mutate,onSelect:(id,additive=false)=>{floor.selectObject(id,additive);setObjectInspector(Boolean(floor.state.selected));},onPlaced:()=>{floor.state.placing=null;draw();},onCancel:()=>{floor.state.placing=null;floor.state.structure=null;floor.render();},onMessage:msg=>$('#floor-editor-notice').textContent=msg,onUnavailable:()=>{if(!ui.active||ui.display!=='three')return;ui.display='visual';root.querySelectorAll('[data-room-display]').forEach(x=>{const yes=x.dataset.roomDisplay==='visual';x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes))});studioMode();draw();$('#floor-editor-notice').textContent='3D indisponível neste navegador. A planta 2D permanece editável.';}});
  function syncTabState(){
@@ -129,7 +137,37 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    const replacement=[...event.currentTarget.querySelectorAll(selector)].find(b=>(b.dataset.roomTab||b.dataset.roomDisplay)===identity);
    replacement?.focus();
  }
- function studioMode(){root.querySelector('.rooms-shell').dataset.currentDisplay=ui.display;syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
+ function activeWorkflowStep(step){
+   document.querySelectorAll('.bo-workflow-steps [data-bo-stage]').forEach(button=>{
+    const selected=button.dataset.boStage===step;
+    button.classList.toggle('active',selected);
+    if(selected)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');
+   });
+ }
+ function openWorkflow(step){
+  if(step==='scenario'||step==='analyze'){
+   document.querySelector('.rail-btn[data-view="simulation"]')?.click();
+   activeWorkflowStep(step);
+   if(step==='analyze'){
+    requestAnimationFrame(()=>{
+     const report=document.querySelector('#simulation-view .sim-results');
+     if(report&&!report.hidden&&document.querySelector('#simulation-view')?.classList.contains('sim-has-result'))report.scrollIntoView({block:'start'});
+     else document.querySelector('#sim-run')?.focus();
+    });
+   }
+   return;
+  }
+  if(!ui.active)document.querySelector('.rail-btn[data-view="rooms"]')?.click();
+  ui.display=step==='plan'?'overview':step==='service'?'cards':'three';
+  studioMode();draw();
+ }
+ root.addEventListener('bo-workflow-navigate',event=>openWorkflow(event.detail.stage));
+ function studioMode(){root.querySelector('.rooms-shell').dataset.currentDisplay=ui.display;
+  const step=ui.display==='overview'?'plan':ui.display==='cards'?'service':'mount';
+  root.dataset.workflowStep=step;activeWorkflowStep(step);
+  const journey=root.querySelector('#hybrid-journey');
+  if(journey&&ui.display==='cards'){journey.classList.add('is-expanded');const toggle=journey.querySelector('#hybrid-journey-expand');toggle?.setAttribute('aria-expanded','true');if(toggle)toggle.textContent='Recolher';}
+  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
    if(is3d)studio3d.activate();else studio3d.deactivate();if(isCards){floor.hide();root.querySelector('.room-workflow-drawer').open=true;}else if(isOverview){floor.hide();overview.render()}else floor.show();
  }
  function renderTabs(){const d=getDocument(),nav=$('#room-tab-nav');nav.innerHTML=(d.environments||[]).map(r=>`<button type="button" data-room-tab="${esc(r.id)}" class="room-tab ${ui.selected===r.id?'active':''}" role="tab" aria-selected="${ui.selected===r.id?'true':'false'}" tabindex="${ui.selected===r.id?0:-1}" aria-controls="floor-editor"><span class="room-tab-icon" style="--tab-color:${esc(r.color||'#228b75')}">${esc(r.icon)}</span>${esc(short(r.name,23))}<small>${d.nodes.filter(n=>n.environmentId===r.id).length} atividades</small></button>`).join('')+`<button type="button" class="room-tab-add" id="room-tab-add">＋ Novo ambiente</button>`;
@@ -139,12 +177,12 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  
  function status(s){$('#room-live').textContent=s}
  function setFurniture(open){const shell=root.querySelector('.rooms-shell');root.querySelector('#bo-catalog-tool')?.setAttribute('aria-pressed',String(open));shell.classList.toggle('hybrid-furniture-active',open);hybrid.tabs(open?'furniture':'rooms');shell.classList.toggle('show-furniture',open);$('#room-toggle-library').setAttribute('aria-expanded',String(open));}
- function setObjectInspector(open){if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');setDetails(false);if(window.matchMedia('(max-width:900px)').matches){root.querySelector('.rooms-shell').classList.add('hybrid-mobile-right-open');root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open');}}root.querySelector('.rooms-shell').classList.toggle('show-object-inspector',open);$('#room-toggle-object-inspector').setAttribute('aria-expanded',String(open));}
+ function setObjectInspector(open){root.classList.toggle('bo-object-selected',Boolean(open));if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');setDetails(false);if(window.matchMedia('(max-width:900px)').matches){root.querySelector('.rooms-shell').classList.add('hybrid-mobile-right-open');root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open');}}root.querySelector('.rooms-shell').classList.toggle('show-object-inspector',open);$('#room-toggle-object-inspector').setAttribute('aria-expanded',String(open));}
  function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');}if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
  function apply(change,message){try{mutate(change);draw();status(message||'Ambientes atualizados.');}catch(e){status('Não foi possível: '+e.message);console.error('Erro ao atualizar ambiente:',e)}}
- function select(id){setFurniture(false);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
+ function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(false);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
  function roomCard(r,proj){const isUnassigned=r.id==='unassigned',selected=ui.selected===r.id;
    const names=r.nodes.filter(n=>!ui.search||[n.title,n.team,n.owner].join(' ').toLocaleLowerCase('pt-BR').includes(ui.search)).slice(0,12);
    const more=r.nodes.length-names.length;
@@ -294,5 +332,5 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  });
  $('#room-back').addEventListener('click',onBack);
  $('#room-help').addEventListener('click',()=>$('#room-how').hidden=!$('#room-how').hidden);
- return {show(){ui.active=true;root.hidden=false;document.body.classList.add('sb-hybrid-active');document.querySelector('#hybrid-construct')?.classList.add('active');document.querySelector('#hybrid-simulate')?.classList.remove('active');document.querySelector('#hybrid-construct')?.setAttribute('aria-current','page');document.querySelector('#hybrid-simulate')?.removeAttribute('aria-current');if(window.matchMedia('(max-width:1400px)').matches)setFurniture(false);studioMode();draw();},hide(){ui.active=false;document.body.classList.remove('sb-hybrid-active');document.querySelector('#hybrid-construct')?.classList.remove('active');document.querySelector('#hybrid-simulate')?.classList.add('active');document.querySelector('#hybrid-simulate')?.setAttribute('aria-current','page');document.querySelector('#hybrid-construct')?.removeAttribute('aria-current');floor.hide();studio3d.deactivate();root.hidden=true;},refresh(){draw()},openTask,state:ui};
+ return {show(){ui.active=true;root.hidden=false;document.body.classList.add('sb-hybrid-active');if(window.matchMedia('(max-width:1400px)').matches)setFurniture(false);studioMode();draw();},hide(){ui.active=false;activeWorkflowStep('scenario');document.body.classList.remove('sb-hybrid-active');floor.hide();studio3d.deactivate();root.hidden=true;},refresh(){draw()},openTask,state:ui};
 }
