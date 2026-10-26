@@ -1,0 +1,32 @@
+name: Blue Ocean 3D · UX regressions
+
+on:
+  push:
+    branches: [fix/workspace-ux-p0-p1]
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'tests/**'
+      - 'scripts/build-css.py'
+      - '.github/workflows/workspace-ux.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9f683
+      - name: Check JavaScript syntax
+        run: |
+          node --check app/workspace-controls.mjs
+          node --check app/environments-ui.mjs
+          node --check app/floorplan-ui.mjs
+      - name: Unit and contract tests
+        run: npm test
+      - name: Verify generated CSS bundle
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
