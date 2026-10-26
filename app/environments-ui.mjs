@@ -9,6 +9,7 @@ import {initSiteOverview} from './site-overview.mjs';
 import {confirmAction} from './confirm-dialog.mjs';
 import {initWorkspaceControls} from './workspace-controls.mjs';
 import {buildJourneyGraph} from './journey-flow.mjs';
+import {initLayoutReview} from './layout-review-ui.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const palette=['#1F927F','#587EB7','#B67E48','#9373B4','#D0748F','#5692AA','#7B9167'];
@@ -30,7 +31,7 @@ function installHybridLayout(root){
  main.after(right);right.appendChild(document.querySelector('#floor-editor-inspector'));right.appendChild(document.querySelector('#room-detail'));
  const preview=document.createElement('button');preview.type='button';preview.className='hybrid-sim-action';preview.textContent='▶ Simular a partir daqui';preview.addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());right.appendChild(preview);
  const breadcrumb=document.createElement('button');breadcrumb.type='button';breadcrumb.className='hybrid-breadcrumb';breadcrumb.innerHTML='Planta geral <span>›</span> <strong>Ambiente</strong>';breadcrumb.title='Abrir visão geral física';breadcrumb.addEventListener('click',()=>root.querySelector('[data-room-display="overview"]')?.click());main.querySelector('.floor-editor-toolbar').prepend(breadcrumb);
- const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-note">Ordem baseada nas conexões de execução</span><button type="button" id="hybrid-journey-expand" aria-expanded="false" aria-controls="hybrid-journey-list">Expandir</button><button type="button" id="hybrid-preview">▶ Simular</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" role="region" aria-label="Atividades ordenadas pelas conexões de execução" tabindex="0"></div>';
+ const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-note">Ordem baseada nas conexões de execução</span><button type="button" id="hybrid-journey-expand" aria-expanded="false" aria-controls="hybrid-journey-list">Expandir</button><button type="button" id="hybrid-layout-compare">Comparar layouts</button><button type="button" id="hybrid-preview">▶ Simular</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" role="region" aria-label="Atividades ordenadas pelas conexões de execução" tabindex="0"></div>';
  shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());
  journey.querySelector('#hybrid-journey-expand').addEventListener('click',e=>{
   const expanded=journey.classList.toggle('is-expanded');
@@ -74,6 +75,8 @@ function renderHybridJourney(doc,selected){
 
 export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const root=$('#rooms-view'),hybrid=installHybridLayout(root),ui={active:false,selected:null,editing:null,search:'',stage:0,kitTab:'catalog',display:'three'};
+ const layoutReview=initLayoutReview({root,getDocument,getRoomId:()=>ui.selected});
+ root.querySelector('#hybrid-layout-compare').addEventListener('click',()=>layoutReview.open());
  root.querySelector('.rooms-shell').classList.add('studio-full','show-object-inspector');
  window.matchMedia('(max-width:1050px)').addEventListener('change',e=>{if(e.matches)setFurniture(false)});
  const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
