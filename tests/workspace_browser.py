@@ -27,7 +27,7 @@ with sync_playwright() as pw:
  expect(page.locator('.hybrid-left-dock')).to_be_hidden()
  page.get_by_role('button',name='Abrir biblioteca').click()
  expect(page.locator('.hybrid-left-dock')).to_be_visible()
- page.locator('[data-room-display="visual"]').click()
+ page.locator('#bo-workflow-floor').click()
  page.locator('.floor-prop[data-floor-prop]').first.click()
  expect(page.locator('.workspace-inspector-section')).to_have_count(3)
  expect(page.locator('fieldset.studio18-position')).to_have_attribute('aria-label','Posição precisa do móvel')
