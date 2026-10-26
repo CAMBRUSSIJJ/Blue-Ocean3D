@@ -59,14 +59,14 @@ function renderHybridJourney(doc,selected){
  const flow=buildJourneyGraph(doc);
  const note=document.querySelector('#hybrid-journey-note');
  if(note)note.textContent=flow.cyclic?'⚠ Ciclo identificado: revise as conexões antes de simular':
-  `${flow.tasks.length} atividades · ${flow.precedenceCount} conexões de execução · ${flow.isolatedCount} sem vínculos`;
- if(!flow.tasks.length){list.innerHTML='<p class="hybrid-journey-empty">A jornada aparece quando você adiciona atividades ao serviço.</p>';return;}
+  `${flow.steps.length} componentes · ${flow.tasks.length} atividades · ${flow.precedenceCount} conexões de execução`;
+ if(!flow.steps.length){list.innerHTML='<p class="hybrid-journey-empty">A jornada aparece quando você adiciona atividades ao serviço.</p>';return;}
  const levels=new Map();
- for(const task of flow.tasks){if(!levels.has(task.level))levels.set(task.level,[]);levels.get(task.level).push(task)}
+ for(const task of flow.steps){if(!levels.has(task.level))levels.set(task.level,[]);levels.get(task.level).push(task)}
  list.innerHTML=[...levels].map(([level,tasks])=>`<div class="hybrid-journey-group" data-journey-level="${level}">
   <div class="hybrid-journey-level">${level===0?'Início / atividades independentes':`Após ${level} conexão(ões)`}${tasks.length>1?'<small> · possíveis execuções paralelas</small>':''}</div>
   <div class="hybrid-journey-tasks">${tasks.map(task=>`<div class="hybrid-journey-step" style="--journey-color:${/^#[0-9a-fA-F]{6}$/.test(task.roomColor)?task.roomColor:'#81939b'}">
-   <button type="button" class="hybrid-journey-task" data-hybrid-step="${esc(task.id)}" ${task.roomId?`data-hybrid-room-id="${esc(task.roomId)}"`:''} title="${esc(task.title)} · clique para editar"><strong>${esc(short(task.title,40))}</strong><small>${task.duration>0?`${task.duration} min (previstos)`:'Marco sem duração'}${task.isolated?' · Sem sequência':''}${task.outgoing>1?' · Ramificação':''}</small></button>
+   <button type="button" class="hybrid-journey-task" data-hybrid-step="${esc(task.id)}" ${task.roomId?`data-hybrid-room-id="${esc(task.roomId)}"`:''} title="${esc(task.title)} · clique para editar"><strong>${esc(short(task.title,40))}</strong><small>${esc(CARD_TYPES[task.type]?.title||'Componente')} · ${['activity','decision'].includes(task.type)?(task.duration>0?`${task.duration} min previstos`:'Marco sem duração'):'Informativo'}${task.isolated&&['activity','decision'].includes(task.type)?' · Sem sequência':''}${task.outgoing>1?' · Ramificação':''}</small></button>
    ${task.roomId?`<button type="button" class="hybrid-journey-location" data-hybrid-room="${esc(task.roomId)}" title="Abrir ambiente no editor 3D">${esc(task.roomName)} ↗</button>`:'<span class="hybrid-journey-orphan">Sem ambiente vinculado</span>'}
   </div>`).join('')}</div>
  </div>`).join('');
