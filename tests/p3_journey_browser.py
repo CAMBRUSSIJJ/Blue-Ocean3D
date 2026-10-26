@@ -11,6 +11,8 @@ with sync_playwright() as pw:
  errors=[]
  page.on('pageerror',lambda e:errors.append(str(e)))
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
+ expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
+ page.locator('#bo-workflow-service').click()
  journey=page.locator('#hybrid-journey-list')
  expect(journey).to_be_visible(timeout=12000)
  tasks=page.evaluate("doc.nodes.length")
