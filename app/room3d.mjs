@@ -225,6 +225,11 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
   loading=false;
  }
  element.addEventListener('click',handleControls);
+ element.querySelector('#room3d-quick-help')?.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  e.preventDefault();e.stopPropagation();
+  handleControls({target:element.querySelector('[data-room3d-control="close-help"]')});
+ });
  element.querySelector('#room3d-wall-height')?.addEventListener('change',e=>{
   const id=getRoomId();if(!id)return;
   try{mutate(d=>setWallHeight(d,id,e.target.value));say(`Paredes ajustadas para ${wallHeight(getDocument(),id).toFixed(2)} m.`);renderRoom()}
