@@ -30,3 +30,9 @@ jobs:
         run: |
           python3 scripts/build-css.py
           git diff --exit-code -- app/styles-bundle.css
+      - name: Install Chromium test runtime
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Browser workspace E2E
+        run: python3 tests/workspace_browser.py
