@@ -1,0 +1,13 @@
+/* v1.9: controles de tamanho e seleção múltipla — mesmo editor em tela ampla. */
+#rooms-view .studio19-size{border:1px solid #b4dac8;border-radius:10px;margin:11px 0;padding:10px;background:#effaf3;min-width:0}
+#rooms-view .studio19-size legend{font-size:11px;font-weight:800;color:#245e4b}
+#rooms-view .studio19-size>small{display:block;padding:7px 0 1px;font-size:10px;color:#517567}
+#rooms-view .studio19-size button{width:100%;margin-top:8px;border:0;border-radius:8px;background:#087e65;color:white;padding:9px 6px;font-size:11px;font-weight:800;cursor:pointer}
+#rooms-view .studio19-size input:focus-visible,#rooms-view .studio19-size button:focus-visible,#rooms-view .studio19-group-actions button:focus-visible{outline:2px solid #0d9b79;outline-offset:2px}
+#rooms-view .studio19-group-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0}
+#rooms-view .studio19-group-actions button{border:1px solid #a7d1be;border-radius:8px;padding:10px 5px;background:#e9f5ed;color:#285b48;font-weight:750;font-size:11px;cursor:pointer}
+#rooms-view .studio19-group-actions #studio19-group-remove{background:#fff0ef;color:#a43f49;border-color:#e9bab7}
+#rooms-view .floor-prop.selected{outline:3px solid #09876e!important;outline-offset:-2px;box-shadow:0 0 0 3px #3ab89c50!important}
+@media(max-width:620px){#rooms-view .studio19-size{padding:9px}#rooms-view .studio19-group-actions{grid-template-columns:1fr}}
+
+#rooms-view .studio19-structure-preview{position:absolute;z-index:20;pointer-events:none;background:#0ea987aa;box-shadow:0 0 0 2px #0ea98735;border-radius:4px;}

@@ -1,0 +1,29 @@
+/* v2.3 UX — cabeçalho, navegação, barra 3D, simulação */
+:focus-visible{outline:2px solid #1c9185;outline-offset:2px}
+.top-actions .menu-wrap{position:relative}
+#btn-export{font-weight:700}
+#export-menu.dropdown{background:#fff;border:1px solid #cfe0dc;box-shadow:0 14px 34px #0b1f2a29;width:230px;padding:6px}
+#export-menu.dropdown button{color:#1f4f48;font-size:13px;padding:11px 12px;min-height:40px}
+#export-menu.dropdown button:hover{background:#e9f5f2}
+#export-menu.dropdown hr{border:0;border-top:1px solid #dbe8e5;margin:5px 4px}
+#export-menu.dropdown .menu-danger{color:#9a4b1c}
+.save-state.is-error{color:#9a5b00}
+.save-state .save-backup{margin-left:6px;border:1px solid #d9a441;background:#fff7e6;color:#7a4a00;border-radius:8px;padding:3px 9px;font-size:12px;font-weight:700;cursor:pointer}
+.rail{width:74px!important;flex-basis:74px!important;padding:16px 7px!important}
+.rail .rail-btn{width:60px!important;height:58px!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:21px;line-height:1}
+.rail .rail-btn small{font-size:11px;font-weight:700;letter-spacing:.01em}
+.rail .rail-btn.active{color:#fff}
+.room3d-buttons [data-room3d-control="top"],.room3d-buttons [data-room3d-control="rotate-selected"]{position:relative;margin-left:12px}
+.room3d-buttons [data-room3d-control="top"]::before,.room3d-buttons [data-room3d-control="rotate-selected"]::before{content:"";position:absolute;left:-8px;top:18%;bottom:18%;width:1px;background:currentColor;opacity:.3}
+.floor-editor-toolbar #floor-undo,.floor-editor-toolbar #floor-redo{min-width:38px;font-size:16px}
+.sim-playbar{position:sticky;top:0;z-index:30;background:#fff;box-shadow:0 8px 18px #0b1f2a1f}
+@media(max-width:650px){
+ .rail{position:fixed!important;left:0;right:0;bottom:0;width:auto!important;height:60px;flex-direction:row;justify-content:center;gap:34px;padding:3px 8px!important;z-index:60;border-right:0;border-top:1px solid #25344a}
+ .rail .brand-symbol,.rail .rail-gap,.rail .rail-version{display:none}
+ .rail .rail-btn{height:52px!important}
+ .workspace{padding-bottom:62px}
+ .brandline .brand-separator,.brandline>span:not(.brand-separator){display:none}
+ .brandline strong{white-space:nowrap}
+ .project-field{min-width:0}
+ #rooms-view button,#simulation-view button{min-height:40px}
+}

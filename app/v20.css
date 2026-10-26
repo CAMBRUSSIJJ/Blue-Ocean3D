@@ -1,0 +1,36 @@
+/* v2.0 — planta geral e alças contextuais sem ocupar o estúdio individual */
+#rooms-view .site-overview{background:#f7fbf8;border:1px solid #d5e5dd;border-radius:16px;min-height:540px;overflow:hidden}
+#rooms-view .site-head{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:white;border-bottom:1px solid #d7e6df}
+#rooms-view .site-head h3{font-size:20px;margin:5px 0;color:#183d39}
+#rooms-view .site-head p{margin:4px 0;color:#57776c;font-size:12px}
+#rooms-view .site-head-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#rooms-view .site-head-actions button,#rooms-view .site-room-handle button{border:1px solid #bbd9ce;background:#f0faf5;padding:8px 10px;border-radius:8px;color:#145947;cursor:pointer;font-weight:700}
+#rooms-view .site-summary{font-size:12px;color:#466c60}
+#rooms-view .site-scroll{overflow:auto;max-height:65vh;background-image:radial-gradient(#d4e5dc 1px, transparent 1px);background-size:20px 20px;background-color:#f4f9f6;padding:16px}
+#rooms-view .site-canvas{position:relative;min-width:720px;min-height:400px}
+#rooms-view .site-link{position:absolute;inset:0;pointer-events:none;overflow:visible}
+#rooms-view .site-room{position:absolute;border:1px solid #95b6a9;background:white;border-radius:9px;overflow:hidden;box-shadow:0 3px 9px #0d3e2b13;z-index:2;transition:box-shadow .12s}
+#rooms-view .site-room.dragging{z-index:4;box-shadow:0 8px 22px #17614755}
+#rooms-view .site-room-handle{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:6px 8px;background:#f1f8f3;cursor:grab;touch-action:none;height:39px;font-size:12px;color:#234d42}
+#rooms-view .site-room-handle b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
+#rooms-view .site-room-handle button{padding:5px;font-size:10px;white-space:nowrap}
+#rooms-view .site-room-svg{display:block;width:100%;height:160px}
+#rooms-view .site-room>small{display:block;font-size:10px;padding:6px 9px;color:#608073}
+#rooms-view .site-notes{padding:18px 22px;font-size:13px;line-height:1.5;color:#244c41}
+#rooms-view .site-notes p{margin:8px 0}
+#rooms-view .site-warning{background:#fff5e9;border-left:3px solid #e4a05d;padding:7px 9px}
+#rooms-view .site-ok{background:#eaf8f0;border-left:3px solid #159878;padding:7px 9px}
+#rooms-view .site-disclaimer{font-size:11px;color:#6d8179}
+#rooms-view .floor-prop{overflow:visible}
+#rooms-view .floor-resize-handle{position:absolute;bottom:-7px;right:-7px;width:18px;height:18px;border-radius:5px;background:#0a9d7c;border:2px solid white;box-shadow:0 2px 6px #144d3d88;cursor:nwse-resize;touch-action:none;z-index:8}
+#rooms-view .floor-prop:not(.selected) .floor-resize-handle{display:none}
+#rooms-view .floor-prop.is-resizing{outline:3px solid #12a081;z-index:7}
+#rooms-view .floor-prop.invalid-resize{outline:3px solid #d35f5f!important}
+#rooms-view .room-mode-switch [data-room-display="overview"].active{background:#187f6e;color:#fff}
+
+/* Geometria física da sala: títulos ficam FORA dos 12×8 quadrados. */
+#rooms-view .site-room{overflow:visible;border:0;border-radius:0;background:transparent;box-shadow:none}
+#rooms-view .site-room-svg{border:3px solid #527d71;border-radius:3px;height:160px;background:#edf5f0;box-sizing:border-box}
+#rooms-view .site-room-handle{position:absolute;bottom:100%;width:100%;border:1px solid #bbd7c9;border-radius:7px 7px 0 0;background:#f6fbf7;box-sizing:border-box}
+#rooms-view .site-room>small{position:absolute;top:100%;left:0;right:0;background:#ffffff;border:1px solid #cbded4;border-radius:0 0 6px 6px}
+#rooms-view .site-room.dragging{box-shadow:none;filter:drop-shadow(0 7px 9px #15594840)}

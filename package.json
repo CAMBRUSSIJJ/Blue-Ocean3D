@@ -1,0 +1,16 @@
+{
+  "name": "service-cad-lab",
+  "version": "2.6.0",
+  "private": true,
+  "type": "module",
+  "description": "Service simulation with editable physical corridors, doors, collision-aware cross-room routing and illustrative spatial traffic, hypothetical travel durations, unified 3D scene and event-derived visual actor interactions.",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "test": "node --test tests/*.test.mjs",
+    "build:css": "python3 scripts/build-css.py",
+    "test:browser": "python3 tests/v23_browser.py"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

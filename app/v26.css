@@ -1,0 +1,33 @@
+/* v2.3.2 — progressive accessibility, modals and readable controls. */
+.sb-confirm-dialog{box-sizing:border-box;width:min(450px,calc(100vw - 28px));max-width:450px;border:1px solid #c6dcd4;border-radius:16px;padding:22px;box-shadow:0 20px 70px #102b2a4a;background:#fff;color:#173b3b}
+.sb-confirm-dialog::backdrop{background:#092c2c91;backdrop-filter:blur(3px)}
+.sb-confirm-head{display:flex;gap:11px;align-items:center}
+.sb-confirm-head h2{margin:0;font-size:19px;line-height:1.3}
+.sb-confirm-mark{display:inline-grid;place-items:center;background:#fff1df;color:#905218;border-radius:50%;width:38px;height:38px;font-size:22px;font-weight:800}
+.sb-confirm-dialog p{font-size:14px;line-height:1.55;color:#4b6360;margin:17px 0 22px}
+.sb-confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+.sb-confirm-actions button{min-height:44px;min-width:100px;padding:9px 15px;border-radius:9px}
+.sb-confirm-primary{color:white;background:#b83f3f;border:1px solid #a82e2e;font-weight:750;cursor:pointer}
+.sb-confirm-primary.is-neutral{background:#097f6d;border-color:#097f6d}
+.sb-confirm-dialog :focus-visible{outline:3px solid #0c7b6d;outline-offset:3px}
+/* Make tab state accessible without changing the shared app state. */
+#rooms-view [role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px #11816b}
+#rooms-view [role="tab"]:focus-visible,#room-tab-add:focus-visible{outline:3px solid #087f6e;outline-offset:2px}
+#rooms-view .room-mode-switch button[role="tab"],#rooms-view .room-tab-nav .room-tab{min-height:44px!important;font-size:12px!important;line-height:1.3}
+#rooms-view .room-tab small{font-size:11px!important}
+/* Primary touch targets — avoid zero-area hit regions and hidden focus. */
+#rooms-view .floor-editor-toolbar button,#rooms-view .room-controls button,
+#rooms-view .room3d-buttons button,#rooms-view .room3d-structure-bar button,
+#rooms-view .floor-structure-tools button,
+#simulation-view button,#simulation-view select{min-height:44px!important;min-width:40px!important}
+#rooms-view .room3d-wall-control input{min-height:44px;min-width:56px}
+#rooms-view input:focus-visible,#rooms-view select:focus-visible,
+#simulation-view input:focus-visible,#simulation-view select:focus-visible{outline:3px solid #087f6e;outline-offset:2px}
+@media(max-width:680px){
+ #rooms-view .room-mode-switch{overflow-x:auto;max-width:100%;justify-content:flex-start;scrollbar-width:thin}
+ #rooms-view .room-mode-switch button[role="tab"]{flex:0 0 auto!important;min-height:44px!important;font-size:12px!important;padding:8px 10px!important}
+ #rooms-view .room-tab-nav .room-tab{min-height:44px!important}
+ #rooms-view .room3d-buttons button{min-height:44px!important;min-width:44px!important}
+ #simulation-view #sim-play,#simulation-view #sim-reset,#simulation-view #sim-forward{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){.sb-confirm-dialog{scroll-behavior:auto;transition:none}}

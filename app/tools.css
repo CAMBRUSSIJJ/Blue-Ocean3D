@@ -1,0 +1,30 @@
+/* v0.6 — ferramentas, menu rápido, paleta de comandos */
+.tool-strip{position:absolute;z-index:6;left:14px;top:62px;display:flex;flex-direction:column;gap:4px;padding:6px;background:#fff;border:1px solid #d6e4e2;border-radius:14px;box-shadow:0 8px 28px #2b595126}
+.tool-strip button{position:relative;width:42px;height:42px;display:grid;place-items:center;border:1px solid transparent;border-radius:10px;background:transparent;color:#476d78;font-size:19px;line-height:1}
+.tool-strip button:hover{background:#eef8f5}.tool-strip button.on{background:#168b86;color:#fff;box-shadow:0 3px 10px #168b8650}
+.tool-strip kbd{position:absolute;right:3px;bottom:1px;font:800 8px Manrope,sans-serif;opacity:.55}
+.tool-strip i{height:1px;background:#e1ebe9;margin:3px 4px}
+.canvas-wrapper[data-tool=pan]{cursor:grab}.canvas-wrapper[data-tool=connect],.canvas-wrapper.linking{cursor:crosshair}.canvas-wrapper[data-tool=delete]{cursor:pointer}
+.canvas-wrapper[data-tool=pan] .canvas-node,.canvas-wrapper[data-tool=connect] .canvas-node{cursor:inherit}
+.canvas-wrapper[data-tool=delete] .canvas-node:hover .node-bg{stroke:#d64545!important;stroke-width:3}
+.canvas-wrapper[data-tool=delete] .map-edge:hover{stroke:#d64545!important}
+.node-port{fill:#fff;stroke:#168b86;stroke-width:3;opacity:0;cursor:crosshair;transition:opacity .15s}
+.canvas-node:hover .node-port,.canvas-node.selected .node-port,.canvas-wrapper[data-tool=connect] .node-port,.canvas-wrapper.linking .node-port{opacity:1}
+.node-port:hover{fill:#168b86}
+.quick-menu{position:fixed;z-index:50;width:262px;max-height:min(440px,calc(100vh - 16px));overflow:auto;padding:6px;background:#fff;border:1px solid #cfe2de;border-radius:14px;box-shadow:0 18px 50px #1d3f3a33}
+.qm-head{font:800 10px Manrope,sans-serif;letter-spacing:1.2px;color:#5f8a86;padding:8px 10px 6px;text-transform:uppercase}
+.quick-menu button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:7px 8px;border:0;background:transparent;border-radius:9px;color:#27434a}
+.quick-menu button:hover,.quick-menu button:focus-visible{background:#eaf8f3}.quick-menu b{display:block;font-size:12px}.quick-menu small{font-size:10px;color:#79949a}
+.palette{width:min(560px,calc(100vw - 24px));margin:12vh auto 0;padding:0;border:1px solid #cfe2de;border-radius:16px;background:#fff;color:#27434a;box-shadow:0 30px 90px #10302c44;overflow:hidden}
+.palette::backdrop{background:#0b1f2288}.palette input{width:100%;border:0;border-bottom:1px solid #e1ebe9;padding:18px 20px;font-size:15px;outline:0;background:#fff;color:#1f3a40}
+.palette ul{list-style:none;margin:0;padding:6px;max-height:min(340px,50vh);overflow:auto}.palette li{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:9px;font-size:13px;cursor:pointer}
+.palette li.on{background:#e3f6f0;color:#0f6a62}.palette li small{color:#7a9a97;font-size:11px;white-space:nowrap}.palette li.empty{color:#7a9a97;cursor:default}
+.palette footer{padding:9px 16px;border-top:1px solid #e1ebe9;font-size:10px;color:#7a9a97;background:#f7fbfa}
+.help-dialog{background:#fff;color:#27434a;border-color:#cfe2de;width:min(560px,calc(100vw - 24px))}.help-dialog h2{color:#1f3a40}.help-dialog table{width:100%;border-collapse:collapse;margin-top:12px}
+.help-dialog th{text-align:left;padding:8px 10px 8px 0;width:44%;vertical-align:top}.help-dialog td{padding:8px 0;font-size:12px;color:#59767b;border-bottom:1px solid #eef3f2}.help-dialog tr th{border-bottom:1px solid #eef3f2}
+.help-dialog kbd{font:700 11px Manrope,sans-serif;background:#eef6f4;border:1px solid #d2e3df;border-radius:6px;padding:3px 6px;color:#2c5a58}
+.inline-rename{position:fixed;z-index:60;height:30px;padding:0 8px;border:2px solid #168b86;border-radius:8px;background:#fff;color:#14323a;font-family:Manrope,system-ui,sans-serif;font-weight:800;box-shadow:0 6px 20px #168b8630;outline:0}
+.foot-issues{border:1px solid #f0d9b5;background:#fff7e8;color:#9a6420;font-size:10px;font-weight:800;border-radius:999px;padding:4px 10px}
+.foot-issues.ok{border-color:#cfe8df;background:#eefaf5;color:#26806f}
+.builder-intro small{color:#4f7f74;margin-left:auto;font-size:10px}.builder-intro small+button{margin-left:10px}
+@media(max-width:740px){.tool-strip{top:50px;left:8px;padding:4px}.tool-strip button{width:36px;height:36px}.tool-strip kbd{display:none}.builder-intro small{display:none}}

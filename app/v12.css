@@ -1,0 +1,30 @@
+/* v1.2 — geometria física de referência e acessibilidade de postos. */
+.floor-structure-tools{border-bottom:1px solid #dce9e0;margin-bottom:12px;padding-bottom:12px;display:grid;gap:6px}
+.floor-structure-tools h4{font-size:11px;margin:0 0 4px;color:#386456}
+.floor-structure-tools>button{cursor:pointer;text-align:left;padding:9px 8px;border:1px solid #d7e6db;background:#fff;border-radius:9px;font:750 11px/1.3 inherit;color:#3c685a}
+.floor-structure-tools>button:hover{border-color:#58b4a1}.floor-structure-tools>button.active,.floor-structure-tools>button[aria-pressed="true"]{background:#e0f5ed;border-color:#168b75;color:#096d57;box-shadow:inset 3px 0 0 #188e75}
+.floor-structure-tools>small{font-size:9px;color:#839d91;line-height:1.5;margin:3px 0}
+.floor-structure-editing .floor-surface{cursor:crosshair!important}.floor-structure-editing .floor-prop{pointer-events:none}
+.floor-edge{position:absolute;display:block;z-index:5;pointer-events:none;box-sizing:border-box}
+.floor-edge-h{height:0;transform:translateY(-50%)}.floor-edge-v{width:0;transform:translateX(-50%)}
+.floor-edge-h.floor-edge-wall{border-top:5px solid #3c5c54;box-shadow:0 1px 2px #203d3542}
+.floor-edge-v.floor-edge-wall{border-left:5px solid #3c5c54;box-shadow:1px 0 2px #203d3542}
+.floor-edge-h.floor-edge-door{border-top:3px dashed #23a288;background:#dbf1e8}
+.floor-edge-v.floor-edge-door{border-left:3px dashed #23a288;background:#dbf1e8}
+.floor-surface{box-shadow:none;border:1px solid #c3d3c9}
+.floor-surface::before{display:none}
+.floor-room-doors{font-size:9px;padding:4px 6px;border:1px solid #d5e9df;border-radius:6px;color:#2d7f65;background:#edfaf4;white-space:nowrap}
+.floor-room-no-door{background:#fff6e8;color:#966339;border-color:#f1d8b0}
+.floor-route-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible}
+.floor-route-overlay g{fill:none;stroke:#19a57b;stroke-width:1.25;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:2 1;filter:drop-shadow(0 0 1px #ffffff)}
+.floor-route-badge{position:absolute;z-index:6;bottom:4px;right:4px;border-radius:6px;background:#dcf7e9;border:1px solid #bce8d3;padding:3px 6px;font-size:10px;font-weight:800;color:#1d795f;pointer-events:none}
+.floor-route-badge.is-blocked{background:#ffebe7;border-color:#f2b7ac;color:#ba4e3f}
+.floor-link-label input[type=number]{display:block;width:100%;margin-top:8px;padding:8px;border:1px solid #ccded3;border-radius:8px;color:#265e50;background:#fff;font-size:12px}
+.floor-dimensions{background:#edf7f0;border:1px solid #dbe9dc;padding:9px;border-radius:8px;font-size:11px;line-height:1.5;color:#456d5b;margin-top:8px}
+.floor-dimensions b{color:#1b7562}
+.floor-person-blocked{outline:3px solid #d15b45;outline-offset:3px}
+.sim-floor .floor-edge{opacity:.95}
+@media(min-width:1250px){.floor-editor-content{grid-template-columns:152px minmax(0,1fr) 187px}.floor-palette-items{grid-template-columns:1fr}}
+@media(max-width:700px){.floor-structure-tools{grid-template-columns:repeat(2,minmax(0,1fr))}.floor-structure-tools h4,.floor-structure-tools small{grid-column:1/-1}}
+
+.floor-navigation-alert{color:#a95a39;font-weight:800}.floor-inspector-hint{overflow-wrap:anywhere}

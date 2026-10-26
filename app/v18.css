@@ -1,0 +1,37 @@
+/* v1.8 — edição precisa sem sacrificar a tela inteira da v1.7 */
+#rooms-view .room3d-structure-bar{
+ position:absolute;z-index:10;left:50%;top:12px;transform:translateX(-50%);
+ display:flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid #c8e2d6;
+ background:#ffffffed;border-radius:11px;box-shadow:0 4px 17px #214a3623;
+ max-width:calc(100% - 325px);overflow-x:auto;scrollbar-width:thin;
+}
+#rooms-view .room3d-structure-bar span{white-space:nowrap;font-size:10px;font-weight:800;color:#487c67;margin:0 7px 0 4px}
+#rooms-view .room3d-structure-bar button{
+ white-space:nowrap;border:1px solid #e2ede7;background:#f8fbf9;border-radius:8px;color:#366a56;
+ cursor:pointer;padding:8px 10px;font-size:11px;font-weight:800;
+}
+#rooms-view .room3d-structure-bar button.active,#rooms-view .room3d-structure-bar button[aria-pressed=true]{background:#d9f5e8;color:#00674d;border-color:#2fa784}
+#rooms-view .room3d-structure-bar button:focus-visible,.studio18-position input:focus-visible,.studio18-position button:focus-visible,.studio18-nudge button:focus-visible{outline:2px solid #0d9b79;outline-offset:2px}
+#rooms-view .room3d-stage:has(.room3d-structure-bar button.active) canvas{cursor:crosshair!important}
+.studio18-position,.studio18-nudge{border:1px solid #e0eee6;border-radius:10px;margin:12px 0 0;padding:10px;background:#f7fbf8;min-width:0}
+.studio18-position legend,.studio18-nudge legend{font-size:11px;font-weight:800;color:#356757;padding:0 3px}
+.studio18-coordinates{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.studio18-coordinates label{font-weight:750;font-size:10px;color:#537668;display:flex;flex-direction:column;gap:4px}
+.studio18-coordinates input{width:100%;min-width:0;padding:8px 5px;border:1px solid #bfd7cb;border-radius:7px;background:#fff;color:#255346;font-size:13px}
+#studio18-apply{width:100%;margin-top:8px;border:0;border-radius:8px;background:#087e65;color:#fff;padding:9px 6px;font-weight:800;font-size:11px;cursor:pointer}
+.studio18-nudge div{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.studio18-nudge button{border:1px solid #bdd9ca;border-radius:8px;background:white;color:#2e7661;min-height:35px;font-weight:900;font-size:19px;cursor:pointer}
+#studio18-duplicate{background:#e5f5ec;color:#21634c;border:1px solid #a9d3be;border-radius:8px;padding:8px}
+#rooms-view .room3d-buttons{max-width:min(100%,980px)}
+@media(max-width:1100px){
+ #rooms-view .room3d-structure-bar{top:48px;left:50%;max-width:calc(100% - 26px)}
+ #rooms-view .room3d-dim{top:96px!important}
+}
+@media(max-width:620px){
+ #rooms-view .room3d-structure-bar{left:7px;right:7px;top:43px;transform:none;max-width:calc(100% - 14px)}
+ #rooms-view .room3d-structure-bar span{display:none}
+ #rooms-view .room3d-structure-bar button{padding:8px 7px;font-size:10px}
+ #rooms-view .room3d-dim{top:93px!important;left:7px!important;max-width:calc(100% - 14px)!important}
+ #rooms-view .room3d-buttons{max-width:calc(100% - 12px);bottom:48px!important;gap:3px}
+ #rooms-view .room3d-buttons button{font-size:9px!important}
+}

@@ -1,0 +1,14 @@
+/* v2.2 — Opção de deslocamento e planta geral 3D. */
+.sim22-spatial-settings{border:1px solid #cfdfd6;border-radius:12px;padding:12px 14px;margin:12px 0;background:#f7fbf8}
+.sim22-spatial-settings summary{cursor:pointer;color:#166f61;font-weight:750}
+.sim22-spatial-settings p{font-size:.78rem;color:#617e77;line-height:1.5;margin:.55rem 0 0}
+.sim22-spatial-fields{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
+.sim22-spatial-fields label{display:grid;gap:5px;font-size:.78rem;color:#2e5c52;font-weight:650}
+.sim22-spatial-fields .sim22-switch{display:flex;align-items:center;gap:8px;width:100%}
+.sim22-spatial-fields input[type=number]{width:146px;max-width:100%;padding:8px;border:1px solid #c9d9d1;border-radius:9px;background:white}
+.sim22-spatial-summary{margin:4px 0 12px;padding:12px 16px;background:#eff8f3;border:1px solid #d0e4d8;border-radius:12px;color:#315f51;line-height:1.55;font-size:.9rem}
+.sim22-spatial-summary small{display:block;opacity:.78}
+.sim22-site-3d{height:min(62vh,610px);min-height:360px;background:#e8f2ed;position:relative;overflow:hidden;border-radius:12px}
+.sim22-overview-canvas{display:block;width:100%;height:100%;touch-action:none}
+.sim22-site-3d[hidden],.sim21-map[hidden]{display:none!important}
+@media(max-width:640px){.sim22-site-3d{min-height:290px;height:48vh}.sim22-spatial-fields label{max-width:100%}}

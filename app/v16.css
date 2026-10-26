@@ -1,0 +1,70 @@
+/* Service Builder v1.6 — simulation-first 3D visualizer, two-tab navigation retained. */
+#sim16-scene[hidden],#sim-floor[hidden],#sim16-alert[hidden]{display:none!important}
+.simulation-view{padding-top:19px}
+.sim-hero{margin-bottom:13px}
+.sim-hero h1{font-size:clamp(24px,2vw,30px)}
+.sim-scene{grid-template-columns:minmax(0,1fr) auto auto;gap:9px;margin-bottom:10px}
+.sim-scene>.sim-card:first-child{padding:14px 18px}
+.sim-scene>.sim-guide{max-width:210px;padding:12px;align-self:start}
+.sim-scene>.sim-guide summary{font-size:11px;font-weight:700;cursor:pointer}
+.sim-scene>.sim-guide[open]{max-width:320px}
+.sim-scene .sim-controls{gap:8px}
+.sim-preflight{margin-bottom:9px!important}
+.sim-has-result .sim-results{display:flex;flex-direction:column}
+.sim-floor-card{order:2;min-width:0;padding:16px}
+.sim-stats{order:0;gap:10px!important;margin-bottom:8px!important}
+.sim-stats .sim-stat{padding:12px 16px!important}
+.sim-stats strong{font-size:21px!important}
+.sim-diagnosis{order:5}
+.sim-playbar{order:1;margin:3px 0 10px!important}
+.sim16-analytics{order:4;margin-top:12px;min-width:0;border:1px solid #d8e7df;border-radius:14px;background:#fff}
+.sim16-analytics>summary{list-style:none;cursor:pointer;padding:15px 18px;color:#24594f;font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.sim16-analytics>summary::-webkit-details-marker{display:none}
+.sim16-analytics>summary span{font-size:10px;color:#879e93}
+.sim16-analytics .sim-grid{padding:0 12px 12px;margin-top:0}
+.sim-opportunities{order:6}.sim-lower{order:7}.sim-comparison{order:8}
+.sim-floor-head{margin-bottom:11px}
+.sim-floor-head h2{font-size:18px}
+.sim-floor-head .sim-subtle{max-width:720px}
+.sim-floor-key{margin-top:9px}
+.sim16-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.sim16-modes{display:flex;gap:4px;padding:4px;border-radius:11px;background:#edf5f1}
+.sim16-modes button{border:0;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:850;background:transparent;color:#52766a}
+.sim16-modes button.active{background:#168775;color:#fff;box-shadow:0 2px 6px #0b716530}
+.sim16-hint{font-size:11px;color:#748f84}
+.sim16-rooms{display:flex;overflow-x:auto;gap:7px;padding:0 0 11px;scrollbar-width:thin}
+.sim16-rooms button{min-width:128px;flex:0 0 auto;padding:9px 13px;text-align:left;background:#f7faf8;color:#476c60;border:1px solid #d9e7e1;border-radius:10px;font-size:12px;font-weight:800}
+.sim16-rooms button.active{background:#e5f7ee;color:#13705d;border-color:#21a385}
+.sim16-rooms button small{display:block;margin-top:3px;font-size:10px;font-weight:600;color:#7b9188}
+.sim16-viewgrid{display:grid;grid-template-columns:minmax(0,1fr) 235px;gap:11px}
+.sim16-stage{position:relative;min-width:0;height:clamp(360px,44vw,570px);border-radius:15px;background:linear-gradient(135deg,#e2f0e9,#d4e5dd);overflow:hidden;border:1px solid #c9dfd2}
+.sim16-webgl{position:absolute;inset:0;min-height:250px}
+.sim3d-canvas{height:100%;width:100%;display:block;touch-action:none;outline:none;cursor:grab}
+.sim3d-canvas:focus-visible{outline:3px solid #11a186;outline-offset:-3px}.sim3d-canvas:active{cursor:grabbing}
+.sim16-stage-caption{position:absolute;left:13px;top:12px;display:flex;flex-direction:column;gap:3px;background:#ffffffef;border:1px solid #d2e8dc;border-radius:10px;padding:9px 12px;pointer-events:none;box-shadow:0 3px 12px #21533e1c}
+.sim16-stage-caption span:first-child{font-weight:850;font-size:13px;color:#21594a}.sim16-stage-caption span:last-child{font-size:11px;color:#5e8878}
+.sim16-cameras{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px;position:absolute;right:11px;bottom:10px;padding:5px;border-radius:10px;background:#ffffffed;box-shadow:0 3px 12px #21533e27}
+.sim16-cameras button{min-width:33px;min-height:32px;border:1px solid #d8e9df;border-radius:7px;background:#f3faf6;color:#227361;font-weight:850}
+.sim16-cameras button:hover{background:#ddf7e7}
+.sim16-side{min-width:0;max-height:570px;overflow:auto;border:1px solid #ddeae4;border-radius:14px;padding:13px;background:#f9fcfa}
+.sim16-side h3{margin:1px 0 11px;font-size:14px;color:#21594c}
+.sim16-counter-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.sim16-counter-list>span{padding:8px 4px;text-align:center;border-radius:8px;background:#e8f4ed}
+.sim16-counter-list b{display:block;font-size:18px;color:#176e60}
+.sim16-counter-list small{font-size:9px;line-height:1.3;color:#648576}
+.sim16-actor-list{display:flex;flex-direction:column;gap:6px;margin-top:11px}
+.sim16-actor-list button{display:flex;align-items:center;text-align:left;gap:9px;width:100%;padding:9px;border:1px solid #d9e8e0;border-radius:10px;background:white;color:#244e45}
+.sim16-actor-list button>span:first-child{border-radius:50%;min-width:33px;height:33px;display:grid;place-items:center;font-weight:850;font-size:12px;background:#e2ebfa;color:#507bb2}
+.sim16-actor-list button.is-staff>span:first-child{background:#dff7e9;color:#187867}.sim16-actor-list button.is-waiting>span:first-child{background:#fff1d5;color:#ab7025}
+.sim16-actor-list button b,.sim16-actor-list button small{display:block}.sim16-actor-list button b{font-size:11px}.sim16-actor-list button small{font-size:10px;color:#82988b;font-weight:500;overflow-wrap:anywhere}
+.sim16-empty,.sim16-side-note{font-size:11px;color:#738e82;line-height:1.6;margin:12px 0}
+.sim16-disclaimer{font-size:11px;color:#68877a;background:#eff8f1;padding:11px 13px;border-radius:9px;margin:11px 0 0;line-height:1.5}
+.sim16-alert{padding:10px;background:#fff3df;border:1px solid #f2cf98;border-radius:9px;color:#946323;margin:8px 0;font-weight:700;font-size:12px}
+@media(max-width:1120px){.sim-scene{grid-template-columns:1fr}.sim-scene>.sim-guide{max-width:none}.sim16-viewgrid{grid-template-columns:minmax(0,1fr) 200px}.sim16-stage{height:440px}}
+@media(max-width:700px){.simulation-view{padding:15px 12px 35px}.sim16-viewgrid{grid-template-columns:1fr}.sim16-stage{height:360px}.sim16-side{max-height:225px}.sim16-hint{display:none}.sim16-rooms button{min-width:115px}.sim16-cameras{left:6px;right:6px;justify-content:center}.sim16-cameras button{min-width:29px}.sim-floor-card{padding:12px}.sim-scene{grid-template-columns:1fr}.sim16-analytics .sim-grid{padding:5px}}
+@media(prefers-reduced-motion:reduce){.sim3d-canvas{scroll-behavior:auto}}
+
+.sim16-selection:not(:empty){margin:12px 0 0;padding:11px;background:#ebf8f0;border:1px solid #c7e6d4;border-radius:11px;color:#2c6454}
+.sim16-selection h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#14715f}
+.sim16-selection strong,.sim16-selection small{display:block}.sim16-selection strong{font-size:13px}.sim16-selection small{margin:3px 0;font-size:11px}.sim16-selection p{font-size:10px;margin:7px 0;line-height:1.5}
+.sim16-selection button{border:1px solid #98ccb7;border-radius:8px;padding:8px;font-size:11px;font-weight:750;background:#fff;color:#14715f}

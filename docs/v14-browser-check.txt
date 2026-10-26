@@ -1,0 +1,1 @@
+Browser test uses in-memory JavaScript bundle: localhost is blocked in sandbox.

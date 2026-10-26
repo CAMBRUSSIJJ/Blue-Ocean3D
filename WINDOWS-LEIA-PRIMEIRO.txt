@@ -1,0 +1,23 @@
+SERVICE BUILDER v2.6 — COMO ABRIR NO WINDOWS 10 OU 11
+
+1. Instale Python 3.9 ou mais recente para Windows (https://www.python.org/downloads/windows/).
+   Se o instalador oferecer, marque "Add Python to PATH".
+2. Extraia completamente o ZIP antes de executar (nao execute dentro do ZIP).
+3. Abra a pasta service-cad-lab e de dois cliques em INICIAR-WINDOWS.bat.
+4. Aguarde a janela do terminal exibir o endereco e use http://localhost:4173/app/ no navegador.
+5. Deixe a janela do terminal aberta. Para encerrar use Ctrl+C.
+
+IA OLLAMA (OPCIONAL)
+- Instale Ollama para Windows: https://ollama.com/download/windows
+- Em PowerShell, apos a instalacao: ollama pull qwen3:4b
+- Abra o Service Builder e clique em Copiloto IA; selecione o modelo local.
+- Se Ollama estiver desligado, o Service Builder funciona sem IA.
+
+IMPORTANTE
+- Este ZIP e um aplicativo web LOCAL, nao um .exe nativo do Windows.
+- Sem instalacao de Node.js. Python e necessario para o servidor/ponte local com Ollama.
+- Projetos salvos no navegador Linux NAO sao transferidos automaticamente. Exporte em JSON
+  no Linux e importe no Windows com o botao Importar.
+- A IA apenas PROPOE alteracoes, exige aprovacao e permite desfazer.
+- A grade das salas permanece 12x8. O agente aceita no maximo 6 salas por proposta.
+- Nenhum modelo Ollama esta incluido no ZIP.

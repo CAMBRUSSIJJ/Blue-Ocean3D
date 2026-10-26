@@ -1,0 +1,11 @@
+/* Service Builder v2.3 — ocupação visual de assentos e postos. */
+.sim23-occupancy{font-size:11px;line-height:1.6;color:#246d58;background:#e7f5ef;border:1px solid #cce8d9;padding:9px 11px;border-radius:9px;margin:10px 0;}
+.sim16-counter-list{grid-template-columns:repeat(auto-fit,minmax(64px,1fr));}
+.sim16-counter-list>span{min-width:0;}
+.sim16-actor-list button.is-waiting{border-left:3px solid #cc9b54;}
+.sim16-side-note{border-top:1px solid #dcebe2;padding-top:10px;}
+@media(max-width:700px){.sim23-occupancy{font-size:10px}.sim16-counter-list{grid-template-columns:repeat(3,minmax(0,1fr));}}
+
+.floor-person-seated .floor-person-torso{background:#8668a6!important}
+.floor-person-working .floor-person-torso{background:#21876d!important}
+.floor-person-seated .floor-person-label:after{content:" ▰";font-size:8px;color:#603a91}

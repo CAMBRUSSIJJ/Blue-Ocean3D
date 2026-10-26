@@ -1,0 +1,33 @@
+/* Service Builder v1.5: biblioteca explorável e movimentação guiada. */
+.floor-library-controls{display:grid;gap:7px;margin:0 0 12px}
+.floor-library-controls input,.floor-library-controls select{min-width:0;width:100%;box-sizing:border-box;padding:9px 10px;border-radius:9px;border:1px solid #bfd8cb;background:#fff;color:#254f43;font:600 11px/1.25 system-ui}
+.floor-library-controls input:focus-visible,.floor-library-controls select:focus-visible{outline:2px solid #12856c;outline-offset:2px}
+.floor-palette-item[hidden]{display:none!important}
+.floor-palette-item[draggable=true]{cursor:grab;user-select:none}
+.floor-palette-item[draggable=true]:active{cursor:grabbing}
+.floor-palette-item:hover{background:#eff9f4!important;transform:translateY(-1px)}
+.floor-palette-item:focus-visible{outline:3px solid #278f73!important;outline-offset:2px}
+.floor-ghost{position:absolute;border:2px dashed #15976c;background:#3aba8455;border-radius:6px;pointer-events:none;box-sizing:border-box;z-index:9;transition:background .1s,border-color .1s}
+.floor-ghost[data-valid=false]{border-color:#d45460;background:#d454604b}
+.room3d-stage{background:linear-gradient(150deg,#e7f5ed,#dae9e5)}
+.room3d-help{padding:10px!important;font-size:11px!important;font-weight:600}
+.room3d-canvas{touch-action:none;cursor:crosshair}
+.floor-placing .room3d-canvas{cursor:copy}
+.furn-bench .furn-main{top:20px;height:11px;background:#9c825e;box-shadow:0 -10px #b79e7e,0 5px #6d5944}
+.furn-bench .furn-detail{left:19px;top:30px;width:5px;height:10px;background:#766252;box-shadow:25px 0 #766252}
+.furn-table .furn-main{left:17px;top:4px;width:32px;height:27px;border-radius:50%;background:#bd9b76;box-shadow:0 4px #927054}
+.furn-table .furn-detail{left:29px;top:27px;width:8px;height:13px;background:#947353;border-radius:2px}
+.furn-printer .furn-main{left:17px;top:15px;width:37px;height:21px;background:#789aab;box-shadow:inset 0 6px #b9d7db,0 3px #476b81}
+.furn-printer .furn-detail{left:24px;top:5px;width:23px;height:11px;background:#fbfcf8;border:1px solid #bed2da}
+.furn-coffee .furn-main{left:22px;top:8px;width:25px;height:30px;background:#74a6a2;box-shadow:inset 0 -6px #416f70}
+.furn-coffee .furn-detail{left:26px;top:2px;width:15px;height:17px;border-radius:8px;background:#daeef0}
+.furn-exam .furn-main{left:8px;top:12px;width:52px;height:20px;border-radius:7px;background:#b4d3d6;box-shadow:inset 0 7px #eaf5f6,0 3px #678d99}
+.furn-exam .furn-detail{left:14px;top:32px;width:5px;height:9px;background:#668c96;box-shadow:33px 0 #668c96}
+.furn-screen .furn-main{left:12px;top:4px;width:44px;height:29px;background:#435f71;border:4px solid #344b56;box-shadow:inset 0 6px #a7dfda}
+.furn-screen .furn-detail{left:31px;top:32px;width:6px;height:10px;background:#71848c}
+.furn-stool .furn-main{left:19px;top:8px;width:29px;height:20px;border-radius:50%;background:#ab99c3;box-shadow:0 5px #706080}
+.furn-stool .furn-detail{left:30px;top:28px;width:7px;height:13px;background:#71828b}
+@media(min-width:651px){.floor-palette{overscroll-behavior:contain}.floor-palette-items{grid-template-columns:repeat(2,minmax(0,1fr))!important}.floor-palette-item{min-height:99px!important}.floor-palette-item .floor-palette-label{min-height:24px}.floor-editor-content{grid-template-columns:minmax(190px,230px) minmax(0,1fr) minmax(190px,230px)!important}}
+@media(min-width:651px) and (max-width:1130px){.floor-editor-content{grid-template-columns:minmax(155px,190px) minmax(0,1fr)!important}.floor-editor-inspector{grid-column:1/-1!important;height:auto!important;max-height:330px!important;border-top:1px solid #d5e6df}.floor-editor-content{height:auto!important;overflow:visible!important}.room-studio-center,.floor-palette{height:580px!important;max-height:580px!important}.room3d-stage,.floor-editor-map{height:580px!important}}
+@media(max-width:650px){.floor-palette-items{grid-template-columns:repeat(3,minmax(0,1fr))!important}.floor-library-controls{grid-template-columns:1fr 1fr}.floor-palette-item{min-height:85px!important}.room3d-help{font-size:10px!important;padding:8px!important}}
+@media(prefers-reduced-motion:reduce){.floor-palette-item{transition:none!important;transform:none!important}}

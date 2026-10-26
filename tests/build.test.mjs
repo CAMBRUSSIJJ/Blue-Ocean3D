@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createDocument,addNode,validateDocument,stageLeft,laneTop,clone} from '../app/core.mjs';
+import {resolvePlacement,insertComponent,addKit,stageAt,laneAt,suggestedSequence,safeApplyKit} from '../app/build.mjs';
+test('encaixe magnético encontra etapa e faixa pelo ponto no canvas',()=>{const d=createDocument();const p=resolvePlacement(d,{type:'activity',x:stageLeft(2)+100,y:laneTop('back')+80});assert.equal(p.stage,2);assert.equal(p.lane,'back');assert.equal(p.x%16,0);assert.equal(p.y%16,0)});
+test('dois componentes no mesmo quadrante não se sobrepõem quando existe espaço',()=>{const d=createDocument();const p=insertComponent(d,{type:'activity',stage:0});const q=insertComponent(d,{type:'activity',stage:0});assert.notEqual(p.node.y,q.node.y);assert.equal(q.crowded,false);assert.equal(validateDocument(d),true)});
+test('preserva cartão anterior quando um novo item é posicionado',()=>{const d=createDocument();const old=addNode(d,{type:'activity',stage:0,title:'Anterior'});const before=clone(old);const r=insertComponent(d,{type:'decision',stage:0});assert.equal(old.id,before.id);assert.equal(old.title,before.title);assert.equal(r.node.type,'decision');assert.equal(d.nodes.length,2)});
+test('kit cria atividades, conexões e dados reais',()=>{const d=createDocument();const v=addKit(d,'reception');assert.equal(v.nodes.length,3);assert.equal(v.edges.length,2);assert.equal(d.nodes.find(n=>n.title==='Receber e acolher').duration,5);assert.equal(validateDocument(d),true)});
+test('kits permanecem válidos com conteúdo anterior',()=>{const d=createDocument();addKit(d,'reception');addKit(d,'booking');addKit(d,'aftercare');assert.equal(d.nodes.length,9);assert.equal(d.edges.length,6);assert.equal(validateDocument(d),true)});
+test('sugestão não duplica uma relação existente',()=>{const d=createDocument();const r=addKit(d,'reception');assert.equal(suggestedSequence(d,r.nodes[0].id,r.nodes[1].id),false);assert.equal(suggestedSequence(d,r.nodes[2].id,r.nodes[0].id),true)});
+test('kit rejeitado não modifica documento existente',()=>{const d=createDocument();const before=JSON.stringify(d);assert.throws(()=>safeApplyKit(d,'missing'));assert.equal(JSON.stringify(d),before)});
+test('posicionamento mantém índices nos limites da matriz',()=>{const d=createDocument();assert.equal(stageAt(d,-1000),0);assert.equal(stageAt(d,1e9),3);assert.equal(laneAt(-1e9),'evidence');assert.equal(laneAt(1e9),'support')});
+
+test('encaixe respeita o significado: atividades não viram evidências por acidente',()=>{const d=createDocument();const p=resolvePlacement(d,{type:'activity',x:stageLeft(1)+60,y:laneTop('evidence')+50});assert.equal(p.lane,'front');const q=resolvePlacement(d,{type:'activity',x:stageLeft(1)+60,y:laneTop('back')+50});assert.equal(q.lane,'back');const r=resolvePlacement(d,{type:'system',x:stageLeft(1)+60,y:laneTop('customer')+50});assert.equal(r.lane,'support')});

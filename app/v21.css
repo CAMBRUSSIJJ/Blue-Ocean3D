@@ -1,0 +1,26 @@
+/* v2.1 — corredores e circulação, sem novas abas principais. */
+#rooms-view .site21-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 20px;background:#ecf7f1;border-bottom:1px solid #d5e7dc}
+#rooms-view .site21-tools button{border:1px solid #aecfc0;border-radius:8px;padding:9px 11px;color:#146653;background:white;cursor:pointer;font-weight:700}
+#rooms-view .site21-tools button.active,#rooms-view .site21-tools button[data-site-connect]{background:#127f69;color:white;border-color:#127f69}
+#rooms-view .site21-modes,#rooms-view .site21-pair{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#rooms-view .site21-pair label{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#335f51}
+#rooms-view .site21-pair select{min-width:108px;max-width:165px;padding:8px;border:1px solid #bad4c9;border-radius:8px;background:#fff;color:#22473e}
+#rooms-view .site21-instruction{padding:8px 22px;margin:0;font-size:12px;color:#487363;background:#f7fcf8}
+#rooms-view .site21-cells{position:absolute;inset:0;pointer-events:none}
+#rooms-view .site21-corridor{position:absolute;width:20px;height:20px;box-sizing:border-box;border:1px solid #cf995b;background:#ecd4b0;border-radius:2px}
+#rooms-view .site21-editing{cursor:crosshair;touch-action:none}
+#rooms-view .site21-editing .site-room-handle{cursor:default}
+#rooms-view .site-notes button{border:1px solid #dab98c;color:#80501c;background:white;border-radius:6px;font-size:11px;padding:5px 8px;cursor:pointer;margin-left:8px}
+#simulation-view .sim21-site{margin:12px 0 0;background:#f7fbf8;border:1px solid #d0e7d9;border-radius:14px;overflow:hidden}
+#simulation-view .sim21-site-head{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:white;border-bottom:1px solid #dcece2}
+#simulation-view .sim21-site-head h3{font-size:17px;color:#183f37;margin:0 0 4px}
+#simulation-view .sim21-site-head p{font-size:12px;color:#567a6a;margin:0}
+#simulation-view #sim21-route-status{font-size:12px;color:#16725d;font-weight:700}
+#simulation-view .sim21-map{max-height:65vh;min-height:310px;overflow:auto;padding:28px;background:radial-gradient(#d2e7da 1px,transparent 1px) 0 0/23px 23px}
+#simulation-view .sim21-traffic-svg{display:block;max-width:none;height:auto;border-radius:10px;box-shadow:0 5px 18px #29584420}
+#simulation-view .sim21-traffic-svg [data-sim21-person]{cursor:pointer;outline:none}
+#simulation-view .sim21-traffic-svg [data-sim21-person]:focus circle{stroke:#e78c29;stroke-width:4px}
+#simulation-view .sim21-disclaimer{margin:0;padding:12px 15px;font-size:12px;color:#53796b;background:white;border-top:1px solid #dcece2}
+@media(max-width:700px){#rooms-view .site21-tools{padding:10px}#rooms-view .site21-pair{width:100%}#rooms-view .site21-pair select{max-width:140px}#simulation-view .sim21-map{padding:8px}}
+
+#rooms-view .site21-pair [data-site-connect-all]{background:#f9e9cb;color:#805120;border-color:#d3ad72}
