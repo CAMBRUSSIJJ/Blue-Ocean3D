@@ -1,0 +1,45 @@
+name: Blue Ocean 3D · P7 Workspace
+on:
+  push:
+    branches: [feat/blueocean3d-p7-workspace]
+  pull_request:
+    paths: [app/**, tests/**, scripts/**, vercel.json, .github/workflows/p7-workspace.yml]
+permissions:
+  contents: read
+jobs:
+  p7:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Syntax and unit regressions
+        run: |
+          node --check app/environments-ui.mjs
+          node --check app/simulation-ui.mjs
+          node --check app/p7-simulation-layout.mjs
+          node --check app/floorplan.mjs
+          node --check app/floorplan-ui.mjs
+          node --check app/room3d.mjs
+          node --check app/simulation3d.mjs
+          npm test
+      - name: Reproducible CSS and Windows/Vercel build
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+          node scripts/build-vercel.mjs
+          test -f dist/index.html
+          test -f dist/app/index.html
+      - name: Install Chromium
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Browser acceptance P0-P7
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
+          python3 tests/p3_journey_browser.py
+          python3 tests/p4_professional_browser.py
+          python3 tests/blue_light_browser.py
+          python3 tests/p6_workflow_browser.py
+          python3 tests/p7_workspace_browser.py
+          python3 tests/p4_deployment_browser.py
