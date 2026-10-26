@@ -97,6 +97,7 @@ export function rotateFurniture(doc,id){const layout=ensureFloorplan(doc),o=layo
 export function removeFurniture(doc,id){const layout=ensureFloorplan(doc);const count=layout.objects.length;layout.objects=layout.objects.filter(o=>o.id!==id);return count!==layout.objects.length;}
 export function linkFurniture(doc,id,nodeId=''){
  const object=ensureFloorplan(doc).objects.find(o=>o.id===id);if(!object)throw Error('Móvel não encontrado.');
+ if(nodeId&&FURNITURE[object.kind]?.visualOnly)throw Error('Pessoas ilustrativas não podem representar postos operacionais.');
  if(nodeId&&!doc.nodes.some(n=>n.id===nodeId&&n.environmentId===object.roomId))throw Error('A atividade deve pertencer ao mesmo ambiente.');
  object.nodeId=nodeId;return object;
 }
