@@ -11,6 +11,9 @@ with sync_playwright() as pw:
  errors=[]
  page.on('pageerror',lambda error:errors.append(str(error)))
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
+ page.wait_for_timeout(600)
+ if page.locator('#site-overview').is_hidden():
+  raise RuntimeError('Startup error: '+repr(errors)+'; root='+str(page.evaluate("document.querySelector('#rooms-view')?.outerHTML.slice(0,200)")))
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
  page.locator('#bo-workflow-mount').click()
  left=page.locator('.workspace-splitter-left')
