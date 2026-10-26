@@ -127,7 +127,7 @@ export function installP71Overview({root,getDocument,moveRoom,report,roomSpot,on
   const delta=steps[event.key];if(!delta)return;
   event.preventDefault();const p=roomSpot(getDocument(),card.dataset.siteRoom),n=event.shiftKey?5:1;
   const x=Math.max(0,Math.min(190,p.x+delta[0]*n)),y=Math.max(0,Math.min(190,p.y+delta[1]*n));
-  try{moveRoom(card.dataset.siteRoom,x,y);selectRoom(card.dataset.siteRoom)}
+  try{const id=card.dataset.siteRoom;moveRoom(id,x,y);selectRoom(id);[...root.querySelectorAll('.site-room')].find(el=>el.dataset.siteRoom===id)?.focus({preventScroll:true})}
   catch(err){onMessage?.('⚠ '+err.message)}
  });
  root.addEventListener('wheel',event=>{
