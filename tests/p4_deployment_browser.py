@@ -30,6 +30,7 @@ try:
    page.goto(url+path,wait_until='domcontentloaded')
    expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
    page.locator('#bo-workflow-mount').click()
+   page.locator('#hybrid-journey-expand').click()
    expect(page.locator('#hybrid-journey-list')).to_be_visible(timeout=15000)
    expect(page.locator('#hybrid-layout-compare')).to_be_visible()
    assert page.evaluate("getComputedStyle(document.querySelector('.rooms-shell')).display")!='none'
