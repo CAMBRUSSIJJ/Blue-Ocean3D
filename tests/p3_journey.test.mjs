@@ -47,16 +47,17 @@ test('P3: imported cyclic graph remains visible and explicitly flagged',()=>{
  const g=buildJourneyGraph(doc);
  assert.equal(g.cyclic,true);
  assert.equal(g.tasks.length,5);
+ assert.equal(g.steps.length,doc.nodes.length);
 });
 test('P3: events come from deterministic simulator and preserve planned minutes',()=>{
  const doc=fixture();
  const result=simulateService(doc,{cases:2,arrivalInterval:0,teamCapacity:1});
  const atStart=journeySimulationSummary(doc,result,0,1);
  const atEnd=journeySimulationSummary(doc,result,result.metrics.elapsed,1);
- assert.equal(atEnd.rows.length,5);
+ assert.equal(atEnd.rows.length,6);
  assert.ok(atEnd.rows.every(t=>t.status==='complete'));
  assert.ok(atStart.rows.some(t=>t.status!=='complete'));
- assert.deepEqual(atEnd.rows.map(x=>x.duration),buildJourneyGraph(doc).tasks.map(x=>x.duration));
+ assert.deepEqual(atEnd.rows.map(x=>x.duration),buildJourneyGraph(doc).steps.map(x=>x.duration));
  assert.equal(atEnd.peakWait.every(x=>x.totalWait>0),true);
  assert.equal(result.events.length,12);
 });
