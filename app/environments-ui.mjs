@@ -132,7 +132,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  window.matchMedia('(max-width:1050px)').addEventListener('change',e=>{if(e.matches)setFurniture(false)});
  const planInspector=document.createElement('section');planInspector.className='p71-plan-inspector';
  planInspector.innerHTML='<p class="p71-panel-eyebrow">ESPAÇO FÍSICO</p><h3 id="p71-plan-title">Selecione um ambiente</h3><p id="p71-plan-info">Clique em uma sala na planta para inspecioná-la. Use as setas para mover uma sala selecionada.</p><button type="button" id="p71-plan-edit" hidden>Abrir ambiente 3D</button>';
- right.append(planInspector);
+ root.querySelector('.hybrid-right-dock').append(planInspector);
  const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
  root.addEventListener('p71-room-selected',e=>{
   const room=getDocument().environments?.find(x=>x.id===e.detail.id);
