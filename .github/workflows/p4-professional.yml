@@ -1,0 +1,38 @@
+name: Blue Ocean 3D · P4 professional review
+on:
+  push:
+    branches: [feat/blueocean3d-ux-p4-professional]
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'tests/**'
+      - '.github/workflows/p4-professional.yml'
+permissions:
+  contents: read
+jobs:
+  p4-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Module syntax and functional regression
+        run: |
+          node --check app/professional-review.mjs
+          node --check app/layout-review-ui.mjs
+          node --check app/environments-ui.mjs
+          node --check app/simulation-ui.mjs
+          npm test
+      - name: Verify generated styles
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+      - name: Install Chromium
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: P0–P4 browser regression
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
+          python3 tests/p3_journey_browser.py
+          python3 tests/p4_professional_browser.py
