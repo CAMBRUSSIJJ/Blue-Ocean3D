@@ -8,7 +8,7 @@ test('P2: 3D resize grip is only drawn on hover or active drag',()=>{
  assert.match(source,/hoveredId===selected\.id\|\|pointer\.down\?\.resizeId===selected\.id/);
  assert.match(source,/hoveredId=null/);
  assert.match(source,/h\.resizeId\?'nwse-resize'/);
- assert.match(source,/result\.valid\?'#18ae83':'#df5561'/);
+ assert.match(source,/result\.valid\?'#168db8':'#df5561'/);
 });
 
 test('P2: keyboard resizing uses canonical furniture and collision validation',()=>{
