@@ -18,7 +18,32 @@ export const FURNITURE={
  exam:{name:'Maca de exame',icon:'▰',w:3,h:1,category:'Atendimento'},
  screen:{name:'Painel informativo',icon:'▤',w:2,h:1,category:'Equipamentos'},
  stool:{name:'Banqueta',icon:'●',w:1,h:1,category:'Espera'},
- door:{name:'Entrada / saída',icon:'↪',w:2,h:1,category:'Circulação'}
+ door:{name:'Entrada / saída',icon:'↪',w:2,h:1,category:'Circulação'},
+ counter_l:{name:'Balcão em L',icon:'▰',w:3,h:2,category:'Recepção',tags:'recepcao atendimento guiche',visualOnly:false},
+ counter_low:{name:'Balcão acessível',icon:'▰',w:2,h:1,category:'Recepção',tags:'balcao baixo acessibilidade recepcao',visualOnly:false},
+ reception_desk:{name:'Mesa de recepção',icon:'▤',w:2,h:2,category:'Recepção',tags:'recepcao balcao atendimento',visualOnly:false},
+ sofa_large:{name:'Sofá três lugares',icon:'▥',w:3,h:1,category:'Espera',tags:'sofa recepcao espera',visualOnly:false},
+ visitor_chair:{name:'Cadeira de visitante',icon:'●',w:1,h:1,category:'Espera',tags:'cadeira cliente acompanhante recepcao',visualOnly:false},
+ office_chair:{name:'Cadeira giratória',icon:'●',w:1,h:1,category:'Administrativo',tags:'cadeira ergonomica escritorio',visualOnly:false},
+ side_table:{name:'Mesa lateral',icon:'▤',w:1,h:1,category:'Espera',tags:'mesa apoio recepcao',visualOnly:false},
+ meeting_table:{name:'Mesa de reunião',icon:'▤',w:3,h:2,category:'Administrativo',tags:'reuniao mesa trabalho',visualOnly:false},
+ computer:{name:'Computador',icon:'▣',w:1,h:1,category:'Administrativo',tags:'monitor pc terminal recepcao',visualOnly:false},
+ filing_cabinet:{name:'Arquivo de documentos',icon:'▥',w:2,h:1,category:'Administrativo',tags:'arquivo gaveteiro armario',visualOnly:false},
+ clinic_desk:{name:'Mesa clínica',icon:'▤',w:2,h:1,category:'Clínica',tags:'consultorio mesa atendimento',visualOnly:false},
+ exam_chair:{name:'Poltrona de procedimento',icon:'▥',w:2,h:2,category:'Clínica',tags:'cadeira clinica consultorio',visualOnly:false},
+ divider:{name:'Biombo divisório',icon:'▤',w:2,h:1,category:'Clínica',tags:'biombo privacidade divisoria',visualOnly:false},
+ sink:{name:'Pia clínica',icon:'▤',w:1,h:1,category:'Clínica',tags:'lavatorio pia higiene',visualOnly:false},
+ medical_cart:{name:'Carrinho auxiliar',icon:'▣',w:1,h:2,category:'Clínica',tags:'carrinho instrumento medico apoio',visualOnly:false},
+ water_dispenser:{name:'Bebedouro',icon:'▣',w:1,h:1,category:'Apoio',tags:'agua bebedouro filtro copa',visualOnly:false},
+ trash_bin:{name:'Lixeira',icon:'▣',w:1,h:1,category:'Apoio',tags:'lixo lixeira descartavel',visualOnly:false},
+ signage:{name:'Placa de orientação',icon:'▣',w:1,h:1,category:'Circulação',tags:'sinalizacao placa caminho',visualOnly:false},
+ bookshelf:{name:'Estante',icon:'▥',w:2,h:1,category:'Apoio',tags:'prateleira livro estante',visualOnly:false},
+ locker:{name:'Armário individual',icon:'▥',w:1,h:1,category:'Apoio',tags:'armario vestiario guarda volume',visualOnly:false},
+ person_client_standing:{name:'Cliente em pé',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa paciente cliente em pe visual ilustrativo',visualOnly:true},
+ person_client_seated:{name:'Cliente sentado',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa paciente cadeira sentado visual ilustrativo',visualOnly:true},
+ person_receptionist:{name:'Recepcionista',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa funcionario atendente recepcao visual',visualOnly:true},
+ person_professional:{name:'Profissional',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa medico psicologo atendente visual',visualOnly:true},
+ person_support:{name:'Pessoa de apoio',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa limpeza auxiliar apoio visual',visualOnly:true}
 };
 const uid=()=>globalThis.crypto?.randomUUID?.()||`prop-${Math.random().toString(36).slice(2)}`;
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
