@@ -64,7 +64,7 @@ with sync_playwright() as pw:
  # At high desktop resolution, controls are still reachable.
  page.set_viewport_size({'width':1920,'height':1080})
  expect(page.locator('#room-3d-stage')).to_be_visible()
- expect(page.locator('#bo-catalog-tool')).to_be_visible()
+ expect(page.locator('#hybrid-tab-furniture')).to_be_visible()
  # On smaller screens use the dedicated mobile panel navigation.
  page.set_viewport_size({'width':700,'height':800})
  expect(page.locator('#hybrid-mobile-furniture')).to_be_visible()
