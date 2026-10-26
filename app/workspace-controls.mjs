@@ -16,7 +16,7 @@ export function initWorkspaceControls({shell,main,left,right}){
   left:workspaceIsWidth(stored.left,'left')?stored.left:WORKSPACE_SIZE_LIMITS.left.default,
   right:workspaceIsWidth(stored.right,'right')?stored.right:WORKSPACE_SIZE_LIMITS.right.default,
   leftCollapsed:stored.leftCollapsed===true,
-  rightCollapsed:stored.rightCollapsed===true
+  rightCollapsed:stored.rightCollapsed!==false
  };
  const refs={};
  function persist(){workspaceWrite(state)}
