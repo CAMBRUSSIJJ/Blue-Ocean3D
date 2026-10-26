@@ -2,6 +2,7 @@ import {FURNITURE,GRID,ensureFloorplan,validFurniture,putFurniture,moveFurniture
 import {setEdge,edgeType,roomEdges,portals,setRoomScale,cellMeters,bestEntranceRoute,routeMeters,navigationReport} from './floorplan-navigation.mjs';
 import {wallHeight,setWallHeight} from './room-style.mjs';
 import {thumbnail} from './room-catalog.mjs';
+import {matchesFurniture} from './catalog-filter.mjs';
 import {roomInteractionPlan} from './simulation-poses.mjs';
 import {placementFromPoint,FURNITURE_DRAG_TYPE} from './placement.mjs';
 import {duplicateFurniture,moveFurnitureBy,moveFurnitureGroup,removeFurnitureGroup,paintStructureLine} from './studio-actions.mjs';
@@ -111,12 +112,11 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
  const empty=document.createElement('p');empty.className='p7-library-empty';
  empty.textContent='Nenhum item encontrado. Limpe os filtros ou tente outro termo.';empty.hidden=true;
  palette.before(footer);palette.after(empty);
- const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').trim();
  function filterLibrary(){
-  const term=normalize(search.value),cat=category.value;let count=0;
+  const term=search.value,cat=category.value;let count=0;
   for(const button of palette.querySelectorAll('[data-furniture-kind]')){
-   const info=FURNITURE[button.dataset.furnitureKind];
-   const matched=(!term||normalize([info.name,info.category,info.tags||'',button.dataset.furnitureKind].join(' ')).includes(term))&&(!cat||info.category===cat);
+   const key=button.dataset.furnitureKind;
+   const matched=matchesFurniture(FURNITURE[key],term,cat,key);
    button.hidden=!matched;if(matched)count++;
   }
   footer.querySelector('#p7-library-count').textContent=count+' itens';
