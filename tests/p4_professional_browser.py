@@ -19,6 +19,7 @@ with sync_playwright() as playwright:
  page.goto('https://blue-ocean.test/app/',wait_until='domcontentloaded')
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
  page.locator('#bo-workflow-mount').click()
+ page.locator('.bo-toolbar-more summary').click()
  expect(page.locator('#hybrid-layout-compare')).to_be_visible(timeout=15000)
  page.locator('#hybrid-layout-compare').click()
  dialog=page.locator('#p4-layout-dialog')
@@ -44,6 +45,7 @@ with sync_playwright() as playwright:
  if page.locator('#sim-allow-parallel').count():
   page.locator('#sim-allow-parallel').check()
   page.locator('#sim-run').click()
+ page.locator('#bo-workflow-analyze').click()
  button=page.locator('#p4-export-report')
  expect(button).to_be_enabled(timeout=15000)
  with page.expect_download() as download_info:
