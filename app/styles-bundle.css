@@ -1470,3 +1470,51 @@ body.sb-hybrid-active #rooms-view #hybrid-journey-expand:focus-visible{
 @media(prefers-reduced-motion:reduce){
  body.sb-hybrid-active #rooms-view .hybrid-journey{transition:none}
 }
+
+/* SOURCE: professional-review.css */
+/* P4 — professional physical comparison and report export */
+#rooms-view .p4-layout-dialog{
+ position:fixed;inset:0;margin:auto;width:min(1080px,calc(100vw - 36px));
+ max-width:none;max-height:min(91vh,930px);overflow:auto;
+ border-radius:14px;border:1px solid #80a9ac;padding:0;background:#f5f9fb;color:#1a3d4b;
+ box-shadow:0 24px 65px #0009;
+}
+#rooms-view .p4-layout-dialog::backdrop{background:rgba(8,22,28,.72)}
+#rooms-view .p4-layout-dialog:not([open]){display:none}
+#rooms-view .p4-layout-panel{padding:22px;display:block}
+#rooms-view .p4-layout-heading{display:flex;justify-content:space-between;align-items:start;gap:14px}
+#rooms-view .p4-layout-heading span{font-size:11px;font-weight:750;color:#35718a;letter-spacing:.08em}
+#rooms-view .p4-layout-heading h2{font-size:24px;line-height:1.22;color:#123f52;margin:4px 0 8px}
+#rooms-view .p4-layout-heading p{margin:0 0 14px;max-width:690px;color:#4b6674;font-size:14px;line-height:1.5}
+#rooms-view .p4-layout-heading button{font-size:24px;width:44px;height:44px;min-height:44px;
+ border-radius:9px;border:1px solid #bdd0d6;background:#fff;color:#183b4a;cursor:pointer}
+#rooms-view .p4-layout-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:13px 0 18px}
+#rooms-view .p4-layout-actions label{font-size:14px;font-weight:700;color:#294d5c}
+#rooms-view .p4-layout-actions select,
+#rooms-view .p4-layout-actions button{min-height:43px;border-radius:8px;padding:8px 12px;font-size:13px}
+#rooms-view .p4-layout-actions select{border:1px solid #a3bdc6;color:#163c49;background:#fff;min-width:170px}
+#rooms-view .p4-layout-actions button{background:#21637c;color:#fff;border:1px solid #21637c;cursor:pointer}
+#rooms-view .p4-layout-grids{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+#rooms-view .p4-layout-grids article{background:#fff;border:1px solid #cfdee2;border-radius:10px;padding:12px;min-width:0}
+#rooms-view .p4-layout-grids h3{font-size:15px;color:#264d59;margin:0 0 10px}
+#rooms-view .p4-layout-grids svg{display:block;width:100%;height:auto}
+#rooms-view .p4-layout-empty{min-height:180px;padding:36px 8px;color:#5e7280;font-size:14px}
+#rooms-view #p4-layout-diff{margin-top:14px;display:flex;flex-direction:column;gap:6px;border-radius:9px;
+ border:1px solid #b4ccd0;background:#e7f3f5;padding:13px 15px;font-size:14px;color:#1b4655;line-height:1.4}
+#rooms-view #p4-layout-diff strong{font-size:15px}
+#rooms-view #p4-layout-diff small{font-size:12px;line-height:1.5;color:#476674}
+#rooms-view .p4-layout-disclaimer{margin:14px 0 0;font-size:12px;color:#55707d;line-height:1.5}
+#rooms-view #hybrid-layout-compare{min-height:36px!important;font-size:12px!important;padding:6px 10px!important}
+#rooms-view .p4-layout-dialog :is(button,select):focus-visible,
+#rooms-view #hybrid-layout-compare:focus-visible{outline:3px solid #217eaf!important;outline-offset:3px!important}
+#simulation-view .p4-report-actions{display:flex;gap:8px;flex-wrap:wrap}
+#simulation-view #p4-export-report{min-height:43px}
+#simulation-view .p4-report-help{font-size:12px;color:#556d79;line-height:1.5;margin:10px 0 0}
+@media(max-width:700px){
+ #rooms-view .p4-layout-dialog{width:calc(100vw - 12px);max-height:94vh;border-radius:8px}
+ #rooms-view .p4-layout-panel{padding:13px}
+ #rooms-view .p4-layout-heading h2{font-size:20px}
+ #rooms-view .p4-layout-grids{grid-template-columns:minmax(0,1fr)}
+ #rooms-view .p4-layout-actions select{min-width:0;flex:1}
+ #rooms-view .p4-layout-heading button{flex-shrink:0}
+}
