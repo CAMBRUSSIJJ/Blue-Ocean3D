@@ -1248,6 +1248,7 @@ body.sb-hybrid-active #rooms-view :is(.room3d-buttons button,.room3d-quick-help 
  #rooms-view .room3d-quick-help{scroll-behavior:auto}
 }
 
+
 /* SOURCE: workspace.css */
 /* P0/P1 · Workspace único, acessível e ajustável, sem alterar o motor 3D. */
 @media (min-width:901px){
