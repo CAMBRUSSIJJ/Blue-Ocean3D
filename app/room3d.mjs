@@ -100,9 +100,9 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
   if(e.type==='wall'){cub(world,e.axis==='h'?1.01:thin,height,e.axis==='v'?1.01:thin,x,height/2,z,document.body.classList.contains('bo-ocean')?0xe0e9f5:(front?0xa2b6ae:0xb9cac1));return}
   if(e.type==='door'){
    // Abertura transitável: soleira e batente ao invés de uma parede sólida.
-   cub(world,e.axis==='h'?.96:thin,.035,e.axis==='v'?.96:thin,x,.036,z,0x3cab88);
+   cub(world,e.axis==='h'?.96:thin,.035,e.axis==='v'?.96:thin,x,.036,z,document.body.classList.contains('bo-ocean')?0x4b9dc8:0x3cab88);
    const h=view.cutaway&&front?.24:Math.min(2.55,fullHeight),dx=e.axis==='h'?.43:0,dz=e.axis==='v'?.43:0;
-   for(const s of [-1,1])cub(world,.085,h,.085,x+dx*s,h/2,z+dz*s,0x328f7c);
+   for(const s of [-1,1])cub(world,.085,h,.085,x+dx*s,h/2,z+dz*s,document.body.classList.contains('bo-ocean')?0x3b76b4:0x328f7c);
   }
  }
  function renderRoom(){
