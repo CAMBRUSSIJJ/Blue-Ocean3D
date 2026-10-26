@@ -52,7 +52,7 @@ function installHybridLayout(root){
  const rightTabs=type=>{const env=type==='environment';right.querySelector('#hybrid-tab-object').setAttribute('aria-selected',String(!env));right.querySelector('#hybrid-tab-environment').setAttribute('aria-selected',String(env));};
  right.querySelector('#hybrid-tab-object').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')==='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('object')});
  right.querySelector('#hybrid-tab-environment').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')!=='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('environment')});
- root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){move.classList.toggle('active',!root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));}});
+ root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){const active=Boolean(root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));move.classList.toggle('active',!active);root.classList.toggle('bo-structure-active',active);}});
  const workspace=initWorkspaceControls({shell,main,left,right});
  const controls=document.createElement('div');controls.className='bo-canvas-tools';
  controls.innerHTML='<button type="button" id="bo-catalog-tool" aria-label="Alternar entre biblioteca e ambientes" aria-pressed="false" title="Biblioteca de móveis">▦ <span>Biblioteca</span></button><button type="button" id="bo-inspector-tool" aria-expanded="false" title="Abrir ou recolher propriedades">☷ <span>Propriedades</span></button>';
@@ -68,6 +68,16 @@ function installHybridLayout(root){
   workspace.setCollapsed('right',!workspace.state.rightCollapsed);
   controls.querySelector('#bo-inspector-tool').setAttribute('aria-expanded',String(!workspace.state.rightCollapsed));
  });
+ const extras=document.createElement('details');extras.className='bo-toolbar-more';
+ extras.innerHTML='<summary aria-label="Abrir ações secundárias">Mais <span aria-hidden="true">···</span></summary><div class="bo-toolbar-menu"></div>';
+ const actionGroup=toolbar?.lastElementChild;
+ for(const id of ['floor-add-task','floor-auto','floor-clear-selection']){
+  const button=actionGroup?.querySelector('#'+id);
+  if(button)extras.querySelector('.bo-toolbar-menu').appendChild(button);
+ }
+ extras.addEventListener('click',event=>{if(event.target.closest('button'))extras.open=false;});
+ actionGroup?.appendChild(extras);
+
  return {tabs,rightTabs,workspace};
 }
 function renderHybridJourney(doc,selected){
