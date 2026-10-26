@@ -70,7 +70,40 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
   const spec=FURNITURE[o.kind];group.scale.set(o.rotation===90?d/spec.w:w/spec.w,1,o.rotation===90?w/spec.h:d/spec.h);
   const color=colors[o.kind]||0x8dafa1,iw=FURNITURE[o.kind].w*.82,id=FURNITURE[o.kind].h*.82;
   cub(group,iw,.06,id,0,.08,0,0xdbe7df); // sombra/base visual
-  if(o.kind==='counter'){cub(group,iw,.88,id,0,.5,0,color);cub(group,iw,.15,id+.12,0,1.02,0,0xe0ba92);cub(group,iw*.34,.30,.07,0,1.27,-.2,0x2e5d65);cub(group,iw*.31,.22,.025,0,1.29,-.15,0x8bdbdf);cub(group,.33,.04,.15,.12,1.13,.12,0x465a59)}
+  if(spec.visualOnly){
+   // Static presentation figures are intentionally independent of simulated agents.
+   const seated=o.kind==='person_client_seated';
+   const shirt=o.kind==='person_receptionist'?0x207cc1:o.kind==='person_professional'?0x416c9e:o.kind==='person_support'?0x748ca3:0x8d85bd;
+   cylinder(group,.20,.22,seated?.42:.60,0,seated?.55:.80,0,shirt);
+   sphere(group,.18,0,seated?1.02:1.24,0,0xdca986);
+   for(const x of [-.12,.12])cub(group,.09,seated?.30:.53,.11,x,seated?.21:.29,0,0x53647c);
+   for(const x of [-.25,.25])cub(group,.085,.32,.1,x,seated?.58:.78,0,shirt);
+   if(seated){cub(group,.65,.14,.62,0,.38,0,0x8799ac);cub(group,.65,.5,.08,0,.63,-.30,0x8799ac)}
+  }
+  else if(['counter_l','counter_low'].includes(o.kind)){
+   cub(group,iw,.82,id,0,.5,0,0xb89474);cub(group,iw,.10,id+.08,0,.98,0,0xd3b28b);
+   if(o.kind==='counter_l')cub(group,iw*.3,.74,id*.8,-iw*.37,.46,.15,0xc49c72);
+  }
+  else if(['reception_desk','clinic_desk','meeting_table','side_table'].includes(o.kind)){
+   cub(group,iw,.12,id,0,.83,0,0xbf9874);
+   for(const x of [-iw*.42,iw*.42])for(const z of [-id*.40,id*.40])cub(group,.09,.73,.09,x,.42,z,0x71818b);
+  }
+  else if(['sofa_large','visitor_chair','office_chair','exam_chair'].includes(o.kind)){
+   cub(group,iw,.26,id*.82,0,.48,.03,0x8b87ba);
+   cub(group,iw,.62,.16,0,.73,-id*.42,0x777aa4);
+   for(const x of [-iw*.37,iw*.37])cub(group,.10,.42,.10,x,.25,0,0x66747c);
+  }
+  else if(['divider','signage'].includes(o.kind)){cub(group,iw,.09,id*.22,0,.98,0,o.kind==='signage'?0x4686b9:0xc5d3dd);cub(group,.07,1.3,.08,0,.67,0,0x7f929f)}
+  else if(['sink','water_dispenser','trash_bin','medical_cart','computer'].includes(o.kind)){
+   cub(group,iw*.73,.82,id*.70,0,.48,0,0x91aaba);
+   cub(group,iw*.63,.12,id*.63,0,.94,0,0xdfe8ef);
+   if(o.kind==='computer')cub(group,.52,.50,.09,0,1.23,-.2,0x35546e);
+  }
+  else if(['filing_cabinet','bookshelf','locker'].includes(o.kind)){
+   cub(group,iw,1.48,id*.82,0,.77,0,0x98aabd);
+   for(const y of [.49,.89,1.24])cub(group,iw*.85,.045,id*.84,0,y,0,0xdfe7ec);
+  }
+  else if(o.kind==='counter'){cub(group,iw,.88,id,0,.5,0,color);cub(group,iw,.15,id+.12,0,1.02,0,0xe0ba92);cub(group,iw*.34,.30,.07,0,1.27,-.2,0x2e5d65);cub(group,iw*.31,.22,.025,0,1.29,-.15,0x8bdbdf);cub(group,.33,.04,.15,.12,1.13,.12,0x465a59)}
   else if(o.kind==='desk'||o.kind==='station'){cub(group,iw,.16,id,0,.84,0,color);for(const x of [-iw*.4,iw*.4])for(const z of [-id*.35,id*.35])cub(group,.10,.72,.1,x,.42,z,0x6f5844);if(o.kind==='station'){cub(group,.68,.58,.08,0,1.2,-.35,0x2e5261);cub(group,.5,.29,.035,0,1.22,-.29,0x9fd9de);cub(group,.24,.08,.26,0,.9,-.24,0x3b5660);cub(group,.38,.035,.19,0,.95,.09,0x405763)}}
   else if(o.kind==='waiting'){cub(group,iw,.39,id*.82,0,.35,.04,color);cub(group,iw,.62,.23,0,.68,-id*.39,color);for(const x of [-iw*.46,iw*.46])cub(group,.18,.35,id*.82,x,.48,.04,color)}
   else if(o.kind==='chair'){cub(group,iw*.75,.2,id*.68,0,.47,.1,color);cub(group,iw*.75,.75,.14,0,.72,-id*.33,color);cub(group,iw*.64,.07,.08,0,1.11,-id*.33,0x8d7b9f);for(const x of [-iw*.28,iw*.28])for(const z of [-id*.2,id*.2])cub(group,.08,.46,.08,x,.25,z,0x736b78)}
