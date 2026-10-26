@@ -41,7 +41,7 @@ export function installP71Overview({root,getDocument,moveRoom,report,roomSpot,on
   for(const card of root.querySelectorAll('.site-room')){
    const on=card.dataset.siteRoom===id;
    card.classList.toggle('p71-selected-room',on);
-   card.setAttribute('aria-pressed',String(on));
+   card.setAttribute('aria-label',(on?'Selecionado: ':'Selecionar ')+card.querySelector('.site-room-handle b')?.textContent);
   }
   onRoomSelect?.(id);
  }
@@ -94,10 +94,10 @@ export function installP71Overview({root,getDocument,moveRoom,report,roomSpot,on
   const svg=root.querySelector('.site-link');
   if(svg){const shapes=svg.querySelectorAll('polyline,line');shapes.forEach((line,i)=>{const link=reportLinks[i];if(link)line.dataset.siteRoute=link.from+'|'+link.to;})}
   for(const card of root.querySelectorAll('.site-room')){
-   card.tabIndex=0;card.setAttribute('role','button');
+   card.tabIndex=0;card.setAttribute('role','group');
    card.setAttribute('aria-label','Selecionar '+card.querySelector('.site-room-handle b')?.textContent);
    card.classList.toggle('p71-selected-room',card.dataset.siteRoom===selectedRoom);
-   card.setAttribute('aria-pressed',String(card.dataset.siteRoom===selectedRoom));
+   card.setAttribute('aria-label',(card.dataset.siteRoom===selectedRoom?'Selecionado: ':'Selecionar ')+card.querySelector('.site-room-handle b')?.textContent);
   }
   // Invalidate a focus that is no longer in the graph without affecting stored data.
   if(!reportLinks.some(r=>r.from+'|'+r.to===selectedRoute))selectedRoute='';
