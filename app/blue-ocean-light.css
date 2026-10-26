@@ -120,6 +120,7 @@ body.bo-ocean.sb-hybrid-active #rooms-view .workspace-reopen{
  background:#fff!important;color:#20518c!important;
  border-color:#d5e1ee!important;box-shadow:0 6px 20px #17365016!important;
  font-size:12px!important;font-weight:700!important;min-height:42px!important;
+ top:auto!important;bottom:86px!important;z-index:16!important;
 }
 /* Library: neutral thumbnails and only one interactive active state. */
 body.bo-ocean.sb-hybrid-active #rooms-view .room-tab-nav{
