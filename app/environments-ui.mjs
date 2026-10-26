@@ -33,7 +33,7 @@ function installHybridLayout(root){
  const preview=document.createElement('button');preview.type='button';preview.className='hybrid-sim-action';preview.textContent='▶ Simular a partir daqui';preview.addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());right.appendChild(preview);
  const breadcrumb=document.createElement('button');breadcrumb.type='button';breadcrumb.className='hybrid-breadcrumb';breadcrumb.innerHTML='Planta geral <span>›</span> <strong>Ambiente</strong>';breadcrumb.title='Abrir visão geral física';breadcrumb.addEventListener('click',()=>root.querySelector('[data-room-display="overview"]')?.click());main.querySelector('.floor-editor-toolbar').prepend(breadcrumb);
  const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-note">Ordem baseada nas conexões de execução</span><button type="button" id="hybrid-journey-expand" aria-expanded="false" aria-controls="hybrid-journey-list">Expandir</button><button type="button" id="hybrid-layout-compare">Comparar layouts</button><button type="button" id="hybrid-preview">▶ Simular</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" role="region" aria-label="Atividades ordenadas pelas conexões de execução" tabindex="0"></div>';
- shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());
+ shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:'scenario'}})));
  journey.querySelector('#hybrid-journey-expand').addEventListener('click',e=>{
   const expanded=journey.classList.toggle('is-expanded');
   e.currentTarget.setAttribute('aria-expanded',String(expanded));
@@ -54,6 +54,14 @@ function installHybridLayout(root){
  right.querySelector('#hybrid-tab-environment').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')!=='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('environment')});
  root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){const active=Boolean(root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));move.classList.toggle('active',!active);root.classList.toggle('bo-structure-active',active);}});
  const workspace=initWorkspaceControls({shell,main,left,right});
+ const cameraExtra=document.createElement('button');cameraExtra.type='button';cameraExtra.id='bo-camera-options';cameraExtra.textContent='Ângulos';
+ cameraExtra.setAttribute('aria-label','Mostrar ou ocultar controles de rotação da câmera');
+ cameraExtra.setAttribute('aria-pressed','false');
+ root.querySelector('.room3d-buttons')?.append(cameraExtra);
+ cameraExtra.addEventListener('click',()=>{
+  const expanded=root.classList.toggle('bo-camera-extra-open');
+  cameraExtra.setAttribute('aria-pressed',String(expanded));
+ });
  const controls=document.createElement('div');controls.className='bo-canvas-tools';
  controls.innerHTML='<button type="button" id="bo-catalog-tool" aria-label="Alternar entre biblioteca e ambientes" aria-pressed="false" title="Biblioteca de móveis">▦ <span>Biblioteca</span></button><button type="button" id="bo-inspector-tool" aria-expanded="false" title="Abrir ou recolher propriedades">☷ <span>Propriedades</span></button>';
  const toolbar=main.querySelector('.floor-editor-toolbar');
@@ -169,7 +177,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  
  function status(s){$('#room-live').textContent=s}
  function setFurniture(open){const shell=root.querySelector('.rooms-shell');root.querySelector('#bo-catalog-tool')?.setAttribute('aria-pressed',String(open));shell.classList.toggle('hybrid-furniture-active',open);hybrid.tabs(open?'furniture':'rooms');shell.classList.toggle('show-furniture',open);$('#room-toggle-library').setAttribute('aria-expanded',String(open));}
- function setObjectInspector(open){if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');setDetails(false);if(window.matchMedia('(max-width:900px)').matches){root.querySelector('.rooms-shell').classList.add('hybrid-mobile-right-open');root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open');}}root.querySelector('.rooms-shell').classList.toggle('show-object-inspector',open);$('#room-toggle-object-inspector').setAttribute('aria-expanded',String(open));}
+ function setObjectInspector(open){root.classList.toggle('bo-object-selected',Boolean(open));if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');setDetails(false);if(window.matchMedia('(max-width:900px)').matches){root.querySelector('.rooms-shell').classList.add('hybrid-mobile-right-open');root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open');}}root.querySelector('.rooms-shell').classList.toggle('show-object-inspector',open);$('#room-toggle-object-inspector').setAttribute('aria-expanded',String(open));}
  function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');}if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
