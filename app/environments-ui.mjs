@@ -8,6 +8,7 @@ import {initRoom3D} from './room3d.mjs';
 import {initSiteOverview} from './site-overview.mjs';
 import {confirmAction} from './confirm-dialog.mjs';
 import {initWorkspaceControls} from './workspace-controls.mjs';
+import {projectJourney} from './journey-flow.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const palette=['#1F927F','#587EB7','#B67E48','#9373B4','#D0748F','#5692AA','#7B9167'];
@@ -29,7 +30,7 @@ function installHybridLayout(root){
  main.after(right);right.appendChild(document.querySelector('#floor-editor-inspector'));right.appendChild(document.querySelector('#room-detail'));
  const preview=document.createElement('button');preview.type='button';preview.className='hybrid-sim-action';preview.textContent='▶ Simular a partir daqui';preview.addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());right.appendChild(preview);
  const breadcrumb=document.createElement('button');breadcrumb.type='button';breadcrumb.className='hybrid-breadcrumb';breadcrumb.innerHTML='Planta geral <span>›</span> <strong>Ambiente</strong>';breadcrumb.title='Abrir visão geral física';breadcrumb.addEventListener('click',()=>root.querySelector('[data-room-display="overview"]')?.click());main.querySelector('.floor-editor-toolbar').prepend(breadcrumb);
- const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span>Clique em uma atividade para editar</span><button type="button" id="hybrid-preview">▶ Pré-visualizar</button></div><div id="hybrid-journey-list" class="hybrid-journey-list"></div>';
+ const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-summary" role="status" aria-live="polite">Fluxo real entre atividades</span><button type="button" id="hybrid-preview">▶ Pré-visualizar</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" aria-label="Atividades organizadas pelas conexões reais"></div>';
  shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>document.querySelector('.rail-btn[data-view="simulation"]')?.click());
  const switcher=document.createElement('nav');switcher.className='hybrid-top-modes';switcher.setAttribute('aria-label','Modo do Service Builder');switcher.innerHTML='<button type="button" id="hybrid-construct" class="active" aria-current="page">Construir</button><button type="button" id="hybrid-simulate">Simular</button>';
  document.querySelector('.topbar')?.insertBefore(switcher,document.querySelector('.top-actions'));
@@ -49,9 +50,35 @@ function installHybridLayout(root){
  return {tabs,rightTabs};
 }
 function renderHybridJourney(doc,selected){
- const list=document.querySelector('#hybrid-journey-list');if(!list)return;
- const colors=['#46cbb1','#aa88e7','#e9a951','#dd729a','#63acd4'];
- list.innerHTML=(doc.environments||[]).map((room,i)=>{const color=room.color||colors[i%colors.length];const nodes=doc.nodes.filter(n=>n.environmentId===room.id).slice(0,14);return `<div class="hybrid-journey-group" style="--journey-color:${esc(color)}"><button type="button" class="hybrid-journey-room" data-hybrid-room="${esc(room.id)}">● ${esc(room.name)}</button><div class="hybrid-journey-tasks">${nodes.length?nodes.map(n=>`<button type="button" data-hybrid-step="${esc(n.id)}" data-hybrid-room-id="${esc(room.id)}"><strong>${esc(short(n.title,31))}</strong><small>${Number(n.duration)||0} min</small></button>`).join(''):'<span class="hybrid-journey-empty">Sem atividades</span>'}</div></div>`;}).join('')||'<span class="hybrid-journey-empty">Crie um ambiente para começar sua jornada.</span>';
+ const list=document.querySelector('#hybrid-journey-list'),summary=document.querySelector('#hybrid-journey-summary');
+ if(!list)return;
+ const graph=projectJourney(doc);
+ const stepById=new Map(graph.steps.map(step=>[step.id,step]));
+ if(summary)summary.textContent=`${graph.total} etapas · ${graph.linked} conectadas · ${graph.branches} ramificações · ${graph.crossRoom} passagens entre ambientes`;
+ const kind={activity:'Atividade',decision:'Decisão',touchpoint:'Ponto de contato'};
+ const relation={sequence:'Sequência',dependency:'Dependência',handoff:'Passagem entre equipes'};
+ function card(step){
+  const links=step.outgoing.map(link=>{
+   const target=stepById.get(link.to);
+   if(!target)return '';
+   return `<button type="button" class="hybrid-flow-link" data-hybrid-step="${esc(target.id)}" data-hybrid-room-id="${esc(target.environmentId)}" aria-label="Abrir ${esc(target.title)}: ${esc(relation[link.type]||link.type)}"><small>${esc(relation[link.type]||'Ligação')} →</small>${esc(short(target.title,35))}</button>`;
+  }).join('');
+  return `<article class="hybrid-flow-card ${step.cycle?'is-cycle':''} ${step.environmentId===selected?'is-selected-room':''}" style="--journey-color:${esc(step.environmentColor)}">
+   <button type="button" class="hybrid-flow-open" data-hybrid-step="${esc(step.id)}" data-hybrid-room-id="${esc(step.environmentId)}" aria-label="Editar ${esc(step.title)}, ${esc(step.environmentName)}">
+    <small class="hybrid-flow-room">${esc(step.environmentName)} · ${esc(step.stageName)}</small>
+    <strong>${esc(short(step.title,65))}</strong>
+    <span class="hybrid-flow-meta">${esc(kind[step.type]||step.type)} · ${step.duration} min${step.branchCount>1?' · '+step.branchCount+' ramificações':''}</span>
+   </button>
+   ${links?`<div class="hybrid-flow-links" aria-label="Conexões de saída">${links}</div>`:''}
+  </article>`;
+ }
+ const columns=graph.columns.map(({level,steps})=>`<section class="hybrid-flow-column" aria-label="${level===0?'Início do fluxo':'Nível '+(level+1)}">
+  <div class="hybrid-flow-column-head"><strong>${level===0?'Início':'Continuidade '+(level+1)}</strong><small>${steps.length} etapa(s)</small></div>
+  <div class="hybrid-flow-cards">${steps.map(card).join('')}</div>
+ </section>`).join('');
+ const unlinked=graph.unlinked.length?`<section class="hybrid-flow-column is-unlinked" aria-label="Atividades sem conexão"><div class="hybrid-flow-column-head"><strong>Sem conexões</strong><small>${graph.unlinked.length} etapa(s)</small></div><div class="hybrid-flow-cards">${graph.unlinked.map(card).join('')}</div></section>`:'';
+ const cycles=graph.cyclic.length?`<section class="hybrid-flow-column is-cycle" aria-label="Atividades com fluxo circular"><div class="hybrid-flow-column-head"><strong>⚠ Revisar fluxo circular</strong><small>${graph.cyclic.length} etapa(s)</small></div><div class="hybrid-flow-cards">${graph.cyclic.map(card).join('')}</div></section>`:'';
+ list.innerHTML=columns+unlinked+cycles||'<p class="hybrid-journey-empty">Adicione uma atividade a um ambiente para começar. As conexões criadas no serviço aparecerão aqui, sem sequências presumidas.</p>';
 }
 
 export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
@@ -199,7 +226,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
  }
  root.addEventListener('click',async e=>{const kit=e.target.closest('[data-add-room-kit]'),remove=e.target.closest('[data-delete-template]'),sel=e.target.closest('[data-room-select]'),room=e.target.closest('.room-tile'),item=e.target.closest('[data-room-node]'),add=e.target.closest('[data-room-add]');
-   const hybridRoom=e.target.closest('[data-hybrid-room]');if(hybridRoom&&!e.target.closest('[data-hybrid-step]')){select(hybridRoom.dataset.hybridRoom);return}const hybridStep=e.target.closest('[data-hybrid-step]');if(hybridStep){if(ui.selected!==hybridStep.dataset.hybridRoomId)select(hybridStep.dataset.hybridRoomId);openTask(hybridStep.dataset.hybridStep);return}const review=e.target.closest('[data-room-review]');if(review){openTask(review.dataset.roomReview);return}
+   const hybridRoom=e.target.closest('[data-hybrid-room]');if(hybridRoom&&!e.target.closest('[data-hybrid-step]')){select(hybridRoom.dataset.hybridRoom);return}const hybridStep=e.target.closest('[data-hybrid-step]');if(hybridStep){const roomId=hybridStep.dataset.hybridRoomId;if(roomId&&ui.selected!==roomId)select(roomId);openTask(hybridStep.dataset.hybridStep);return}const review=e.target.closest('[data-room-review]');if(review){openTask(review.dataset.roomReview);return}
    if(remove){e.stopPropagation();if(!await confirmAction({title:'Excluir modelo?',message:'O modelo reutilizável será excluído, mas os ambientes existentes não serão alterados.',confirmLabel:'Excluir modelo'}))return;apply(d=>{d.roomTemplates=d.roomTemplates.filter(t=>t.id!==remove.dataset.deleteTemplate)},'Modelo removido.');return}
    if(kit){const key=kit.dataset.addRoomKit;apply(d=>{const v=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,v.document);ui.selected=v.room.id},'Kit inserido: ambiente, peças e conexões criados.');return}
    const move=e.target.closest('[data-room-move]');if(move){e.stopPropagation();const dialog=$('#room-move-dialog');dialog.dataset.node=move.dataset.roomMove;$('#room-move-to').innerHTML=`<option value="">Sem ambiente</option>`+(getDocument().environments||[]).map(r=>`<option value="${esc(r.id)}" ${getDocument().nodes.find(n=>n.id===move.dataset.roomMove)?.environmentId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');dialog.showModal();return}
