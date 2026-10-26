@@ -1,0 +1,46 @@
+name: Blue Ocean 3D · P5 visual redesign
+on:
+  push:
+    branches: [feat/blueocean3d-blue-light-redesign]
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'vercel.json'
+      - '.github/workflows/p5-visual-redesign.yml'
+permissions:
+  contents: read
+jobs:
+  design:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Syntax, functional and visual contract tests
+        run: |
+          node --check app/environments-ui.mjs
+          node --check app/workspace-controls.mjs
+          node --check app/room3d.mjs
+          npm test
+      - name: CSS source of truth
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+      - name: Exact static deployment build
+        run: |
+          node scripts/build-vercel.mjs
+          test -f dist/index.html
+          test -f dist/app/index.html
+      - name: Chromium
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Browser regression and responsive UI
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
+          python3 tests/p3_journey_browser.py
+          python3 tests/p4_professional_browser.py
+          python3 tests/blue_light_browser.py
+          python3 tests/p4_deployment_browser.py
