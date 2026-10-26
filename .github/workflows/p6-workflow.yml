@@ -1,0 +1,43 @@
+name: Blue Ocean 3D · P6 workflow-first
+on:
+  push:
+    branches: [feat/blueocean3d-workflow-first]
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'tests/**'
+      - '.github/workflows/p6-workflow.yml'
+permissions:
+  contents: read
+jobs:
+  workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Syntax and complete functional regression
+        run: |
+          node --check app/environments-ui.mjs
+          node --check app/site-overview.mjs
+          node --check app/room3d.mjs
+          npm test
+      - name: CSS and real Vercel build
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+          node scripts/build-vercel.mjs
+          test -f dist/app/index.html
+          test -f dist/index.html
+      - name: Install Chromium
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Browser regression P0-P6 and final build
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
+          python3 tests/p3_journey_browser.py
+          python3 tests/p4_professional_browser.py
+          python3 tests/blue_light_browser.py
+          python3 tests/p6_workflow_browser.py
+          python3 tests/p4_deployment_browser.py
