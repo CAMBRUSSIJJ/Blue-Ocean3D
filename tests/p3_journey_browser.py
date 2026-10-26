@@ -18,7 +18,7 @@ with sync_playwright() as pw:
  tasks=page.evaluate("doc.nodes.length")
  assert journey.locator('[data-hybrid-step]').count()==tasks,(tasks,journey.locator('[data-hybrid-step]').count())
  button=page.locator('#hybrid-journey-expand')
- button.click()
+ if button.get_attribute('aria-expanded')!='true': button.click()
  expect(button).to_have_attribute('aria-expanded','true')
  page.locator('[data-hybrid-room]').first.click()
  expect(page.locator('#room-studio-heading')).to_contain_text('Editando:',timeout=8000)
