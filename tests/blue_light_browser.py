@@ -17,7 +17,7 @@ with sync_playwright() as pw:
  assert page.evaluate("document.body.classList.contains('bo-ocean')")
  assert page.evaluate("getComputedStyle(document.querySelector('.topbar')).backgroundColor")=='rgb(255, 255, 255)'
  assert page.evaluate("getComputedStyle(document.querySelector('.hybrid-left-dock')).backgroundColor")=='rgb(255, 255, 255)'
- expect(shell).to_have_class('workspace-right-collapsed')
+ assert 'workspace-right-collapsed' in shell.get_attribute('class').split()
  left=page.locator('.hybrid-left-dock')
  expect(left).to_be_visible()
  # The construction canvas occupies the majority of the work area initially.
@@ -30,14 +30,14 @@ with sync_playwright() as pw:
  assert sizes['journey']<=120,sizes
  # Compact contextual library and right-hand properties.
  page.locator('#bo-catalog-tool').click()
- expect(shell).to_have_class('hybrid-furniture-active')
+ assert 'hybrid-furniture-active' in shell.get_attribute('class').split()
  expect(page.locator('.hybrid-left-dock .floor-palette')).to_be_visible()
  page.locator('#bo-catalog-tool').click()
  expect(page.locator('#room-tab-nav')).to_be_visible()
  page.locator('#bo-inspector-tool').click()
  expect(page.locator('.hybrid-right-dock')).to_be_visible()
  page.locator('#bo-inspector-tool').click()
- expect(shell).to_have_class('workspace-right-collapsed')
+ assert 'workspace-right-collapsed' in shell.get_attribute('class').split()
  # Secondary actions remain accessible, but no longer add toolbar noise.
  menu=page.locator('.bo-toolbar-more')
  expect(menu.locator('summary')).to_be_visible()
@@ -49,7 +49,7 @@ with sync_playwright() as pw:
  # Journey remains one graph, available in expanded mode.
  journey=page.locator('#hybrid-journey')
  page.locator('#hybrid-journey-expand').click()
- expect(journey).to_have_class('is-expanded')
+ assert 'is-expanded' in journey.get_attribute('class').split()
  expect(page.locator('#hybrid-journey-list [data-hybrid-step]').first).to_be_visible()
  page.locator('#hybrid-journey-expand').click()
  # Previous scene modes and service data remain untouched.
