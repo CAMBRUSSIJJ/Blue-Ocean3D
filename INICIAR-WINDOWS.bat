@@ -3,6 +3,7 @@ setlocal EnableExtensions
 chcp 65001 >nul
 cd /d "%~dp0"
 set "PYTHONIOENCODING=utf-8"
+if not defined SERVICE_BUILDER_PORT set "SERVICE_BUILDER_PORT=4175"
 set "PYTHON_CMD="
 where py >nul 2>nul
 if not errorlevel 1 (
@@ -26,15 +27,15 @@ if not defined PYTHON_CMD (
     exit /b 1
 )
 echo.
-echo Service Builder 2.6 - Windows
+echo Blue Ocean 3D P7 - Windows
 %PYTHON_CMD% --version
-echo Abrindo http://localhost:4173/app/
+echo Abrindo http://localhost:%SERVICE_BUILDER_PORT%/app/
 echo Para encerrar o servidor pressione Ctrl+C nesta janela.
 echo.
 %PYTHON_CMD% scripts\server.py
 if errorlevel 1 (
     echo.
-    echo Nao foi possivel iniciar. Verifique se a porta 4173 esta ocupada.
+    echo Nao foi possivel iniciar. Verifique se a porta %SERVICE_BUILDER_PORT% esta ocupada.
     echo Opcao: abra PowerShell, entre nesta pasta e execute:
     echo $env:SERVICE_BUILDER_PORT="4174"; .\INICIAR-WINDOWS.bat
 )

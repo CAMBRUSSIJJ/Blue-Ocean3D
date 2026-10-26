@@ -26,6 +26,7 @@ with sync_playwright() as pw:
  if page.locator('#sim-allow-parallel').count():
   page.locator('#sim-allow-parallel').check()
   page.locator('#sim-run').click()
+ page.locator('#bo-workflow-analyze').click()
  expect(page.locator('#sim-journey')).to_be_visible(timeout=12000)
  sim_rows=page.locator('#sim-journey-steps [data-sim-journey-step]')
  assert sim_rows.count()==tasks,(sim_rows.count(),tasks)

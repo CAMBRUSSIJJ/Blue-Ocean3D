@@ -74,5 +74,5 @@ test('P4: controls and generated CSS are wired to canonical screens',()=>{
  assert.match(read('app/environments-ui.mjs'),/initLayoutReview\(/);
  assert.match(read('app/index.html'),/id="p4-export-report"/);
  assert.match(read('app/simulation-ui.mjs'),/professionalReportHTML\(/);
- assert.equal(JSON.parse(read('app/css-manifest.json')).at(-1),'workflow-first.css');
+ assert.equal(JSON.parse(read('app/css-manifest.json')).at(-1),'p7-workspace.css');
 });

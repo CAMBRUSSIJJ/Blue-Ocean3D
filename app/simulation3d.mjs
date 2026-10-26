@@ -46,7 +46,17 @@ export function initSimulation3D({container,onSelect,onUnavailable}){
   // A footprint is canonical; simple geometry keeps rendering viable on integrated GPUs.
   const ww=FURNITURE[obj.kind].w*.85,dd=FURNITURE[obj.kind].h*.85;
   const wood='#b88d69',metal='#698e91',fabric='#9889b7';
-  if(['desk','station','table'].includes(obj.kind)){
+  if(FURNITURE[obj.kind]?.visualOnly){
+   // Static figurine, not a simulated client or professional.
+   const shirt=obj.kind==='person_professional'?'#4570a1':obj.kind==='person_receptionist'?'#2786b3':'#8a8eb5';
+   const seated=obj.kind==='person_client_seated';
+   cyl(root,.20,seated?.4:.58,0,seated?.57:.80,0,shirt);
+   sphere(root,.17,0,seated?1.05:1.24,0,'#dfb08f');
+   box(root,.11,seated?.30:.54,.13,-.11,seated?.24:.29,0,'#52687d');
+   box(root,.11,seated?.30:.54,.13,.11,seated?.24:.29,0,'#52687d');
+   if(seated){box(root,.65,.15,.60,0,.40,0,'#899dac');box(root,.65,.53,.10,0,.67,-.3,'#899dac')}
+  }
+  else if(['reception_desk','clinic_desk','meeting_table','side_table','desk','station','table'].includes(obj.kind)){
    if(obj.kind==='table'){cyl(root,.7,.14,0,.76,0,wood);cyl(root,.14,.72,0,.37,0,'#785f4b')}
    else{box(root,ww,.13,dd,0,.78,0,wood);for(const x of [-ww*.42,ww*.42])for(const z of [-dd*.38,dd*.38])box(root,.08,.7,.08,x,.40,z,'#69594d');if(obj.kind==='station'){box(root,.55,.48,.08,0,1.08,-.3,'#405e68');box(root,.42,.30,.02,0,1.10,-.245,'#a4d8d9')}}
   }else if(obj.kind==='counter'){box(root,ww,.9,dd,0,.48,0,wood);box(root,ww,.13,dd+.07,0,1,0,'#ecd0a2')}

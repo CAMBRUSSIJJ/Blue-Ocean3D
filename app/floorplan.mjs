@@ -18,7 +18,32 @@ export const FURNITURE={
  exam:{name:'Maca de exame',icon:'▰',w:3,h:1,category:'Atendimento'},
  screen:{name:'Painel informativo',icon:'▤',w:2,h:1,category:'Equipamentos'},
  stool:{name:'Banqueta',icon:'●',w:1,h:1,category:'Espera'},
- door:{name:'Entrada / saída',icon:'↪',w:2,h:1,category:'Circulação'}
+ door:{name:'Entrada / saída',icon:'↪',w:2,h:1,category:'Circulação'},
+ counter_l:{name:'Balcão em L',icon:'▰',w:3,h:2,category:'Recepção',tags:'recepcao atendimento guiche',visualOnly:false},
+ counter_low:{name:'Balcão acessível',icon:'▰',w:2,h:1,category:'Recepção',tags:'balcao baixo acessibilidade recepcao',visualOnly:false},
+ reception_desk:{name:'Mesa de recepção',icon:'▤',w:2,h:2,category:'Recepção',tags:'recepcao balcao atendimento',visualOnly:false},
+ sofa_large:{name:'Sofá três lugares',icon:'▥',w:3,h:1,category:'Espera',tags:'sofa recepcao espera',visualOnly:false},
+ visitor_chair:{name:'Cadeira de visitante',icon:'●',w:1,h:1,category:'Espera',tags:'cadeira cliente acompanhante recepcao',visualOnly:false},
+ office_chair:{name:'Cadeira giratória',icon:'●',w:1,h:1,category:'Administrativo',tags:'cadeira ergonomica escritorio',visualOnly:false},
+ side_table:{name:'Mesa lateral',icon:'▤',w:1,h:1,category:'Espera',tags:'mesa apoio recepcao',visualOnly:false},
+ meeting_table:{name:'Mesa de reunião',icon:'▤',w:3,h:2,category:'Administrativo',tags:'reuniao mesa trabalho',visualOnly:false},
+ computer:{name:'Computador',icon:'▣',w:1,h:1,category:'Administrativo',tags:'monitor pc terminal recepcao',visualOnly:false},
+ filing_cabinet:{name:'Arquivo de documentos',icon:'▥',w:2,h:1,category:'Administrativo',tags:'arquivo gaveteiro armario',visualOnly:false},
+ clinic_desk:{name:'Mesa clínica',icon:'▤',w:2,h:1,category:'Clínica',tags:'consultorio mesa atendimento',visualOnly:false},
+ exam_chair:{name:'Poltrona de procedimento',icon:'▥',w:2,h:2,category:'Clínica',tags:'cadeira clinica consultorio',visualOnly:false},
+ divider:{name:'Biombo divisório',icon:'▤',w:2,h:1,category:'Clínica',tags:'biombo privacidade divisoria',visualOnly:false},
+ sink:{name:'Pia clínica',icon:'▤',w:1,h:1,category:'Clínica',tags:'lavatorio pia higiene',visualOnly:false},
+ medical_cart:{name:'Carrinho auxiliar',icon:'▣',w:1,h:2,category:'Clínica',tags:'carrinho instrumento medico apoio',visualOnly:false},
+ water_dispenser:{name:'Bebedouro',icon:'▣',w:1,h:1,category:'Apoio',tags:'agua bebedouro filtro copa',visualOnly:false},
+ trash_bin:{name:'Lixeira',icon:'▣',w:1,h:1,category:'Apoio',tags:'lixo lixeira descartavel',visualOnly:false},
+ signage:{name:'Placa de orientação',icon:'▣',w:1,h:1,category:'Circulação',tags:'sinalizacao placa caminho',visualOnly:false},
+ bookshelf:{name:'Estante',icon:'▥',w:2,h:1,category:'Apoio',tags:'prateleira livro estante',visualOnly:false},
+ locker:{name:'Armário individual',icon:'▥',w:1,h:1,category:'Apoio',tags:'armario vestiario guarda volume',visualOnly:false},
+ person_client_standing:{name:'Cliente em pé',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa paciente cliente em pe visual ilustrativo',visualOnly:true},
+ person_client_seated:{name:'Cliente sentado',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa paciente cadeira sentado visual ilustrativo',visualOnly:true},
+ person_receptionist:{name:'Recepcionista',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa funcionario atendente recepcao visual',visualOnly:true},
+ person_professional:{name:'Profissional',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa medico psicologo atendente visual',visualOnly:true},
+ person_support:{name:'Pessoa de apoio',icon:'♙',w:1,h:1,category:'Pessoas',tags:'pessoa limpeza auxiliar apoio visual',visualOnly:true}
 };
 const uid=()=>globalThis.crypto?.randomUUID?.()||`prop-${Math.random().toString(36).slice(2)}`;
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -46,11 +71,12 @@ export function resizeFurniture(doc,id,width,height){
  o.width=w;o.height=h;return o;
 }
 
-export function occupied(a,b){const [aw,ah]=furnitureDimensions(a),[bw,bh]=furnitureDimensions(b);return a.x<b.x+bw && a.x+aw>b.x && a.y<b.y+bh && a.y+ah>b.y}
+export function occupied(a,b){if(FURNITURE[a.kind]?.visualOnly||FURNITURE[b.kind]?.visualOnly)return false;const [aw,ah]=furnitureDimensions(a),[bw,bh]=furnitureDimensions(b);return a.x<b.x+bw && a.x+aw>b.x && a.y<b.y+bh && a.y+ah>b.y}
 function validateRoom(doc,roomId){if(!roomById(doc,roomId))throw Error('Escolha um ambiente existente.');}
 function normalizeSpot(obj,x,y,rotation=obj.rotation){const dim=furnitureDimensions({...obj,rotation});return {x:clamp(Math.round(Number(x)||0),0,GRID.columns-dim[0]),y:clamp(Math.round(Number(y)||0),0,GRID.rows-dim[1]),rotation};}
 export function putFurniture(doc,{roomId,kind,x=1,y=1,nodeId='',rotation=0,width,height}){
  validateRoom(doc,roomId);if(!FURNITURE[kind])throw Error('Móvel desconhecido.');
+ if(nodeId&&FURNITURE[kind].visualOnly)throw Error('Pessoa ilustrativa não pode receber vínculo com atividade.');
  if(nodeId&&!doc.nodes.some(n=>n.id===nodeId&&n.environmentId===roomId))throw Error('Vincule uma atividade deste ambiente.');
  const layout=ensureFloorplan(doc),candidate={id:uid(),roomId,kind,nodeId,x:0,y:0,rotation:rotation===90?90:0};
  if(width!==undefined||height!==undefined){const base=furnitureDimensions(candidate);const w=Number(width??base[0]),h=Number(height??base[1]);if(!Number.isInteger(w)||!Number.isInteger(h)||w<1||h<1||w>GRID.columns||h>GRID.rows)throw Error('Dimensões de móvel inválidas.');candidate.width=w;candidate.height=h;}
@@ -72,6 +98,7 @@ export function rotateFurniture(doc,id){const layout=ensureFloorplan(doc),o=layo
 export function removeFurniture(doc,id){const layout=ensureFloorplan(doc);const count=layout.objects.length;layout.objects=layout.objects.filter(o=>o.id!==id);return count!==layout.objects.length;}
 export function linkFurniture(doc,id,nodeId=''){
  const object=ensureFloorplan(doc).objects.find(o=>o.id===id);if(!object)throw Error('Móvel não encontrado.');
+ if(nodeId&&FURNITURE[object.kind]?.visualOnly)throw Error('Pessoas ilustrativas não podem representar postos operacionais.');
  if(nodeId&&!doc.nodes.some(n=>n.id===nodeId&&n.environmentId===object.roomId))throw Error('A atividade deve pertencer ao mesmo ambiente.');
  object.nodeId=nodeId;return object;
 }

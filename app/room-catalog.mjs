@@ -1,3 +1,4 @@
+import {FURNITURE} from './floorplan.mjs';
 /** Galeria leve: miniaturas CSS, sem downloads nem texturas pesadas. */
 export const PREVIEW_KIND={
  counter:{shape:'counter',label:'Balcão com monitor'},
@@ -19,6 +20,13 @@ export const EXTRA_PREVIEW_KIND={
  stool:{shape:'stool',label:'Banqueta'}
 };
 export function thumbnail(kind){
- const config=PREVIEW_KIND[kind]||EXTRA_PREVIEW_KIND[kind];if(!config)return '';
+ const config=PREVIEW_KIND[kind]||EXTRA_PREVIEW_KIND[kind];
+ if(!config){
+  const spec=FURNITURE[kind];if(!spec)return '';
+  // Default semantic thumbnail: no empty cards for catalog extensions.
+  const person=Boolean(spec.visualOnly);
+  return '<span class="p7-thumb '+(person?'is-person':'')+'" aria-hidden="true">'+
+   (person?'<span class="p7-person-head"></span><span class="p7-person-body"></span>':'<span class="p7-thumb-glyph">'+spec.icon+'</span>')+'</span>';
+ }
  return `<span class="furn-preview furn-${config.shape}" aria-hidden="true"><i class="furn-main"></i><i class="furn-detail"></i><i class="furn-accent"></i></span>`;
 }

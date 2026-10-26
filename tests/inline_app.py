@@ -10,7 +10,7 @@ def inline_app(root):
     html=re.sub(r'<link rel="stylesheet"[^>]*>', '',html)
     html=html.replace('</head>',f'<style>{styles}</style></head>')
     js=[]
-    for name in ('core.mjs','build.mjs','explore.mjs','explore-ui.mjs','environments.mjs','floorplan.mjs','floorplan-navigation.mjs','placement.mjs','studio-actions.mjs','room-style.mjs','room-catalog.mjs','floorplan-ui.mjs','room3d.mjs','site-routing.mjs','spatial.mjs','simulation-poses.mjs','site-traffic.mjs','site3d.mjs','site-overview.mjs','confirm-dialog.mjs','workspace-controls.mjs','journey-flow.mjs','professional-review.mjs','layout-review-ui.mjs','environments-ui.mjs','simulation.mjs','simulation-insights.mjs','simulation3d.mjs','simulation-ui.mjs','tools.mjs','tools-ui.mjs','scene3d.mjs','view3d-ui.mjs','ai-core.mjs','ai-ui.mjs','app.mjs'):
+    for name in ('core.mjs','build.mjs','explore.mjs','explore-ui.mjs','environments.mjs','floorplan.mjs','floorplan-navigation.mjs','placement.mjs','studio-actions.mjs','room-style.mjs','room-catalog.mjs','catalog-filter.mjs','floorplan-ui.mjs','room3d.mjs','site-routing.mjs','spatial.mjs','simulation-poses.mjs','site-traffic.mjs','site3d.mjs','site-overview.mjs','confirm-dialog.mjs','workspace-controls.mjs','journey-flow.mjs','professional-review.mjs','layout-review-ui.mjs','environments-ui.mjs','simulation.mjs','simulation-insights.mjs','simulation3d.mjs','p7-simulation-layout.mjs','simulation-ui.mjs','tools.mjs','tools-ui.mjs','scene3d.mjs','view3d-ui.mjs','ai-core.mjs','ai-ui.mjs','app.mjs'):
         code=(app/name).read_text()
         code=re.sub(r'^import [^\n]+\n','',code,flags=re.M)
         code=code.replace('export const ','const ').replace('export function ','function ')

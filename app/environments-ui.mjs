@@ -22,7 +22,7 @@ function installHybridLayout(root){
  document.body.classList.add('bo-ocean');
  const main=shell.querySelector('.rooms-main');
  const left=document.createElement('aside');left.className='hybrid-left-dock';left.setAttribute('aria-label','Ambientes e móveis do projeto');
- left.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Navegação lateral"><button id="hybrid-tab-rooms" type="button" role="tab" aria-selected="true">Ambientes</button><button id="hybrid-tab-furniture" type="button" role="tab" aria-selected="false">Móveis</button></div><p class="hybrid-side-caption">Ambientes deste serviço</p>`;
+ left.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Navegação lateral"><button id="hybrid-tab-rooms" type="button" role="tab" aria-selected="true">Ambientes</button><button id="hybrid-tab-furniture" type="button" role="tab" aria-selected="false">Móveis</button><button id="hybrid-tab-people" type="button" role="tab" aria-selected="false">Pessoas</button></div><p class="hybrid-side-caption">Ambientes deste serviço</p>`;
  shell.insertBefore(left,main);
  left.appendChild(document.querySelector('#room-tab-nav'));
  left.appendChild(document.querySelector('#room-furniture-palette'));
@@ -30,22 +30,33 @@ function installHybridLayout(root){
  const right=document.createElement('aside');right.className='hybrid-right-dock';right.setAttribute('aria-label','Propriedades da seleção');
  right.innerHTML=`<div class="hybrid-dock-tabs" role="tablist" aria-label="Propriedades"><button type="button" id="hybrid-tab-object" role="tab" aria-selected="true">Objeto</button><button type="button" id="hybrid-tab-environment" role="tab" aria-selected="false">Ambiente</button></div>`;
  main.after(right);right.appendChild(document.querySelector('#floor-editor-inspector'));right.appendChild(document.querySelector('#room-detail'));
- const preview=document.createElement('button');preview.type='button';preview.className='hybrid-sim-action';preview.textContent='▶ Simular a partir daqui';preview.addEventListener('click',()=>root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:'scenario'}})));right.appendChild(preview);
+ // Simulation is entered from the six primary tabs, not repeated inside the inspector.
  const breadcrumb=document.createElement('button');breadcrumb.type='button';breadcrumb.className='hybrid-breadcrumb';breadcrumb.innerHTML='Planta geral <span>›</span> <strong>Ambiente</strong>';breadcrumb.title='Abrir visão geral física';breadcrumb.addEventListener('click',()=>root.querySelector('[data-room-display="overview"]')?.click());main.querySelector('.floor-editor-toolbar').prepend(breadcrumb);
- const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-note">Ordem baseada nas conexões de execução</span><button type="button" id="hybrid-journey-expand" aria-expanded="false" aria-controls="hybrid-journey-list">Expandir</button><button type="button" id="hybrid-layout-compare">Comparar layouts</button><button type="button" id="hybrid-preview">▶ Simular</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" role="region" aria-label="Atividades ordenadas pelas conexões de execução" tabindex="0"></div>';
+ const journey=document.createElement('section');journey.id='hybrid-journey';journey.className='hybrid-journey';journey.setAttribute('aria-label','Jornada do cliente');journey.innerHTML='<div class="hybrid-journey-title"><strong>Jornada do cliente</strong><span id="hybrid-journey-note">Ordem baseada nas conexões de execução</span><button type="button" id="hybrid-journey-expand" aria-expanded="false" aria-controls="hybrid-journey-list">Expandir</button><button type="button" id="hybrid-layout-compare">Comparar layouts</button><button type="button" id="hybrid-preview" hidden>Simular</button></div><div id="hybrid-journey-list" class="hybrid-journey-list" role="region" aria-label="Atividades ordenadas pelas conexões de execução" tabindex="0"></div>';
  shell.after(journey);journey.querySelector('#hybrid-preview').addEventListener('click',()=>root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:'scenario'}})));
  journey.querySelector('#hybrid-journey-expand').addEventListener('click',e=>{
   const expanded=journey.classList.toggle('is-expanded');
   e.currentTarget.setAttribute('aria-expanded',String(expanded));
   e.currentTarget.textContent=expanded?'Recolher':'Expandir';
  });
- const switcher=document.createElement('nav');switcher.className='hybrid-top-modes bo-workflow-steps';switcher.setAttribute('aria-label','Etapas do planejamento do serviço');switcher.innerHTML='<button type="button" id="hybrid-construct" data-bo-stage="plan" class="active" aria-current="step">1 Planejar</button><button type="button" id="bo-workflow-mount" data-bo-stage="mount">2 Montar</button><button type="button" id="bo-workflow-service" data-bo-stage="service">3 Funcionamento</button><button type="button" id="hybrid-simulate" data-bo-stage="scenario">4 Cenário</button><button type="button" id="bo-workflow-analyze" data-bo-stage="analyze">5 Analisar</button>';
+ const switcher=document.createElement('nav');switcher.className='hybrid-top-modes bo-workflow-steps p7-tabs';switcher.setAttribute('aria-label','Áreas independentes do Blue Ocean 3D');switcher.innerHTML='<button type="button" id="hybrid-construct" data-bo-stage="plan" class="active" aria-current="page">Visão geral do serviço</button><button type="button" id="bo-workflow-mount" data-bo-stage="mount">Ambiente 3D</button><button type="button" id="bo-workflow-floor" data-bo-stage="floor2d">Planta 2D</button><button type="button" id="bo-workflow-service" data-bo-stage="service">Fluxo e conexões</button><button type="button" id="hybrid-simulate" data-bo-stage="scenario">Simular</button><button type="button" id="bo-workflow-analyze" data-bo-stage="analyze">Analisar</button>';
  document.querySelector('.topbar')?.insertBefore(switcher,document.querySelector('.top-actions'));
  switcher.addEventListener('click',event=>{const button=event.target.closest('[data-bo-stage]');if(!button)return;root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:button.dataset.boStage}}));});
  const move=document.createElement('button');move.type='button';move.className='hybrid-move active';move.textContent='↖ Mover';move.addEventListener('click',()=>{const active=root.querySelector('.room3d-structure-bar [aria-pressed="true"]');if(active)active.click();root.querySelector('#floor-clear-selection')?.click();move.classList.add('active');});document.querySelector('.room3d-structure-bar')?.prepend(move);
- const tabs=(type)=>{const furniture=type==='furniture';shell.classList.toggle('hybrid-furniture-active',furniture);left.querySelector('#hybrid-tab-rooms').setAttribute('aria-selected',String(!furniture));left.querySelector('#hybrid-tab-furniture').setAttribute('aria-selected',String(furniture));left.querySelector('.hybrid-side-caption').textContent=furniture?'Biblioteca de móveis':'Ambientes deste serviço';};
+ const tabs=(type)=>{
+  const furniture=type!=='rooms',people=type==='people';
+  shell.classList.toggle('hybrid-furniture-active',furniture);
+  shell.classList.toggle('p7-people-library',people);
+  left.querySelector('#hybrid-tab-rooms').setAttribute('aria-selected',String(!furniture));
+  left.querySelector('#hybrid-tab-furniture').setAttribute('aria-selected',String(type==='furniture'));
+  left.querySelector('#hybrid-tab-people').setAttribute('aria-selected',String(people));
+  left.querySelector('.hybrid-side-caption').textContent=people?'Pessoas ilustrativas':furniture?'Biblioteca de móveis e equipamentos':'Ambientes deste serviço';
+  const category=left.querySelector('#floor-library-category');
+  if(category){if(people){category.value='Pessoas'}else if(category.value==='Pessoas'){category.value=''}category.dispatchEvent(new Event('change'))}
+ };
  left.querySelector('#hybrid-tab-rooms').addEventListener('click',()=>tabs('rooms'));
  left.querySelector('#hybrid-tab-furniture').addEventListener('click',()=>tabs('furniture'));
+ left.querySelector('#hybrid-tab-people').addEventListener('click',()=>tabs('people'));
  mobileNav.querySelector('#hybrid-mobile-rooms').addEventListener('click',()=>{tabs('rooms');shell.classList.toggle('hybrid-mobile-left-open');shell.classList.remove('hybrid-mobile-right-open')});
  mobileNav.querySelector('#hybrid-mobile-furniture').addEventListener('click',()=>{tabs('furniture');shell.classList.add('hybrid-mobile-left-open');shell.classList.remove('hybrid-mobile-right-open')});
  mobileNav.querySelector('#hybrid-mobile-properties').addEventListener('click',()=>{shell.classList.toggle('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open')});
@@ -84,6 +95,7 @@ function installHybridLayout(root){
   if(button)extras.querySelector('.bo-toolbar-menu').appendChild(button);
  }
  extras.addEventListener('click',event=>{if(event.target.closest('button'))extras.open=false;});
+ const compare=journey.querySelector('#hybrid-layout-compare');if(compare)extras.querySelector('.bo-toolbar-menu').append(compare);
  actionGroup?.appendChild(extras);
 
  return {tabs,rightTabs,workspace};
@@ -141,33 +153,27 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    document.querySelectorAll('.bo-workflow-steps [data-bo-stage]').forEach(button=>{
     const selected=button.dataset.boStage===step;
     button.classList.toggle('active',selected);
-    if(selected)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');
+    if(selected)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
    });
  }
  function openWorkflow(step){
   if(step==='scenario'||step==='analyze'){
    document.querySelector('.rail-btn[data-view="simulation"]')?.click();
+   document.querySelector('#simulation-view')?.dispatchEvent(new CustomEvent('p7-section',{detail:{mode:step==='analyze'?'analyze':'simulate'}}));
    activeWorkflowStep(step);
-   if(step==='analyze'){
-    requestAnimationFrame(()=>{
-     const report=document.querySelector('#simulation-view .sim-results');
-     if(report&&!report.hidden&&document.querySelector('#simulation-view')?.classList.contains('sim-has-result'))report.scrollIntoView({block:'start'});
-     else document.querySelector('#sim-run')?.focus();
-    });
-   }
    return;
   }
   if(!ui.active)document.querySelector('.rail-btn[data-view="rooms"]')?.click();
-  ui.display=step==='plan'?'overview':step==='service'?'cards':'three';
+  ui.display=step==='plan'?'overview':step==='service'?'cards':step==='floor2d'?'visual':'three';
   studioMode();draw();
  }
  root.addEventListener('bo-workflow-navigate',event=>openWorkflow(event.detail.stage));
  function studioMode(){root.querySelector('.rooms-shell').dataset.currentDisplay=ui.display;
-  const step=ui.display==='overview'?'plan':ui.display==='cards'?'service':'mount';
+  const step=ui.display==='overview'?'plan':ui.display==='cards'?'service':ui.display==='visual'?'floor2d':'mount';
   root.dataset.workflowStep=step;activeWorkflowStep(step);
   const journey=root.querySelector('#hybrid-journey');
   if(journey&&ui.display==='cards'){journey.classList.add('is-expanded');const toggle=journey.querySelector('#hybrid-journey-expand');toggle?.setAttribute('aria-expanded','true');if(toggle)toggle.textContent='Recolher';}
-  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
+  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}else{setFurniture(true);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
    if(is3d)studio3d.activate();else studio3d.deactivate();if(isCards){floor.hide();root.querySelector('.room-workflow-drawer').open=true;}else if(isOverview){floor.hide();overview.render()}else floor.show();
  }
  function renderTabs(){const d=getDocument(),nav=$('#room-tab-nav');nav.innerHTML=(d.environments||[]).map(r=>`<button type="button" data-room-tab="${esc(r.id)}" class="room-tab ${ui.selected===r.id?'active':''}" role="tab" aria-selected="${ui.selected===r.id?'true':'false'}" tabindex="${ui.selected===r.id?0:-1}" aria-controls="floor-editor"><span class="room-tab-icon" style="--tab-color:${esc(r.color||'#228b75')}">${esc(r.icon)}</span>${esc(short(r.name,23))}<small>${d.nodes.filter(n=>n.environmentId===r.id).length} atividades</small></button>`).join('')+`<button type="button" class="room-tab-add" id="room-tab-add">＋ Novo ambiente</button>`;
@@ -182,7 +188,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
  function apply(change,message){try{mutate(change);draw();status(message||'Ambientes atualizados.');}catch(e){status('Não foi possível: '+e.message);console.error('Erro ao atualizar ambiente:',e)}}
- function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(false);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
+ function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(true);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
  function roomCard(r,proj){const isUnassigned=r.id==='unassigned',selected=ui.selected===r.id;
    const names=r.nodes.filter(n=>!ui.search||[n.title,n.team,n.owner].join(' ').toLocaleLowerCase('pt-BR').includes(ui.search)).slice(0,12);
    const more=r.nodes.length-names.length;
@@ -332,5 +338,5 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  });
  $('#room-back').addEventListener('click',onBack);
  $('#room-help').addEventListener('click',()=>$('#room-how').hidden=!$('#room-how').hidden);
- return {show(){ui.active=true;root.hidden=false;document.body.classList.add('sb-hybrid-active');if(window.matchMedia('(max-width:1400px)').matches)setFurniture(false);studioMode();draw();},hide(){ui.active=false;activeWorkflowStep('scenario');document.body.classList.remove('sb-hybrid-active');floor.hide();studio3d.deactivate();root.hidden=true;},refresh(){draw()},openTask,state:ui};
+ return {show(){ui.active=true;root.hidden=false;document.body.classList.add('sb-hybrid-active');studioMode();draw();},hide(){ui.active=false;activeWorkflowStep('scenario');document.body.classList.remove('sb-hybrid-active');floor.hide();studio3d.deactivate();root.hidden=true;},refresh(){draw()},openTask,state:ui};
 }

@@ -23,11 +23,11 @@ with sync_playwright() as pw:
  expect(stage.locator('#room3d-quick-help')).to_be_hidden()
  expect(controls).to_have_attribute('aria-expanded','false')
  # Locate an existing object via the canonical 2D editor before checking 3D selection.
- page.locator('[data-room-display="visual"]').click()
+ page.locator('#bo-workflow-floor').click()
  furniture=page.locator('.floor-prop[data-floor-prop]').first
  expect(furniture).to_be_visible(timeout=8000)
  furniture.click()
- page.locator('[data-room-display="three"]').click()
+ page.locator('#bo-workflow-mount').click()
  canvas=stage.locator('canvas.room3d-canvas')
  expect(canvas).to_be_visible(timeout=15000)
  focus=stage.locator('[data-room3d-control="focus-selected"]')

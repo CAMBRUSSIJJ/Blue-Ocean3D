@@ -7,7 +7,7 @@ import {EXTRA_PREVIEW_KIND,thumbnail} from '../app/room-catalog.mjs';
 import {setEdge} from '../app/floorplan-navigation.mjs';
 import {simulateService} from '../app/simulation.mjs';
 test('v1.5: novo catálogo inclui objetos leves para serviços',()=>{
- assert.equal(Object.keys(FURNITURE).filter(k=>k!=='door').length,15);
+ assert.ok(Object.keys(FURNITURE).filter(k=>k!=='door').length>=15); // P7 adds variants; v1.5 base catalog must remain available.
  assert.equal(Object.keys(EXTRA_PREVIEW_KIND).length,7);
  assert.equal(FURNITURE_DRAG_TYPE,'application/x-service-builder-furniture');
  for(const k of Object.keys(EXTRA_PREVIEW_KIND))assert.match(thumbnail(k),/furn-preview/);
