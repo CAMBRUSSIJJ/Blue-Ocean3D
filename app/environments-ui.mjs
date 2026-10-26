@@ -5,7 +5,7 @@ import {insertComponent} from './build.mjs';
 import {reviewServiceFlow} from './simulation-insights.mjs';
 import {initFloorEditor} from './floorplan-ui.mjs';
 import {initRoom3D} from './room3d.mjs';
-import {initSiteOverview} from './site-overview.mjs';
+import {initSiteOverview,roomSpot} from './site-overview.mjs';
 import {confirmAction} from './confirm-dialog.mjs';
 import {initWorkspaceControls} from './workspace-controls.mjs';
 import {buildJourneyGraph} from './journey-flow.mjs';
@@ -65,6 +65,12 @@ function installHybridLayout(root){
  right.querySelector('#hybrid-tab-environment').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')!=='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('environment')});
  root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){const active=Boolean(root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));move.classList.toggle('active',!active);root.classList.toggle('bo-structure-active',active);}});
  const workspace=initWorkspaceControls({shell,main,left,right});
+ // Keep reopen controls in a stable toolbar, never floating over the map or diagnoses.
+ const dockActions=document.createElement('div');dockActions.className='p71-dock-actions';
+ dockActions.setAttribute('aria-label','Painéis do editor');
+ main.prepend(dockActions);
+ dockActions.append(main.querySelector('.workspace-reopen-left'),main.querySelector('.workspace-reopen-right'));
+
  const cameraExtra=document.createElement('button');cameraExtra.type='button';cameraExtra.id='bo-camera-options';cameraExtra.textContent='Ângulos';
  cameraExtra.setAttribute('aria-label','Mostrar ou ocultar controles de rotação da câmera');
  cameraExtra.setAttribute('aria-pressed','false');
@@ -124,7 +130,23 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  root.querySelector('#hybrid-layout-compare').addEventListener('click',()=>layoutReview.open());
  root.querySelector('.rooms-shell').classList.add('studio-full','show-object-inspector');
  window.matchMedia('(max-width:1050px)').addEventListener('change',e=>{if(e.matches)setFurniture(false)});
+ const planInspector=document.createElement('section');planInspector.className='p71-plan-inspector';
+ planInspector.innerHTML='<p class="p71-panel-eyebrow">ESPAÇO FÍSICO</p><h3 id="p71-plan-title">Selecione um ambiente</h3><p id="p71-plan-info">Clique em uma sala na planta para inspecioná-la. Use as setas para mover uma sala selecionada.</p><button type="button" id="p71-plan-edit" hidden>Abrir ambiente 3D</button>';
+ root.querySelector('.hybrid-right-dock').append(planInspector);
  const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
+ root.addEventListener('p71-room-selected',e=>{
+  const room=getDocument().environments?.find(x=>x.id===e.detail.id);
+  if(!room)return;
+  ui.selected=room.id;
+  root.classList.add('p71-plan-selected');
+  planInspector.querySelector('#p71-plan-title').textContent=room.name;
+  const pos=roomSpot(getDocument(),room.id);
+  planInspector.querySelector('#p71-plan-info').textContent=
+   'Posição na planta: coluna '+(pos.x+1)+', linha '+(pos.y+1)+'. Arraste o título da sala ou use as setas (Shift + seta move 5 células).';
+  planInspector.querySelector('#p71-plan-edit').hidden=false;
+  hybrid.workspace.setCollapsed('right',false);
+ });
+ planInspector.querySelector('#p71-plan-edit').addEventListener('click',()=>select(ui.selected));
  const floor=initFloorEditor({getDocument,mutate,onEdit:id=>openTask(id),onSelectRoom:id=>{ui.selected=id;renderInspector();}});
  const studio3d=initRoom3D({element:$('#room-3d-stage'),getDocument,getRoomId:()=>ui.selected,getSelection:()=>floor.state.selected,getSelections:()=>[...floor.state.selectedIds],getPlacing:()=>floor.state.placing,mutate,onSelect:(id,additive=false)=>{floor.selectObject(id,additive);setObjectInspector(Boolean(floor.state.selected));},onPlaced:()=>{floor.state.placing=null;draw();},onCancel:()=>{floor.state.placing=null;floor.state.structure=null;floor.render();},onMessage:msg=>$('#floor-editor-notice').textContent=msg,onUnavailable:()=>{if(!ui.active||ui.display!=='three')return;ui.display='visual';root.querySelectorAll('[data-room-display]').forEach(x=>{const yes=x.dataset.roomDisplay==='visual';x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes))});studioMode();draw();$('#floor-editor-notice').textContent='3D indisponível neste navegador. A planta 2D permanece editável.';}});
  function syncTabState(){
@@ -165,7 +187,9 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   }
   if(!ui.active)document.querySelector('.rail-btn[data-view="rooms"]')?.click();
   ui.display=step==='plan'?'overview':step==='service'?'cards':step==='floor2d'?'visual':'three';
+  if(step==='plan'){root.classList.remove('p71-plan-selected');hybrid.workspace.setCollapsed('right',true)}
   studioMode();draw();
+  if(step==='plan')requestAnimationFrame(()=>{const site=root.querySelector('#site-overview');if(site)site.scrollTop=0;overview.fit();});
  }
  root.addEventListener('bo-workflow-navigate',event=>openWorkflow(event.detail.stage));
  function studioMode(){root.querySelector('.rooms-shell').dataset.currentDisplay=ui.display;
