@@ -1,0 +1,36 @@
+name: Blue Ocean 3D · P3 integrated journey
+on:
+  push:
+    branches: [feat/blueocean3d-ux-p3-journey]
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'tests/**'
+      - '.github/workflows/p3-journey.yml'
+permissions:
+  contents: read
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Syntax and functional regression
+        run: |
+          node --check app/journey-flow.mjs
+          node --check app/environments-ui.mjs
+          node --check app/simulation-ui.mjs
+          npm test
+      - name: Verify CSS source of truth
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+      - name: Install Chromium
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: P0-P3 browser smoke suite
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
+          python3 tests/p3_journey_browser.py

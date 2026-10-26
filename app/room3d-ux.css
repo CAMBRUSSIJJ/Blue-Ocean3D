@@ -1,0 +1,58 @@
+/* P2 — editor 3D contextual: camera focus, selection status and discoverable controls. */
+#rooms-view .room3d-object-info{
+ position:absolute;z-index:14;left:86px;bottom:68px;
+ max-width:min(520px,calc(100% - 160px));padding:9px 12px;
+ border-radius:9px;background:#112d28ed;border:1px solid #387363;
+ color:#effff9;font-size:13px;font-weight:650;line-height:1.4;
+ box-shadow:0 8px 24px #06151175;pointer-events:none;
+}
+#rooms-view .room3d-object-info[hidden]{display:none!important}
+#rooms-view .room3d-canvas:focus-visible{outline:3px solid #87e5df;outline-offset:-3px}
+#rooms-view .room3d-quick-help{
+ position:absolute;z-index:32;right:14px;bottom:68px;width:min(400px,calc(100% - 28px));
+ max-height:min(470px,calc(100% - 95px));overflow:auto;overscroll-behavior:contain;
+ background:#142c2a;border:1px solid #52877d;border-radius:12px;
+ box-shadow:0 15px 45px #0009;padding:15px;color:#e8fcf5;
+ font-size:13px;line-height:1.5;
+}
+#rooms-view .room3d-quick-help[hidden]{display:none!important}
+#rooms-view .room3d-quick-help .room3d-help-head{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;
+}
+#rooms-view .room3d-quick-help strong{font-size:15px;color:#f4fff9}
+#rooms-view .room3d-quick-help p{margin:7px 0;color:#cfe7df}
+#rooms-view .room3d-quick-help small{display:block;margin-top:10px;color:#b2d5cc;font-size:12px;line-height:1.5}
+#rooms-view .room3d-quick-help kbd{
+ display:inline-block;background:#1d4540;border:1px solid #477b71;border-radius:5px;
+ padding:1px 5px;color:#f0fff9;font:600 12px/1.4 ui-monospace,SFMono-Regular,monospace;
+}
+#rooms-view .room3d-quick-help button[data-room3d-control="close-help"]{
+ display:grid;place-items:center;min-height:36px;min-width:36px;border-radius:7px;
+ background:#1d403a;color:#eafff9;border:1px solid #537e77;cursor:pointer;font-size:18px;
+}
+body.sb-hybrid-active #rooms-view .room3d-buttons button[data-room3d-control="help"],
+body.sb-hybrid-active #rooms-view .room3d-buttons button[data-room3d-control="focus-selected"]{
+ padding:6px 9px!important;min-height:40px!important;font-size:12px!important;
+}
+body.sb-hybrid-active #rooms-view :is(.room3d-buttons button,.room3d-quick-help button):focus-visible{
+ outline:3px solid #8bebd3!important;outline-offset:2px!important;
+}
+@media(max-width:700px){
+ #rooms-view .room3d-object-info{left:10px;bottom:64px;max-width:calc(100% - 20px);font-size:12px;padding:7px 9px}
+ #rooms-view .room3d-quick-help{right:8px;bottom:56px;width:calc(100% - 16px)}
+ body.sb-hybrid-active #rooms-view .room3d-buttons button[data-room3d-control="focus-selected"]{
+  font-size:0!important;width:34px;padding:3px!important;
+ }
+ body.sb-hybrid-active #rooms-view .room3d-buttons button[data-room3d-control="focus-selected"]::before{
+  content:"◎";font-size:17px;
+ }
+ body.sb-hybrid-active #rooms-view .room3d-buttons button[data-room3d-control="help"]{
+  font-size:0!important;width:34px;padding:3px!important;
+ }
+ body.sb-hybrid-active #rooms-view .room3d-buttons button[data-room3d-control="help"]::before{
+  content:"?";font-size:17px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ #rooms-view .room3d-quick-help{scroll-behavior:auto}
+}

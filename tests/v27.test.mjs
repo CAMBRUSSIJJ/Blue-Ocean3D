@@ -20,13 +20,14 @@ test('v2.4 monta os docks com componentes canônicos, sem novos editores paralel
 test('v2.4 jornada usa atividades reais e oferece acesso à edição',()=>{
  const s=text('app/environments-ui.mjs');
  assert.match(s,/function renderHybridJourney\(doc,selected\)/);
- assert.match(s,/doc\.nodes\.filter\(n=>n\.environmentId===room\.id\)/);
+ assert.match(s,/buildJourneyGraph\(doc\)/);
  assert.match(s,/data-hybrid-step/);
  assert.match(s,/openTask\(hybridStep\.dataset\.hybridStep\)/);
 });
 test('v2.4 CSS integra os ambientes e recolhe painéis no celular',()=>{
  const manifest=JSON.parse(text('app/css-manifest.json'));
- assert.equal(manifest.at(-2),'v27.css');
+ assert.ok(manifest.includes('v27.css'));
+ assert.ok(manifest.indexOf('v27.css')>manifest.indexOf('v26.css'));
  const css=text('app/styles-bundle.css');
  assert.match(css,/SOURCE: v27\.css/);
  assert.match(css,/hybrid-mobile-left-open/);

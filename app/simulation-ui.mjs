@@ -1,5 +1,7 @@
 /** v0.9 — Modo Simulação: somente leitura, não modifica documentos canônicos. */
 import {simulateService,stateAt,simulationCsv,prepareSimulation} from './simulation.mjs';
+import {journeySimulationSummary} from './journey-flow.mjs';
+import {readLayoutBaseline,professionalReportHTML} from './professional-review.mjs';
 import {environmentSnapshot,capacityOpportunities,quickScenario,reviewServiceFlow} from './simulation-insights.mjs';
 import {renderSimWorld} from './floorplan-ui.mjs';
 import {initSimulation3D,simulationRoomActors,simulationRoomStatus} from './simulation3d.mjs';
@@ -74,13 +76,14 @@ export function serviceDiagnosis(result){
  text:`A equipe ${top.name} concentra ${share}% da espera acumulada por atividades (${compact(top.waiting)} min). Teste reforçar sua capacidade para verificar o impacto.`};
 }
 export function initSimulator({getDocument,onBack,onEdit}){
- const root=$('#simulation-view'),ui={active:false,result:null,reference:null,time:0,playing:false,selected:null,speed:2,opportunities:[],sceneMode:'3d',sceneRoom:null},q=s=>root.querySelector(s);
+ const root=$('#simulation-view'),ui={active:false,result:null,reference:null,time:0,playing:false,selected:null,speed:2,opportunities:[],sceneMode:'3d',sceneRoom:null,journeyCase:1},q=s=>root.querySelector(s);
+ let journeySignature='';
  let timer=null,appliedMode=null,scaleTouched=false;
  const sim3d=initSimulation3D({container:q('#sim16-webgl'),onSelect:entry=>selectTask(entry.caseIndex,entry.nodeId),onUnavailable:msg=>{
   ui.sceneMode='2d';q('#sim16-alert').textContent=msg;q('#sim16-alert').hidden=false;renderFloor();
  }});
  const sceneEsc=s=>esc(s);
- function selectTask(caseIndex,nodeId){ui.selected={caseIndex:Number(caseIndex),nodeId};renderTimeline();renderStatus();renderSelection();if(ui.sceneMode==='2d')q('.sim16-analytics').open=true;announce('Atividade selecionada: confira o painel lateral.')}
+ function selectTask(caseIndex,nodeId){ui.selected={caseIndex:Number(caseIndex),nodeId};renderTimeline();renderStatus();renderSelection();renderSimJourney();if(ui.sceneMode==='2d')q('.sim16-analytics').open=true;announce('Atividade selecionada: confira o painel lateral.')}
  function renderSelection(){const box=q('#sim16-selection');if(!box)return;
   const event=ui.selected&&ui.result?.events.find(e=>e.caseIndex===ui.selected.caseIndex&&e.nodeId===ui.selected.nodeId);
   box.innerHTML=event?`<h4>Atividade selecionada</h4><strong>${esc(event.title)}</strong><small>Cliente #${event.caseIndex} · ${esc(event.team)}</small><p>Início: ${durationLabel(event.start)} · duração: ${durationLabel(event.duration)} · espera: ${durationLabel(event.wait)}</p><button type="button" id="sim16-open-detail">▤ Detalhes na linha do tempo ↓</button>`:'';
@@ -118,8 +121,54 @@ export function initSimulator({getDocument,onBack,onEdit}){
  }
  
  function announce(text){q('#sim-live').textContent=text}
+ function renderSimJourney(){
+  if(!ui.result)return;
+  const panel=q('#sim-journey'),container=q('#sim-journey-steps'),insights=q('#sim-journey-insights');
+  const report=journeySimulationSummary(getDocument(),ui.result,ui.time,ui.journeyCase);
+  panel.hidden=false;
+  const signature=ui.result.createdAt+'|'+ui.journeyCase+'|'+report.steps.map(t=>t.id).join(',');
+  if(signature!==journeySignature){
+   journeySignature=signature;
+   container.innerHTML=report.steps.map((task,index)=>`<button type="button" class="sim-journey-step" data-sim-journey-step="${esc(task.id)}" data-journey-status="upcoming" title="${esc(task.title)} · ir para a atividade no ambiente">
+    <span class="sim-journey-order">${index+1}</span><strong>${esc(clip(task.title,45))}</strong>
+    <small class="sim-journey-room">${esc(task.roomName)}</small>
+    <small class="sim-journey-time">${['activity','decision'].includes(task.type)?(task.duration>0?`${compact(task.duration)} min previstos`:'Marco sem duração'):'Componente informativo'}</small>
+    <small class="sim-journey-state">Aguardando</small>
+   </button>`).join('')||'<p>Nenhuma atividade cadastrada para esta jornada.</p>';
+  }
+  const rowMap=new Map(report.rows.map(row=>[row.id,row]));
+  const labels={complete:'Concluída',running:'Executando',waiting:'Na fila',upcoming:'Ainda não iniciada','not-executed':'Sem evento'};
+  for(const button of container.querySelectorAll('[data-sim-journey-step]')){
+   const row=rowMap.get(button.dataset.simJourneyStep);
+   if(!row)continue;
+   button.dataset.journeyStatus=row.status;
+   button.classList.toggle('is-selected',ui.selected?.nodeId===row.id&&ui.selected?.caseIndex===ui.journeyCase);
+   button.setAttribute('aria-pressed',String(ui.selected?.nodeId===row.id&&ui.selected?.caseIndex===ui.journeyCase));
+   const text=labels[row.status]||'Aguardando';
+   button.querySelector('.sim-journey-state').textContent=row.wait>0?`${text} · espera ${compact(row.wait)} min`:text;
+   button.setAttribute('aria-label',`${row.title}, ${row.roomName}, ${text}, ${row.duration} minutos previstos`);
+  }
+  const spatial=ui.result.settings.spatialEnabled;
+  q('#sim-journey-context').textContent=`Atendimento #${ui.journeyCase} · ${report.precedenceCount} ligações operacionais · ${report.isolatedCount} atividades sem sequência${spatial?' · caminhada estimada incluída':' · deslocamento apenas ilustrativo'}`;
+  if(report.peakWait.length){
+   insights.innerHTML='<strong>Maiores esperas acumuladas no cenário</strong>'+
+    report.peakWait.map(row=>`<button type="button" data-sim-bottleneck="${esc(row.id)}" title="Inspecionar gargalo na ocorrência selecionada">${esc(clip(row.title,35))} · ${compact(row.totalWait)} min no total</button>`).join('');
+  }else insights.innerHTML='<span>Nenhuma espera por capacidade foi calculada neste cenário.</span>';
+  panel.dataset.modelState=report.cyclic?'cyclic':'valid';
+ }
+ function focusJourneyTask(nodeId){
+  if(!ui.result)return;
+  const event=ui.result.events.find(e=>e.nodeId===nodeId&&e.caseIndex===ui.journeyCase);
+  if(!event){announce('Esta atividade não possui evento calculado para a ocorrência.');return}
+  stop();
+  if(getDocument().environments?.some(r=>r.id===event.environmentId))ui.sceneRoom=event.environmentId;
+  if(ui.sceneRoom&&ui.sceneMode!=='3d'&&ui.sceneMode!=='2d')ui.sceneMode='3d';
+  setTime(event.start);
+  selectTask(event.caseIndex,event.nodeId);
+  q('#sim16-scene')?.scrollIntoView({behavior:'auto',block:'nearest'});
+ }
  function stop(){ui.playing=false;clearInterval(timer);timer=null;q('#sim-play').textContent='▶ Reproduzir';q('#sim-play').setAttribute('aria-pressed','false');if(ui.active&&ui.result&&ui.sceneMode==='3d')renderScene()}
- function setTime(time){ui.time=Math.max(0,Math.min(ui.result?.metrics.elapsed||0,time));q('#sim-time').textContent=durationLabel(ui.time);q('#sim-progress').value=String(ui.time);q('#sim-progress').max=String(Math.max(1,ui.result?.metrics.elapsed||1));q('#sim-progress-label').textContent=`${durationLabel(ui.time)} / ${durationLabel(ui.result?.metrics.elapsed||0)}`;renderTimeline();renderStatus();renderFloor()}
+ function setTime(time){ui.time=Math.max(0,Math.min(ui.result?.metrics.elapsed||0,time));q('#sim-time').textContent=durationLabel(ui.time);q('#sim-progress').value=String(ui.time);q('#sim-progress').max=String(Math.max(1,ui.result?.metrics.elapsed||1));q('#sim-progress-label').textContent=`${durationLabel(ui.time)} / ${durationLabel(ui.result?.metrics.elapsed||0)}`;renderTimeline();renderStatus();renderFloor();renderSimJourney()}
  function preflight(){
    const checks=reviewServiceFlow(getDocument());
    const parallel=checks.requiresParallelConfirmation;
@@ -159,9 +208,21 @@ export function initSimulator({getDocument,onBack,onEdit}){
  }
  function config(){return {spatialEnabled:q('#sim22-enable-walking').checked,metersPerCell:Number(q('#sim22-cell-meters').value),walkingSpeed:Number(q('#sim22-walk-speed').value),cases:Number(q('#sim-cases').value),arrivalInterval:Number(q('#sim-interval').value),teamCapacity:Number(q('#sim-capacity').value),teamCapacities:Object.fromEntries([...root.querySelectorAll('[data-sim-team-cap]')].map(e=>[e.dataset.simTeamCap,Number(e.value)]))}}
  function capacities(){let data=getDocument();const teams=[...new Set(data.nodes.filter(n=>['activity','decision'].includes(n.type)&&n.team?.trim()).map(n=>n.team.trim()))].sort((a,b)=>a.localeCompare(b,'pt-BR'));q('#sim-team-controls').innerHTML=teams.length?teams.map(team=>`<label><span>${esc(team)}</span><input type="number" min="1" max="8" step="1" value="${q('#sim-capacity').value}" data-sim-team-cap="${esc(team)}" aria-label="Capacidade da equipe ${esc(team)}"></label>`).join(''):'<p>Sem equipes atribuídas.</p>'}
- function execute(){stop();spatialHelp();if(!preflight().ready){q('#sim-error').textContent='Confirme o paralelismo das atividades desconectadas ou revise o fluxo em Ambientes de Serviço.';q('#sim-error').hidden=false;announce(q('#sim-error').textContent);return;}try{let doc=getDocument();let r=simulateService(doc,config());ui.result=r;ui.selected=null;ui.time=0;root.classList.add('sim-has-result');q('#sim-stats').innerHTML=resultPanel(r);q('#sim22-spatial-summary').innerHTML=spatialSummary(doc,r);const diagnosis=serviceDiagnosis(r);q('#sim-diagnosis').className='sim-diagnosis '+diagnosis.severity;q('#sim-diagnosis').textContent=diagnosis.text;q('#sim-team-load').innerHTML=teamPanel(r);ui.opportunities=capacityOpportunities(doc,r);q('#sim-opportunities').innerHTML=opportunityPanel(ui.opportunities);q('#sim-warnings').innerHTML=warningPanel(r);q('#sim-comparison').innerHTML=comparison(ui.reference,r);q('#sim-cases-tag').textContent=`${r.settings.cases} ocorrência(s)`;q('#sim-reference').disabled=false;q('#sim-csv').disabled=false;q('#sim-json').disabled=false;setTime(0);announce('Simulação concluída. Resultados calculados com dados hipotéticos do projeto.');}catch(err){root.classList.remove('sim-has-result');ui.result=null;q('#sim-error').textContent=err.message;q('#sim-error').hidden=false;spatialHelp(true);announce('Não foi possível simular: '+err.message);return}q('#sim-error').hidden=true;spatialHelp()}
+ function execute(){stop();spatialHelp();if(!preflight().ready){q('#sim-error').textContent='Confirme o paralelismo das atividades desconectadas ou revise o fluxo em Ambientes de Serviço.';q('#sim-error').hidden=false;announce(q('#sim-error').textContent);return;}try{let doc=getDocument();let r=simulateService(doc,config());ui.result=r;ui.selected=null;ui.time=0;ui.journeyCase=1;journeySignature='';
+  q('#sim-journey-case').innerHTML=Array.from({length:r.settings.cases},(_,i)=>`<option value="${i+1}">#${i+1}</option>`).join('');
+  root.classList.add('sim-has-result');q('#sim-stats').innerHTML=resultPanel(r);q('#sim22-spatial-summary').innerHTML=spatialSummary(doc,r);const diagnosis=serviceDiagnosis(r);q('#sim-diagnosis').className='sim-diagnosis '+diagnosis.severity;q('#sim-diagnosis').textContent=diagnosis.text;q('#sim-team-load').innerHTML=teamPanel(r);ui.opportunities=capacityOpportunities(doc,r);q('#sim-opportunities').innerHTML=opportunityPanel(ui.opportunities);q('#sim-warnings').innerHTML=warningPanel(r);q('#sim-comparison').innerHTML=comparison(ui.reference,r);q('#sim-cases-tag').textContent=`${r.settings.cases} ocorrência(s)`;q('#sim-reference').disabled=false;q('#p4-export-report').disabled=false;q('#sim-csv').disabled=false;q('#sim-json').disabled=false;setTime(0);announce('Simulação concluída. Resultados calculados com dados hipotéticos do projeto.');}catch(err){root.classList.remove('sim-has-result');ui.result=null;q('#p4-export-report').disabled=true;q('#sim-error').textContent=err.message;q('#sim-error').hidden=false;spatialHelp(true);announce('Não foi possível simular: '+err.message);return}q('#sim-error').hidden=true;spatialHelp()}
  function play(){if(!ui.result)return;if(ui.playing){stop();return}if(ui.time>=ui.result.metrics.elapsed)setTime(0);ui.playing=true;q('#sim-play').textContent='Ⅱ Pausar';q('#sim-play').setAttribute('aria-pressed','true');timer=setInterval(()=>{if(ui.time>=ui.result.metrics.elapsed){stop();return}setTime(ui.time+Math.max(.25,ui.speed*.25))},260)}
- root.addEventListener('click',e=>{let task=e.target.closest('[data-sim-task]');if(!task)return;let [caseIndex,nodeId]=task.dataset.simTask.split('|');selectTask(caseIndex,nodeId)});
+ root.addEventListener('click',e=>{
+  const journey=e.target.closest('[data-sim-journey-step],[data-sim-bottleneck]');
+  if(journey){focusJourneyTask(journey.dataset.simJourneyStep||journey.dataset.simBottleneck);return}
+  let task=e.target.closest('[data-sim-task]');if(!task)return;
+  let [caseIndex,nodeId]=task.dataset.simTask.split('|');selectTask(caseIndex,nodeId);
+ });
+ q('#sim-journey-case').addEventListener('change',e=>{
+  const next=Number(e.target.value);
+  if(!Number.isInteger(next)||next<1||next>(ui.result?.settings.cases||0))return;
+  stop();ui.journeyCase=next;ui.selected=null;journeySignature='';renderSimJourney();renderStatus();renderSelection();
+ });
  q('#sim16-rooms').addEventListener('click',e=>{const b=e.target.closest('[data-sim16-room]');if(!b)return;ui.sceneRoom=b.dataset.sim16Room;renderFloor();announce('Acompanhando o ambiente selecionado.')});
  q('#sim16-actors').addEventListener('click',e=>{const b=e.target.closest('[data-sim16-actor]');if(!b)return;const [n,id]=b.dataset.sim16Actor.split('|');selectTask(n,id)});
  q('#sim16-selection').addEventListener('click',e=>{if(!e.target.closest('#sim16-open-detail'))return;q('.sim16-analytics').open=true;q('#sim-selected').scrollIntoView({behavior:'smooth',block:'center'})});
@@ -180,10 +241,20 @@ export function initSimulator({getDocument,onBack,onEdit}){
  root.querySelector('.sim-presets').addEventListener('click',e=>{const b=e.target.closest('[data-sim-preset]');if(!b)return;try{const s=quickScenario(config(),b.dataset.simPreset);q('#sim-cases').value=s.cases;q('#sim-interval').value=s.arrivalInterval;q('#sim-capacity').value=s.teamCapacity;for(const el of root.querySelectorAll('[data-sim-team-cap]'))el.value=String(s.teamCapacities[el.dataset.simTeamCap]??s.teamCapacity);execute();announce('Cenário rápido aplicado e recalculado.')}catch(error){announce(error.message)}});
  q('#sim-opportunities').addEventListener('click',e=>{const b=e.target.closest('[data-team][data-cap]');if(!b)return;const cap=root.querySelectorAll('[data-sim-team-cap]');const input=[...cap].find(x=>x.dataset.simTeamCap===b.dataset.team);if(!input)return;input.value=b.dataset.cap;execute();announce('Reforço simulado para '+b.dataset.team+'. Compare com a referência se desejar.')});
  q('#sim-reference').addEventListener('click',()=>{if(!ui.result)return;ui.reference=ui.result;q('#sim-reference-label').textContent='Referência fixa · '+ui.reference.settings.cases+' ocorrências';q('#sim-comparison').innerHTML=comparison(ui.reference,ui.result);announce('Referência fixada. Modifique capacidade ou chegadas e execute novamente.')});
+ q('#p4-export-report').addEventListener('click',()=>{
+  if(!ui.result)return;
+  try{
+   const doc=getDocument();let layoutBaseline=null;
+   try{layoutBaseline=readLayoutBaseline(doc)}catch{/* Browser storage unavailable */}
+   const html=professionalReportHTML({doc,result:ui.result,reference:ui.reference,layoutBaseline});
+   download('blue-ocean-relatorio-servico.html',html,'text/html;charset=utf-8');
+   announce('Relatório profissional exportado. Abra o HTML para imprimir ou salvar em PDF.');
+  }catch(err){announce('Não foi possível criar o relatório: '+err.message)}
+ });
  q('#sim-csv').addEventListener('click',()=>ui.result&&download('service-builder-simulacao.csv',simulationCsv(ui.result),'text/csv;charset=utf-8'));
  q('#sim-json').addEventListener('click',()=>ui.result&&download('service-builder-simulacao.json',JSON.stringify(ui.result,null,2),'application/json'));
  q('#sim-back').addEventListener('click',onBack);
- function show(){ui.active=true;root.hidden=false;root.scrollTop=0;syncSpatialScale();spatialHelp();capacities();preflight();if(ui.result&&ui.result.modelUpdatedAt!==getDocument().updatedAt){ui.result=null;ui.reference=null;root.classList.remove('sim-has-result');q('#sim-reference-label').textContent='Nenhuma referência fixada';}if(!ui.result)execute();else setTime(ui.time);}
+ function show(){ui.active=true;root.hidden=false;root.scrollTop=0;syncSpatialScale();spatialHelp();capacities();preflight();if(ui.result&&ui.result.modelUpdatedAt!==getDocument().updatedAt){ui.result=null;ui.reference=null;journeySignature='';q('#sim-journey').hidden=true;q('#p4-export-report').disabled=true;root.classList.remove('sim-has-result');q('#sim-reference-label').textContent='Nenhuma referência fixada';}if(!ui.result)execute();else setTime(ui.time);}
  function hide(){stop();ui.active=false;site3d.hide();sim3d.hide();appliedMode=null;root.hidden=true;}
- return {state:ui,show,hide,refresh(){if(ui.active&&ui.result?.modelUpdatedAt!==getDocument().updatedAt){stop();ui.result=null;ui.reference=null;root.classList.remove('sim-has-result');q('#sim-error').hidden=false;q('#sim-error').textContent='O serviço mudou; execute novamente para atualizar as estimativas.';capacities();preflight()}}};
+ return {state:ui,show,hide,refresh(){if(ui.active&&ui.result?.modelUpdatedAt!==getDocument().updatedAt){stop();ui.result=null;ui.reference=null;journeySignature='';q('#sim-journey').hidden=true;q('#p4-export-report').disabled=true;root.classList.remove('sim-has-result');q('#sim-error').hidden=false;q('#sim-error').textContent='O serviço mudou; execute novamente para atualizar as estimativas.';capacities();preflight()}}};
 }
