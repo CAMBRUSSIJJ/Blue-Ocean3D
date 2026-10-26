@@ -252,3 +252,6 @@ body.bo-ocean #simulation-view .p7-no-result{
  body.bo-ocean #simulation-view .p7-chart-row{grid-template-columns:110px minmax(0,1fr) 55px;gap:6px}
  body.bo-ocean #simulation-view .sim16-scene,body.bo-ocean #simulation-view .sim16-webgl{min-height:320px!important}
 }
+
+/* Collapse the duplicate legacy library-close action: workspace dock is authoritative. */
+body.bo-ocean.sb-hybrid-active #rooms-view #room-close-library{display:none!important}
