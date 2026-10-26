@@ -58,7 +58,7 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
   }
   if(!o){const room=doc.environments.find(r=>r.id===state.roomId)||doc.environments[0],scale=room?cellMeters(doc,room.id):.75;inspector.innerHTML=`<div class="floor-inspector-top"><span class="panel-eyebrow">DIMENSÕES DO AMBIENTE</span><h3>${esc(room?.name||'Selecione um ambiente')}</h3><small>Malha: ${GRID.columns} × ${GRID.rows} células</small></div>${room?`<label class="floor-link-label">Escala em metros por célula<input id="floor-room-scale" type="number" min="0.4" max="2" step="0.05" value="${scale.toFixed(2)}" aria-label="Metros por célula"></label><label class="floor-link-label">Altura das paredes (metros)<input id="floor-room-wall-height" type="number" min="1.8" max="4.2" step="0.1" value="${wallHeight(doc,room.id).toFixed(2)}" aria-label="Altura das paredes em metros"></label><div class="floor-dimensions"><b>${(GRID.columns*scale).toFixed(2)} m</b> largura × <b>${(GRID.rows*scale).toFixed(2)} m</b> profundidade</div><p class="floor-inspector-hint">Selecione Parede, Porta ou Passagem livre e clique na linha divisória da planta. Use Ver trajetos para testar o acesso aos postos.</p><p class="floor-inspector-hint">As dimensões são estimadas por células. Alterar a escala não altera os tempos operacionais.</p>`:'<p>Crie um ambiente para configurar a planta.</p>'}`;
  inspector.querySelector('#floor-room-scale')?.addEventListener('change',e=>change(d=>setRoomScale(d,room.id,e.target.value),'Dimensões atualizadas.'));inspector.querySelector('#floor-room-wall-height')?.addEventListener('change',e=>change(d=>setWallHeight(d,room.id,e.target.value),'Altura das paredes atualizada.'));return}
-  const options=doc.nodes.filter(n=>n.environmentId===o.roomId&&['activity','decision'].includes(n.type));
+  const options=FURNITURE[o.kind]?.visualOnly?[]:doc.nodes.filter(n=>n.environmentId===o.roomId&&['activity','decision'].includes(n.type));
   inspector.innerHTML=`<div class="floor-inspector-top"><span class="panel-eyebrow">OBJETO SELECIONADO</span><h3>${esc(label(o.kind))}</h3><small>Coluna ${o.x+1} · Linha ${o.y+1} · Giro ${o.rotation}°</small></div>
   <label class="floor-link-label">Atividade neste posto<select id="floor-object-node"><option value="">Nenhuma · só visual</option>${options.map(n=>`<option value="${esc(n.id)}" ${n.id===o.nodeId?'selected':''}>${esc(n.title)}</option>`).join('')}</select></label>
   <p class="floor-inspector-hint">O vínculo posiciona os personagens durante a reprodução. Não modifica os tempos e a capacidade do motor.</p>
@@ -66,6 +66,7 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
   <details class="workspace-inspector-section" data-workspace-section="position" ${inspectorExpanded.has("position")?"open":""}><summary>Posição precisa</summary><fieldset class="studio18-position" aria-label="Posição precisa do móvel"><legend>Posição na grade</legend><div class="studio18-coordinates"><label>Coluna<input id="studio18-x" type="number" min="1" max="12" step="1" value="${o.x+1}"></label><label>Linha<input id="studio18-y" type="number" min="1" max="8" step="1" value="${o.y+1}"></label></div><button type="button" id="studio18-apply">✓ Aplicar posição</button></fieldset></details>
   <details class="workspace-inspector-section" data-workspace-section="nudge" ${inspectorExpanded.has("nudge")?"open":""}><summary>Ajuste fino por células</summary><fieldset class="studio18-nudge" aria-label="Mover objeto uma célula"><legend>Ajustar posição</legend><div><button type="button" data-studio18-nudge="0,-1" aria-label="Mover para cima">↑</button><button type="button" data-studio18-nudge="-1,0" aria-label="Mover para esquerda">←</button><button type="button" data-studio18-nudge="0,1" aria-label="Mover para baixo">↓</button><button type="button" data-studio18-nudge="1,0" aria-label="Mover para direita">→</button></div></fieldset></details>
   <div class="floor-prop-actions">${o.nodeId?'<button type="button" id="floor-edit-task">✎ Editar atividade</button>':''}<button type="button" id="floor-rotate">↻ Girar 90°</button><button type="button" id="studio18-duplicate">▣ Duplicar móvel</button><button type="button" id="floor-remove">🗑 Remover</button></div><small class="floor-keyboard-tip">Arraste ou use as setas · R gira · Shift+D duplica · Delete remove</small>`;
+  if(FURNITURE[o.kind]?.visualOnly){inspector.querySelector('#floor-object-node')?.closest('label')?.remove();inspector.querySelector('.floor-inspector-top')?.insertAdjacentHTML('afterend','<p class="p7-visual-only">Pessoa ilustrativa. Não gera clientes, equipe nem eventos de simulação.</p>');}
   inspector.querySelectorAll('details[data-workspace-section]').forEach(section=>section.addEventListener('toggle',()=>{
    if(!section.isConnected)return;
    if(section.open)inspectorExpanded.add(section.dataset.workspaceSection);
@@ -75,7 +76,7 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
    const w=Number(inspector.querySelector('#studio19-width').value),h=Number(inspector.querySelector('#studio19-height').value);
    change(d=>resizeFurniture(d,o.id,w,h),'Dimensões atualizadas na planta e no 3D.');
   });
-  inspector.querySelector('#floor-object-node').addEventListener('change',e=>change(d=>linkFurniture(d,o.id,e.target.value),'Posto vinculado à atividade.'));
+  inspector.querySelector('#floor-object-node')?.addEventListener('change',e=>change(d=>linkFurniture(d,o.id,e.target.value),'Posto vinculado à atividade.'));
   inspector.querySelector('#floor-edit-task')?.addEventListener('click',()=>onEdit?.(o.nodeId));
   inspector.querySelector('#studio18-apply').addEventListener('click',()=>{
    const x=Number(inspector.querySelector('#studio18-x').value),y=Number(inspector.querySelector('#studio18-y').value);
@@ -101,8 +102,28 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
  }
  palette.innerHTML=Object.entries(FURNITURE).filter(([kind])=>kind!=='door').map(([kind,p])=>`<button type="button" draggable="true" class="floor-palette-item" data-furniture-kind="${kind}" data-category="${esc(p.category)}" aria-label="Arrastar ${esc(p.name)} para o ambiente" aria-pressed="false">${thumbnail(kind)}<span class="floor-palette-label">${esc(p.name)}</span><small>${p.w}×${p.h}</small></button>`).join('');
  const search=wrapper.querySelector('#floor-library-search'),category=wrapper.querySelector('#floor-library-category');
- function filterLibrary(){const term=(search.value||'').trim().toLocaleLowerCase('pt-BR');for(const b of palette.querySelectorAll('[data-furniture-kind]')){const info=FURNITURE[b.dataset.furnitureKind];b.hidden=Boolean((term&&!info.name.toLocaleLowerCase('pt-BR').includes(term))||(category.value&&info.category!==category.value));}}
- search?.addEventListener('input',filterLibrary);category?.addEventListener('change',filterLibrary);
+ category.innerHTML='<option value="">Todas as categorias</option>';
+ for(const name of [...new Set(Object.values(FURNITURE).map(x=>x.category))].sort((a,b)=>a.localeCompare(b,'pt-BR'))){
+  const option=document.createElement('option');option.value=name;option.textContent=name;category.appendChild(option);
+ }
+ const footer=document.createElement('div');footer.className='p7-library-footer';
+ footer.innerHTML='<span id="p7-library-count" role="status"></span><button type="button" id="p7-library-clear">Limpar filtros</button>';
+ const empty=document.createElement('p');empty.className='p7-library-empty';
+ empty.textContent='Nenhum item encontrado. Limpe os filtros ou tente outro termo.';empty.hidden=true;
+ palette.before(footer);palette.after(empty);
+ const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').trim();
+ function filterLibrary(){
+  const term=normalize(search.value),cat=category.value;let count=0;
+  for(const button of palette.querySelectorAll('[data-furniture-kind]')){
+   const info=FURNITURE[button.dataset.furnitureKind];
+   const matched=(!term||normalize([info.name,info.category,info.tags||'',button.dataset.furnitureKind].join(' ')).includes(term))&&(!cat||info.category===cat);
+   button.hidden=!matched;if(matched)count++;
+  }
+  footer.querySelector('#p7-library-count').textContent=count+' itens';
+  empty.hidden=count>0;
+ }
+ footer.querySelector('#p7-library-clear').addEventListener('click',()=>{search.value='';category.value='';filterLibrary();search.focus()});
+ search?.addEventListener('input',filterLibrary);category?.addEventListener('change',filterLibrary);filterLibrary();
  palette.addEventListener('dragstart',e=>{const b=e.target.closest('[data-furniture-kind]');if(!b||!FURNITURE[b.dataset.furnitureKind])return;state.placing=b.dataset.furnitureKind;state.structure=null;updateControls();e.dataTransfer.effectAllowed='copy';e.dataTransfer.setData(FURNITURE_DRAG_TYPE,b.dataset.furnitureKind);e.dataTransfer.setData('text/plain',b.dataset.furnitureKind);message(`Solte ${FURNITURE[b.dataset.furnitureKind].name} sobre uma área livre do ambiente.`);});
  palette.addEventListener('dragend',()=>{state.placing=null;updateControls();wrapper.querySelectorAll('.floor-ghost').forEach(el=>el.remove())});
  palette.addEventListener('click',e=>{const b=e.target.closest('[data-furniture-kind]');if(!b)return;state.structure=null;state.placing=state.placing===b.dataset.furnitureKind?null:b.dataset.furnitureKind;state.selected=null;state.selectedIds.clear();message(state.placing?`Clique em uma posição livre de qualquer ambiente para colocar ${label(state.placing).toLowerCase()}.`:'Selecione um móvel para configurar.');updateControls();inspect()});
