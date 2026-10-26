@@ -41,7 +41,7 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
  const inspectorExpanded=new Set(['size']);
  function message(s){help.textContent=s}
  function change(cb,ok){try{mutate(cb);message(ok||'Planta atualizada.');render();return true;}catch(e){message('⚠ '+e.message);render();return false}}
- function updateControls(){palette.querySelectorAll('[data-furniture-kind]').forEach(b=>{b.classList.toggle('active',b.dataset.furnitureKind===state.placing);b.setAttribute('aria-pressed',String(b.dataset.furnitureKind===state.placing))});wrapper.classList.toggle('floor-placing',Boolean(state.placing||state.structure));wrapper.classList.toggle('floor-structure-editing',Boolean(state.structure));wrapper.querySelectorAll('[data-floor-structure]').forEach(b=>{b.classList.toggle('active',b.dataset.floorStructure===state.structure);b.setAttribute('aria-pressed',String(b.dataset.floorStructure===state.structure));});wrapper.querySelector('#floor-show-routes')?.setAttribute('aria-pressed',String(state.showRoutes));wrapper.classList.toggle('floor-route-enabled',state.showRoutes);}
+ function updateControls(){palette.querySelectorAll('[data-furniture-kind]').forEach(b=>{b.classList.toggle('active',b.dataset.furnitureKind===state.placing);b.setAttribute('aria-pressed',String(b.dataset.furnitureKind===state.placing))});wrapper.classList.toggle('floor-placing',Boolean(state.placing||state.structure));wrapper.classList.toggle('floor-structure-editing',Boolean(state.structure));document.querySelectorAll('#floor-structure-tools [data-floor-structure]').forEach(b=>{b.classList.toggle('active',b.dataset.floorStructure===state.structure);b.setAttribute('aria-pressed',String(b.dataset.floorStructure===state.structure));});$('#floor-show-routes')?.setAttribute('aria-pressed',String(state.showRoutes));wrapper.classList.toggle('floor-route-enabled',state.showRoutes);}
  function selectFurniture(id,additive=false){
   if(!id){state.selected=null;state.selectedIds.clear();}
   else if(additive){if(state.selectedIds.has(id))state.selectedIds.delete(id);else state.selectedIds.add(id);state.selected=[...state.selectedIds].at(-1)||null;}
@@ -102,7 +102,7 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
   updateControls();inspect();
  }
  palette.innerHTML=Object.entries(FURNITURE).filter(([kind])=>kind!=='door').map(([kind,p])=>`<button type="button" draggable="true" class="floor-palette-item" data-furniture-kind="${kind}" data-category="${esc(p.category)}" aria-label="Arrastar ${esc(p.name)} para o ambiente" aria-pressed="false">${thumbnail(kind)}<span class="floor-palette-label">${esc(p.name)}</span><small>${p.w}×${p.h}</small></button>`).join('');
- const search=wrapper.querySelector('#floor-library-search'),category=wrapper.querySelector('#floor-library-category');
+ const search=$('#floor-library-search'),category=$('#floor-library-category');
  category.innerHTML='<option value="">Todas as categorias</option>';
  for(const name of [...new Set(Object.values(FURNITURE).map(x=>x.category))].sort((a,b)=>a.localeCompare(b,'pt-BR'))){
   const option=document.createElement('option');option.value=name;option.textContent=name;category.appendChild(option);
@@ -127,9 +127,9 @@ export function initFloorEditor({getDocument,mutate,onEdit,onSelectRoom}){
  palette.addEventListener('dragstart',e=>{const b=e.target.closest('[data-furniture-kind]');if(!b||!FURNITURE[b.dataset.furnitureKind])return;state.placing=b.dataset.furnitureKind;state.structure=null;updateControls();e.dataTransfer.effectAllowed='copy';e.dataTransfer.setData(FURNITURE_DRAG_TYPE,b.dataset.furnitureKind);e.dataTransfer.setData('text/plain',b.dataset.furnitureKind);message(`Solte ${FURNITURE[b.dataset.furnitureKind].name} sobre uma área livre do ambiente.`);});
  palette.addEventListener('dragend',()=>{state.placing=null;updateControls();wrapper.querySelectorAll('.floor-ghost').forEach(el=>el.remove())});
  palette.addEventListener('click',e=>{const b=e.target.closest('[data-furniture-kind]');if(!b)return;state.structure=null;state.placing=state.placing===b.dataset.furnitureKind?null:b.dataset.furnitureKind;state.selected=null;state.selectedIds.clear();message(state.placing?`Clique em uma posição livre de qualquer ambiente para colocar ${label(state.placing).toLowerCase()}.`:'Selecione um móvel para configurar.');updateControls();inspect()});
- const tools=wrapper.querySelector('#floor-structure-tools');
+ const tools=$('#floor-structure-tools');
  tools?.addEventListener('click',e=>{const b=e.target.closest('[data-floor-structure]');if(!b)return;const type=b.dataset.floorStructure;state.structure=state.structure===type?null:type;state.placing=null;state.selected=null;state.selectedIds.clear();updateControls();inspect();message(state.structure?`Clique nas linhas da grade para definir ${type==='wall'?'paredes':type==='door'?'portas':'passagens livres'}.`: 'Modo de construção encerrado.');});
- wrapper.querySelector('#floor-show-routes')?.addEventListener('click',()=>{state.showRoutes=!state.showRoutes;render();message(state.showRoutes?'Trajetos verdes mostram o caminho disponível entre entrada e posto.':'Visualização de trajetos desativada.');});
+ $('#floor-show-routes')?.addEventListener('click',()=>{state.showRoutes=!state.showRoutes;render();message(state.showRoutes?'Trajetos verdes mostram o caminho disponível entre entrada e posto.':'Visualização de trajetos desativada.');});
  $('#floor-auto').addEventListener('click',()=>change(d=>{const n=autoFurnish(d,state.roomId);if(!n)throw Error('Não há postos livres para mobiliar automaticamente.');},'Layout inicial criado. Arraste os móveis para personalizar.'));
  $('#floor-clear-selection').addEventListener('click',()=>{state.placing=null;state.structure=null;state.selected=null;state.selectedIds.clear();updateControls();inspect();render();message('Seleção cancelada.')});
  let draggedGhost=null;
