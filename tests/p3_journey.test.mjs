@@ -2,26 +2,29 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildJourneyGraph,journeySimulationSummary} from '../app/journey-flow.mjs';
 import {simulateService} from '../app/simulation.mjs';
-import {environmentDemo} from '../app/environments.mjs';
+import {createDocument} from '../app/core.mjs';
 
 function fixture(){
- const doc=environmentDemo();
- // Fixture extends the actual canonical demo instead of writing a copied schema.
- const original=doc.nodes[0];
- const make=(id,title,environmentId,duration=5)=>({...original,id,title,type:'activity',
-  environmentId,stage:0,team:'P3 QA',duration,cost:0});
- const one=doc.environments[0]?.id,two=doc.environments[1]?.id;
- doc.nodes=[make('arrive','Chegada',two,2),make('triage','Triagem',one,3),
-  make('care','Atendimento',two,4),make('invoice','Cobrança',one,2),make('loose','Sem vínculo',null,1)];
- const sample=doc.edges[0]||{id:'edge',type:'sequence'};
+ const doc=createDocument('P3 QA');
+ const room1={id:'room-reception',name:'Recepção',color:'#168B86'};
+ const room2={id:'room-clinic',name:'Consultório',color:'#567BB5'};
+ doc.environments=[room1,room2];
+ const make=(id,title,environmentId,duration=5,team='P3 QA',type='activity')=>({
+  id,title,type,lane:type==='system'?'back':'front',stage:0,team,owner:'Pessoa',duration,
+  x:10,y:10,...(environmentId?{environmentId}:{})
+ });
+ doc.nodes=[make('arrive','Chegada',room2.id,2),make('triage','Triagem',room1.id,3),
+  make('care','Atendimento',room2.id,4,'Profissionais'),make('invoice','Cobrança',room1.id,2),
+  make('loose','Sem vínculo',null,1),make('resource','Ferramenta',null,0,'P3 QA','system')];
  doc.edges=[
-  {...sample,id:'p3-a',from:'arrive',to:'triage',type:'sequence'},
-  {...sample,id:'p3-b',from:'triage',to:'care',type:'handoff'},
-  {...sample,id:'p3-c',from:'triage',to:'invoice',type:'dependency'},
-  {...sample,id:'p3-resource',from:'loose',to:'invoice',type:'resource'}
+  {id:'p3-a',from:'arrive',to:'triage',type:'sequence'},
+  {id:'p3-b',from:'triage',to:'care',type:'handoff',label:'encaminhado'},
+  {id:'p3-c',from:'triage',to:'invoice',type:'dependency'},
+  {id:'p3-resource',from:'loose',to:'resource',type:'resource'}
  ];
  return doc;
 }
+
 test('P3: journey order follows precedence, never room grouping',()=>{
  const g=buildJourneyGraph(fixture());
  const ids=g.tasks.map(t=>t.id);
@@ -43,7 +46,7 @@ test('P3: imported cyclic graph remains visible and explicitly flagged',()=>{
  const doc=fixture();doc.edges.push({id:'cycle',from:'care',to:'arrive',type:'sequence'});
  const g=buildJourneyGraph(doc);
  assert.equal(g.cyclic,true);
- assert.equal(g.tasks.length,doc.nodes.length);
+ assert.equal(g.tasks.length,5);
 });
 test('P3: events come from deterministic simulator and preserve planned minutes',()=>{
  const doc=fixture();
@@ -55,7 +58,7 @@ test('P3: events come from deterministic simulator and preserve planned minutes'
  assert.ok(atStart.rows.some(t=>t.status!=='complete'));
  assert.deepEqual(atEnd.rows.map(x=>x.duration),buildJourneyGraph(doc).tasks.map(x=>x.duration));
  assert.equal(atEnd.peakWait.every(x=>x.totalWait>0),true);
- assert.equal(result.events.length,10);
+ assert.equal(result.events.length,12);
 });
 test('P3: journey calculation does not mutate original document',()=>{
  const doc=fixture(),before=JSON.stringify(doc);
