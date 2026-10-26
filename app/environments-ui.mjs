@@ -7,6 +7,7 @@ import {initFloorEditor} from './floorplan-ui.mjs';
 import {initRoom3D} from './room3d.mjs';
 import {initSiteOverview} from './site-overview.mjs';
 import {confirmAction} from './confirm-dialog.mjs';
+import {initWorkspaceControls} from './workspace-controls.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const palette=['#1F927F','#587EB7','#B67E48','#9373B4','#D0748F','#5692AA','#7B9167'];
@@ -44,6 +45,7 @@ function installHybridLayout(root){
  right.querySelector('#hybrid-tab-object').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')==='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('object')});
  right.querySelector('#hybrid-tab-environment').addEventListener('click',()=>{root.querySelector('#room-toggle-details')?.getAttribute('aria-pressed')!=='true'&&root.querySelector('#room-toggle-details')?.click();rightTabs('environment')});
  root.addEventListener('click',e=>{if(e.target.closest('[data-room3d-structure]')){move.classList.toggle('active',!root.querySelector('.room3d-structure-bar [data-room3d-structure][aria-pressed="true"]'));}});
+ initWorkspaceControls({shell,main,left,right});
  return {tabs,rightTabs};
 }
 function renderHybridJourney(doc,selected){
