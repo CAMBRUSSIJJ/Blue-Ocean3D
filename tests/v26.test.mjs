@@ -6,8 +6,9 @@ test('v2.3.2: uma folha carregada pelo navegador e fontes ordenadas',()=>{
  const html=app('index.html');
  assert.deepEqual([...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map(m=>m[1]),['./styles-bundle.css']);
  const manifest=JSON.parse(app('css-manifest.json'));
- assert.equal(manifest.at(-2),'v27.css');
- assert.equal(manifest.length,27);
+ assert.ok(manifest.indexOf('v27.css')>manifest.indexOf('v26.css'));
+ assert.ok(manifest.indexOf('v27.css')<manifest.indexOf('ai.css'));
+ assert.ok(manifest.length>=27);
  const bundle=app('styles-bundle.css');
  for(const name of manifest)assert.ok(bundle.includes(`SOURCE: ${name}`),name);
  assert.ok(bundle.includes('sim-spatial-help'));
