@@ -76,6 +76,7 @@ function validateRoom(doc,roomId){if(!roomById(doc,roomId))throw Error('Escolha 
 function normalizeSpot(obj,x,y,rotation=obj.rotation){const dim=furnitureDimensions({...obj,rotation});return {x:clamp(Math.round(Number(x)||0),0,GRID.columns-dim[0]),y:clamp(Math.round(Number(y)||0),0,GRID.rows-dim[1]),rotation};}
 export function putFurniture(doc,{roomId,kind,x=1,y=1,nodeId='',rotation=0,width,height}){
  validateRoom(doc,roomId);if(!FURNITURE[kind])throw Error('Móvel desconhecido.');
+ if(nodeId&&FURNITURE[kind].visualOnly)throw Error('Pessoa ilustrativa não pode receber vínculo com atividade.');
  if(nodeId&&!doc.nodes.some(n=>n.id===nodeId&&n.environmentId===roomId))throw Error('Vincule uma atividade deste ambiente.');
  const layout=ensureFloorplan(doc),candidate={id:uid(),roomId,kind,nodeId,x:0,y:0,rotation:rotation===90?90:0};
  if(width!==undefined||height!==undefined){const base=furnitureDimensions(candidate);const w=Number(width??base[0]),h=Number(height??base[1]);if(!Number.isInteger(w)||!Number.isInteger(h)||w<1||h<1||w>GRID.columns||h>GRID.rows)throw Error('Dimensões de móvel inválidas.');candidate.width=w;candidate.height=h;}
