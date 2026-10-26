@@ -13,7 +13,7 @@ with sync_playwright() as pw:
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  journey=page.locator('#hybrid-journey-list')
  expect(journey).to_be_visible(timeout=12000)
- tasks=page.evaluate("doc.nodes.filter(n=>n.type==='activity'||n.type==='decision').length")
+ tasks=page.evaluate("doc.nodes.length")
  assert journey.locator('[data-hybrid-step]').count()==tasks,(tasks,journey.locator('[data-hybrid-step]').count())
  button=page.locator('#hybrid-journey-expand')
  button.click()
