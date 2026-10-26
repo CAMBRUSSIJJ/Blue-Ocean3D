@@ -8,7 +8,7 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('bundle CSS is reproducible from the committed manifest',()=>{
  const files=JSON.parse(read('app/css-manifest.json'));
  assert.ok(files.includes('workspace.css'));
- assert.equal(files.at(-1),'workflow-first.css');
+ assert.equal(files.at(-1),'p7-workspace.css');
  const expected=['/* Service Builder v2.3.2 | generated file; edit individual CSS source files. */',
   ...files.map(f=>'\n/* SOURCE: '+f+' */\n'+read('app/'+f))].join('\n')+'\n';
  assert.equal(read('app/styles-bundle.css'),expected);
