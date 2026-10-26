@@ -2,29 +2,29 @@
  * Blue Ocean 3D — controles de workspace (P0/P1).
  * Não altera o modelo de serviço, a cena Three.js ou a simulação.
  */
-const KEY='blue-ocean3d/workspace/v1';
-const LIMITS={left:{min:176,max:360,default:205},right:{min:246,max:480,default:298}};
-const CENTER_MIN=360;
-const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
-const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
-const write=value=>{try{localStorage.setItem(KEY,JSON.stringify(value))}catch{/* private mode */}};
-const isWidth=(value,side)=>Number.isFinite(value)&&value>=LIMITS[side].min&&value<=LIMITS[side].max;
+const WORKSPACE_STORAGE_KEY='blue-ocean3d/workspace/v1';
+const WORKSPACE_SIZE_LIMITS={left:{min:176,max:360,default:205},right:{min:246,max:480,default:298}};
+const WORKSPACE_CENTER_MIN=360;
+const workspaceClamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+const workspaceRead=()=>{try{return JSON.parse(localStorage.getItem(WORKSPACE_STORAGE_KEY)||'{}')}catch{return {}}};
+const workspaceWrite=value=>{try{localStorage.setItem(WORKSPACE_STORAGE_KEY,JSON.stringify(value))}catch{/* private mode */}};
+const workspaceIsWidth=(value,side)=>Number.isFinite(value)&&value>=WORKSPACE_SIZE_LIMITS[side].min&&value<=WORKSPACE_SIZE_LIMITS[side].max;
 
 export function initWorkspaceControls({shell,main,left,right}){
- const stored=read();
+ const stored=workspaceRead();
  const state={
-  left:isWidth(stored.left,'left')?stored.left:LIMITS.left.default,
-  right:isWidth(stored.right,'right')?stored.right:LIMITS.right.default,
+  left:workspaceIsWidth(stored.left,'left')?stored.left:WORKSPACE_SIZE_LIMITS.left.default,
+  right:workspaceIsWidth(stored.right,'right')?stored.right:WORKSPACE_SIZE_LIMITS.right.default,
   leftCollapsed:stored.leftCollapsed===true,
   rightCollapsed:stored.rightCollapsed===true
  };
  const refs={};
- function persist(){write(state)}
+ function persist(){workspaceWrite(state)}
  function widthLimits(side){
   const other=side==='left'?'right':'left';
   const otherWidth=state[other+'Collapsed']?0:state[other];
-  const available=Math.max(LIMITS[side].min,shell.clientWidth-otherWidth-CENTER_MIN-14);
-  return {...LIMITS[side],max:Math.max(LIMITS[side].min,Math.min(LIMITS[side].max,available))};
+  const available=Math.max(WORKSPACE_SIZE_LIMITS[side].min,shell.clientWidth-otherWidth-WORKSPACE_CENTER_MIN-14);
+  return {...WORKSPACE_SIZE_LIMITS[side],max:Math.max(WORKSPACE_SIZE_LIMITS[side].min,Math.min(WORKSPACE_SIZE_LIMITS[side].max,available))};
  }
  function update({save=false}={}){
   for(const side of ['left','right']){
@@ -36,7 +36,7 @@ export function initWorkspaceControls({shell,main,left,right}){
    refs[side].toggle.setAttribute('aria-expanded',String(!collapsed));
    refs[side].reopen.hidden=!collapsed;
    refs[side].separator.setAttribute('aria-valuenow',String(Math.round(state[side])));
-   refs[side].separator.setAttribute('aria-valuemin',String(LIMITS[side].min));
+   refs[side].separator.setAttribute('aria-valuemin',String(WORKSPACE_SIZE_LIMITS[side].min));
    refs[side].separator.setAttribute('aria-valuemax',String(widthLimits(side).max));
    refs[side].separator.setAttribute('aria-valuetext',Math.round(state[side])+' pixels');
   }
@@ -44,7 +44,7 @@ export function initWorkspaceControls({shell,main,left,right}){
  }
  function setWidth(side,value,save=false){
   const {min,max}=widthLimits(side);
-  state[side]=Math.round(clamp(value,min,max));
+  state[side]=Math.round(workspaceClamp(value,min,max));
   update({save});
  }
  function setCollapsed(side,collapsed){
@@ -62,7 +62,7 @@ export function initWorkspaceControls({shell,main,left,right}){
   reset.type='button';reset.className='workspace-reset-size';reset.textContent='↺';
   reset.setAttribute('aria-label','Restaurar largura '+(side==='left'?'da biblioteca':'das propriedades'));
   reset.title='Restaurar largura padrão';
-  reset.addEventListener('click',()=>setWidth(side,LIMITS[side].default,true));
+  reset.addEventListener('click',()=>setWidth(side,WORKSPACE_SIZE_LIMITS[side].default,true));
   const toggle=document.createElement('button');
   toggle.type='button';toggle.className='workspace-collapse';toggle.title='Recolher painel';
   toggle.addEventListener('click',()=>setCollapsed(side,true));
@@ -99,10 +99,10 @@ export function initWorkspaceControls({shell,main,left,right}){
   separator.addEventListener('pointerup',finish);
   separator.addEventListener('pointercancel',finish);
   separator.addEventListener('lostpointercapture',finish);
-  separator.addEventListener('dblclick',()=>setWidth(side,LIMITS[side].default,true));
+  separator.addEventListener('dblclick',()=>setWidth(side,WORKSPACE_SIZE_LIMITS[side].default,true));
   separator.addEventListener('keydown',e=>{
    let next=null;
-   const n=LIMITS[side];
+   const n=WORKSPACE_SIZE_LIMITS[side];
    if(e.key==='ArrowLeft')next=state[side]+(side==='left'?-16:16);
    if(e.key==='ArrowRight')next=state[side]+(side==='left'?16:-16);
    if(e.key==='Home')next=n.min;
