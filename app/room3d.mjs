@@ -187,6 +187,24 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
  function handleControls(e){const tool=e.target.closest('[data-room3d-structure]');if(tool){toggleStructure(tool.dataset.room3dStructure);return;}const b=e.target.closest('[data-room3d-control]');if(!b)return;const action=b.dataset.room3dControl;if(action==='left')view.yaw-=Math.PI/4;if(action==='right')view.yaw+=Math.PI/4;if(action==='zoom-in')view.zoom=clamp(view.zoom*1.2,.6,2.8);if(action==='zoom-out')view.zoom=clamp(view.zoom/1.2,.6,2.8);if(action==='reset'){view.yaw=.72;view.pitch=.89;view.zoom=1;view.targetX=6;view.targetZ=4}
   if(action==='top'){view.pitch=1.52;view.yaw=0;view.targetX=6;view.targetZ=4}
   if(action==='isometric'){view.yaw=.72;view.pitch=.89}
+  if(action==='focus-selected'){
+   const id=getSelection(),o=validFurniture(getDocument()).find(item=>item.id===id&&item.roomId===getRoomId());
+   if(!o){say('Selecione um móvel para centralizá-lo na câmera.');return}
+   const [w,d]=furnitureDimensions(o);
+   view.targetX=o.x+w/2;view.targetZ=o.y+d/2;view.zoom=clamp(Math.max(view.zoom,1.45),.6,2.8);
+   say('Câmera centralizada no móvel. Pressione F para enquadrar o ambiente.');
+  }
+  if(action==='help'){
+   const help=element.querySelector('#room3d-quick-help'),expanded=help.hidden;
+   help.hidden=!expanded;b.setAttribute('aria-expanded',String(expanded));
+   if(expanded)help.querySelector('button')?.focus();
+   return;
+  }
+  if(action==='close-help'){
+   element.querySelector('#room3d-quick-help').hidden=true;
+   element.querySelector('[data-room3d-control="help"]').setAttribute('aria-expanded','false');
+   element.querySelector('[data-room3d-control="help"]').focus();return;
+  }
   if(action==='cutaway'){view.cutaway=!view.cutaway;const btn=element.querySelector('[data-room3d-control="cutaway"]');if(btn){btn.setAttribute('aria-pressed',String(view.cutaway));btn.textContent=view.cutaway?'◧ Corte':'▣ Paredes';}renderRoom()}
   if(action==='duplicate-selected'){
    const id=getSelection();if(!id){say('Selecione um móvel antes de duplicá-lo.');return;}
@@ -213,15 +231,29 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
   catch(error){say('⚠ '+error.message);e.target.value=wallHeight(getDocument(),id).toFixed(2)}
  });
  window.addEventListener('keydown',e=>{
-  if(!active||e.target.closest?.('input,textarea,select,[contenteditable="true"]')||e.ctrlKey||e.altKey||e.metaKey)return;
+  if(!active||e.target.closest?.('input,textarea,select,button,[contenteditable="true"]')||e.ctrlKey||e.altKey||e.metaKey||document.querySelector('dialog[open]'))return;
   const key=e.key.toLowerCase();
   if(key==='q'||key==='e'){view.yaw+=(key==='q'?-1:1)*Math.PI/4;requestFrame()}
   if(key==='f'){view.yaw=.72;view.pitch=.89;view.zoom=1;view.targetX=6;view.targetZ=4;requestFrame()}
+  if(key==='g'&&getSelection()){e.preventDefault();handleControls({target:element.querySelector('[data-room3d-control="focus-selected"]')})}
+  if(key==='?'||key==='h'){e.preventDefault();handleControls({target:element.querySelector('[data-room3d-control="help"]')});return}
+  if(key==='d'&&e.shiftKey&&getSelection()){e.preventDefault();handleControls({target:element.querySelector('[data-room3d-control="duplicate-selected"]')});return}
   if((e.key==='Delete'||e.key==='Backspace')&&getSelection()){const ids=getSelections?.()||[getSelection()];try{mutate(d=>ids.length>1?removeFurnitureGroup(d,ids):removeFurniture(d,ids[0]));hideGhost();onSelect(null);say('Móvel(is) excluído(s).');renderRoom()}catch(error){say('⚠ '+error.message)}e.preventDefault();return}
   const nudge=e.key==='ArrowLeft'?[-1,0]:e.key==='ArrowRight'?[1,0]:e.key==='ArrowUp'?[0,-1]:e.key==='ArrowDown'?[0,1]:null;
-  if(nudge&&getSelection()){e.preventDefault();const ids=getSelections?.()||[getSelection()];try{mutate(d=>ids.length>1?moveFurnitureGroup(d,ids,...nudge):moveFurnitureBy(d,ids[0],...nudge));say(ids.length>1?'Grupo ajustado.':'Móvel ajustado.');renderRoom()}catch(error){say('⚠ '+error.message)}return}
+  if(nudge&&getSelection()){
+   e.preventDefault();const ids=getSelections?.()||[getSelection()];
+   if(e.shiftKey){
+    if(ids.length!==1){say('Redimensione um móvel por vez usando Shift + setas.');return}
+    const o=validFurniture(getDocument()).find(item=>item.id===ids[0]);if(!o)return;
+    const [w,h]=furnitureDimensions(o),nextW=w+nudge[0],nextH=h+nudge[1];
+    try{mutate(d=>resizeFurniture(d,o.id,nextW,nextH));say(`Dimensões: ${nextW} × ${nextH} células.`);renderRoom()}
+    catch(error){say('⚠ '+error.message)}return;
+   }
+   try{mutate(d=>ids.length>1?moveFurnitureGroup(d,ids,...nudge):moveFurnitureBy(d,ids[0],...nudge));say(ids.length>1?'Grupo ajustado.':'Móvel ajustado.');renderRoom()}
+   catch(error){say('⚠ '+error.message)}return;
+  }
   if(key==='r'&&getSelection())handleControls({target:element.querySelector('[data-room3d-control="rotate-selected"]')});
-  if(e.key==='Escape'){onCancel?.();onSelect(null);say('Seleção cancelada.');renderRoom()}
+  if(e.key==='Escape'){if(structureMode)toggleStructure(structureMode);onCancel?.();onSelect(null);hoveredId=null;const help=element.querySelector('#room3d-quick-help');if(help)help.hidden=true;const helpBtn=element.querySelector('[data-room3d-control="help"]');if(helpBtn)helpBtn.setAttribute('aria-expanded','false');say('Seleção e ferramenta ativa canceladas.');renderRoom()}
  });
  return {activate(){active=true;load().then(()=>{resize();renderRoom()})},deactivate(){active=false;pointer.down=null;hoveredId=null;hideGhost();hideStructurePreview();hideResizePreview();if(raf)cancelAnimationFrame(raf);raf=0},render:renderRoom,dispose(){active=false;ro?.disconnect();disposeGroup(world);renderer?.dispose()}};
 }
