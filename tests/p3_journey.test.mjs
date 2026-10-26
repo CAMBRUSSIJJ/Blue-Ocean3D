@@ -10,7 +10,7 @@ function fixture(){
  const room2={id:'room-clinic',name:'Consultório',color:'#567BB5'};
  doc.environments=[room1,room2];
  const make=(id,title,environmentId,duration=5,team='P3 QA',type='activity')=>({
-  id,title,type,lane:type==='system'?'back':'front',stage:0,team,owner:'Pessoa',duration,
+  id,title,type,lane:type==='system'?'support':'front',stage:0,team,owner:'Pessoa',duration,
   x:10,y:10,...(environmentId?{environmentId}:{})
  });
  doc.nodes=[make('arrive','Chegada',room2.id,2),make('triage','Triagem',room1.id,3),
