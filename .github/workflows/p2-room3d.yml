@@ -1,0 +1,36 @@
+name: Blue Ocean 3D · P2 editor
+on:
+  push:
+    branches: [feat/blueocean3d-ux-p2]
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'tests/**'
+      - '.github/workflows/p2-room3d.yml'
+permissions:
+  contents: read
+jobs:
+  editor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Verify syntax
+        run: |
+          node --check app/room3d.mjs
+          node --check app/environments-ui.mjs
+          node --check app/workspace-controls.mjs
+      - name: Unit and contract tests
+        run: npm test
+      - name: Confirm CSS is reproducible
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+      - name: Install browser runtime
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: Smoke test workspace and P2 3D
+        run: |
+          python3 tests/workspace_browser.py
+          python3 tests/p2_room3d_browser.py
