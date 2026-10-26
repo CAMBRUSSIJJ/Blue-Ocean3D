@@ -1518,3 +1518,535 @@ body.sb-hybrid-active #rooms-view #hybrid-journey-expand:focus-visible{
  #rooms-view .p4-layout-actions select{min-width:0;flex:1}
  #rooms-view .p4-layout-heading button{flex-shrink:0}
 }
+
+/* SOURCE: blue-ocean-light.css */
+/*
+ Blue Ocean 3D · Design System 2026
+ A single, explicit theme boundary after the legacy layers.
+ No changes to the service graph, physical layout or simulation engine.
+*/
+body.bo-ocean {
+ --bo-blue:#155eef; --bo-blue-dark:#1048b8; --bo-navy:#102b49; --bo-turquoise:#0891b2;
+ --bo-text:#1e344e; --bo-muted:#61758f; --bo-muted-2:#7a8da2;
+ --bo-bg:#f4f7fb; --bo-canvas:#edf3fb; --bo-surface:#fff;
+ --bo-line:#dbe5f0; --bo-line-strong:#c7d6e5; --bo-hover:#eff5ff;
+ --bo-selected:#e9f1ff; --bo-focus:#155eef;
+ background:var(--bo-bg);color:var(--bo-text);
+ font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body.bo-ocean *{scrollbar-color:#c6d7ea transparent}
+body.bo-ocean.sb-hybrid-active,body.bo-ocean.sb-hybrid-active #app.shell{
+ background:var(--bo-bg)!important;color:var(--bo-text)!important;
+}
+/* Product identity. White header + singular high-contrast action hierarchy. */
+body.bo-ocean .topbar,body.bo-ocean.sb-hybrid-active .topbar{
+ min-height:64px!important;height:64px!important;background:#fff!important;
+ border-bottom:1px solid var(--bo-line)!important;box-shadow:none!important;
+ color:var(--bo-text)!important;padding:0 20px!important;gap:14px!important;
+}
+body.bo-ocean .topbar .identity{flex:0 1 262px;min-width:140px;max-width:262px}
+body.bo-ocean .topbar .app-overline,body.bo-ocean.sb-hybrid-active .topbar .app-overline{
+ display:block!important;font-size:10px!important;letter-spacing:.13em!important;
+ line-height:1.2;color:var(--bo-blue)!important;font-weight:800!important;
+}
+body.bo-ocean .topbar .brandline strong,body.bo-ocean.sb-hybrid-active .topbar .brandline strong{
+ color:var(--bo-navy)!important;font-size:17px!important;font-weight:750!important;
+ letter-spacing:-.025em;line-height:1.3;
+}
+body.bo-ocean .topbar .top-actions,body.bo-ocean.sb-hybrid-active .topbar .top-actions{
+ justify-content:flex-end;gap:10px!important;min-width:0;
+}
+body.bo-ocean .topbar #save-status.save-state,body.bo-ocean.sb-hybrid-active .topbar #save-status.save-state{
+ color:#637d92!important;background:transparent!important;font-size:12px!important;
+ max-width:190px!important;
+}
+body.bo-ocean .topbar #save-status.is-error,body.bo-ocean.sb-hybrid-active .topbar #save-status.is-error{
+ background:#fff1e8!important;color:#98502e!important;
+}
+body.bo-ocean .topbar #btn-export,body.bo-ocean.sb-hybrid-active .topbar .menu-wrap #btn-export{
+ min-height:39px!important;border-radius:9px!important;background:#fff!important;
+ color:var(--bo-navy)!important;border:1px solid var(--bo-line-strong)!important;
+ font-size:13px!important;font-weight:650!important;
+}
+body.bo-ocean .topbar #btn-export:hover{background:var(--bo-hover)!important}
+body.bo-ocean .topbar #ai-launch{
+ background:#f0f6ff!important;color:#1c569c!important;
+ border:1px solid #dbe8ff!important;border-radius:9px!important;
+ box-shadow:none!important;font-weight:650!important;min-height:39px!important;
+}
+body.bo-ocean .topbar .dropdown,body.bo-ocean.sb-hybrid-active .topbar .dropdown{
+ background:#fff!important;color:var(--bo-text)!important;
+ border:1px solid var(--bo-line)!important;box-shadow:0 18px 40px #17325016!important;
+ border-radius:12px!important;
+}
+body.bo-ocean .topbar .dropdown button,body.bo-ocean.sb-hybrid-active .topbar .dropdown button{color:var(--bo-text)!important}
+body.bo-ocean .topbar .dropdown button:hover{background:var(--bo-hover)!important}
+body.bo-ocean .hybrid-top-modes{
+ border:1px solid #e1e9f3!important;border-radius:11px!important;background:#f3f6fa!important;
+ padding:3px!important;gap:2px;box-shadow:none!important;
+}
+body.bo-ocean .hybrid-top-modes button{
+ min-height:38px!important;border-radius:8px!important;font-size:13px!important;
+ color:#667990!important;font-weight:700!important;background:transparent!important;
+ padding:8px 17px!important;
+}
+body.bo-ocean .hybrid-top-modes button.active{
+ background:#fff!important;color:var(--bo-blue)!important;box-shadow:0 1px 5px #17325012!important;
+}
+/* Desktop workspace is a quiet professional drawing space, not a dark dashboard. */
+body.bo-ocean.sb-hybrid-active #rooms-view.rooms-view{
+ background:var(--bo-bg)!important;height:calc(100dvh - 64px)!important;min-height:320px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .rooms-shell{
+ background:var(--bo-canvas)!important;min-height:240px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .rooms-main{
+ background:var(--bo-canvas)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock,
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock{
+ background:var(--bo-surface)!important;color:var(--bo-text)!important;
+ border-color:var(--bo-line)!important;box-shadow:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-dock-head{
+ min-height:56px!important;border-bottom:1px solid #edf1f7!important;
+ background:#fff!important;padding:8px 9px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-dock-head .hybrid-dock-tabs{
+ background:#f4f7fb!important;border-radius:9px;box-shadow:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-dock-tabs button{
+ background:transparent!important;color:var(--bo-muted)!important;
+ min-height:37px!important;border-radius:7px!important;font-size:12px!important;
+ border:0!important;font-weight:650!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-dock-tabs button[aria-selected="true"]{
+ color:var(--bo-blue)!important;background:#fff!important;
+ box-shadow:0 1px 4px #1b427710!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-collapse,
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-reset-size{
+ color:#5b7089!important;background:transparent!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view :is(.workspace-collapse,.workspace-reset-size):hover{
+ border-color:#cad9e9!important;background:#eef4fc!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-splitter{
+ background:#edf2f8!important;border-left-color:#e3ebf3!important;
+ border-right-color:#e3ebf3!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-splitter::before{background:#a3b8d0!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-splitter:hover,
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-splitter:focus-visible{background:#c9dcff!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .workspace-reopen{
+ background:#fff!important;color:#20518c!important;
+ border-color:#d5e1ee!important;box-shadow:0 6px 20px #17365016!important;
+ font-size:12px!important;font-weight:700!important;min-height:42px!important;
+}
+/* Library: neutral thumbnails and only one interactive active state. */
+body.bo-ocean.sb-hybrid-active #rooms-view .room-tab-nav{
+ padding:10px!important;gap:4px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-tab{
+ min-height:57px!important;color:var(--bo-text)!important;
+ border:1px solid transparent!important;background:transparent!important;
+ border-radius:10px!important;padding:10px!important;
+ font-size:13px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-tab:hover{
+ background:#f4f8ff!important;border-color:#e0eafb!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-tab.active{
+ background:#eaf2ff!important;border-color:#bfd6ff!important;color:#154caa!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-tab .room-tab-icon{
+ background:color-mix(in srgb,var(--tab-color,#155eef) 17%,white)!important;
+ color:var(--tab-color,#155eef)!important;filter:saturate(.85);
+ border:1px solid color-mix(in srgb,var(--tab-color,#155eef) 25%,white)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-tab small{
+ color:var(--bo-muted)!important;font-size:11px!important;line-height:1.45;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view #room-tab-add{
+ background:#fff!important;color:var(--bo-blue)!important;
+ border:1px dashed #95b6e9!important;font-size:12px!important;
+ margin:14px 2px 6px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-side-caption{
+ color:#657d95!important;font-size:11px!important;letter-spacing:.04em;
+ font-weight:600;margin:12px 14px 4px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock .floor-palette{
+ background:#fff!important;color:var(--bo-text)!important;
+ padding:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock .floating-panel-head h4{
+ color:var(--bo-navy)!important;font-size:14px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock .floating-panel-head p,
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-palette small{
+ color:var(--bo-muted)!important;font-size:12px!important;line-height:1.45!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-library-controls :is(input,select){
+ background:#fff!important;color:var(--bo-text)!important;
+ border:1px solid var(--bo-line-strong)!important;min-height:38px!important;font-size:13px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock .floor-palette-item{
+ background:#fff!important;border:1px solid #e1e9f3!important;
+ color:var(--bo-text)!important;box-shadow:none!important;min-height:79px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock .floor-palette-item:is(:hover,.active){
+ background:#f2f7ff!important;border-color:#a6c8ff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock .floor-palette-label{
+ color:var(--bo-text)!important;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-structure-tools{
+ background:#f4f8fd!important;color:var(--bo-text)!important;border-color:#e2eaf3!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-structure-tools button{
+ background:#fff!important;color:var(--bo-text)!important;border:1px solid var(--bo-line)!important;
+}
+/* One structural toolbar for 3D: 2D structure tools remain for the 2D editor. */
+body.bo-ocean.sb-hybrid-active #rooms-view .rooms-shell[data-current-display="three"] .floor-structure-tools{
+ display:none!important;
+}
+/* Canvas/header. Eliminate prose and secondary actions from the always-visible row. */
+body.bo-ocean.sb-hybrid-active #rooms-view .room-mode-switch{
+ background:#fff!important;border-bottom:1px solid var(--bo-line)!important;
+ padding:4px 16px!important;gap:5px!important;flex-basis:49px!important;
+ min-height:49px!important;max-height:49px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-mode-switch button{
+ color:#687c94!important;background:transparent!important;
+ border:0!important;border-radius:8px!important;min-height:37px!important;
+ font-size:12px!important;font-weight:650!important;padding:8px 12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-mode-switch button.active{
+ color:var(--bo-blue)!important;background:#eaf2ff!important;
+ border:1px solid #cfe0ff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-mode-switch button:hover:not(.active){
+ background:#f4f7fc!important;color:#234e82!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor{
+ background:var(--bo-canvas)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar{
+ background:#fff!important;border-bottom:1px solid var(--bo-line)!important;
+ min-height:54px!important;height:54px!important;flex-basis:54px!important;
+ padding:5px 14px!important;gap:8px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar .panel-eyebrow,
+body.bo-ocean.sb-hybrid-active #rooms-view #room-studio-subtitle{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar h3{
+ font-size:14px!important;line-height:1.35;color:var(--bo-navy)!important;font-weight:750!important;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar>div:last-child{
+ display:flex!important;gap:5px!important;align-items:center!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar .button,
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-canvas-tools button{
+ background:#fff!important;border:1px solid #dce6f2!important;
+ border-radius:8px!important;color:#31536f!important;
+ min-height:36px!important;font-size:12px!important;font-weight:700!important;
+ padding:7px 10px!important;box-shadow:none!important;cursor:pointer;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar :is(.button,.bo-canvas-tools button):hover{
+ background:#edf5ff!important;border-color:#a9c8f3!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-canvas-tools{
+ margin-left:auto;display:flex;align-items:center;gap:6px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-canvas-tools button[aria-pressed="true"],
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-canvas-tools button[aria-expanded="true"]{
+ color:var(--bo-blue)!important;background:#eaf2ff!important;border-color:#bad4ff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-more{position:relative}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-more>summary{
+ list-style:none;cursor:pointer;min-height:36px;display:flex;align-items:center;gap:7px;
+ border:1px solid #dce6f2;border-radius:8px;padding:8px 11px;color:#31536f;
+ font-size:12px;font-weight:750;background:#fff;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-more>summary::-webkit-details-marker{display:none}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-more[open]>summary{
+ background:#eaf2ff;color:var(--bo-blue)!important;border-color:#bad4ff;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-menu{
+ position:absolute;z-index:50;right:0;top:calc(100% + 9px);width:228px;
+ display:flex;flex-direction:column;gap:4px;padding:8px;border:1px solid #dce6f2;
+ border-radius:12px;background:#fff;box-shadow:0 16px 38px #193a611e;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-menu button{
+ width:100%!important;display:flex!important;text-align:left!important;justify-content:flex-start!important;
+ min-height:40px!important;padding:9px 12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-breadcrumb{
+ background:transparent!important;color:#7a8ba0!important;font-size:12px!important;
+ max-width:200px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-breadcrumb strong{color:#203a60!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-breadcrumb span{color:var(--bo-blue)!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-studio-center,
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-stage,
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-map{
+ background:var(--bo-canvas)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-map .floor-editor-room{
+ background:#fff!important;color:var(--bo-text)!important;
+}
+/* 3D contextual tools, no independent permanent second wall toolset. */
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-dim{
+ background:#ffffffea!important;color:#47647c!important;border:1px solid #d9e5f2!important;
+ box-shadow:0 3px 12px #19477510;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-object-info{
+ background:#fffffff2!important;color:#1d4c78!important;
+ border:1px solid #c8daee!important;box-shadow:0 6px 15px #1e4d7f12!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar{
+ background:#fffffff2!important;border:1px solid #d8e3f0!important;
+ border-radius:12px!important;box-shadow:0 6px 22px #1d426c18!important;
+ max-width:70px!important;width:70px!important;padding:5px!important;gap:3px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar button{
+ color:#42627b!important;background:transparent!important;border:0!important;
+ min-height:48px!important;border-radius:8px!important;font-size:11px!important;font-weight:650!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar button:hover{background:#f0f6ff!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar button:is(.active,[aria-pressed="true"]){
+ background:#e6f0ff!important;color:#155eef!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-wall-control{
+ display:none!important;
+ background:#fff!important;color:var(--bo-text)!important;border:1px solid var(--bo-line)!important;
+ box-shadow:0 8px 20px #19477512;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view.bo-structure-active .room3d-wall-control{
+ display:flex!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-wall-control input{
+ background:#fff!important;color:var(--bo-text)!important;border-color:var(--bo-line)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-buttons{
+ background:#fffffff2!important;border:1px solid #dbe5f0!important;
+ box-shadow:0 7px 24px #153e7118!important;border-radius:12px!important;
+ padding:5px!important;gap:4px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-buttons button{
+ color:#345878!important;background:#fff!important;border:1px solid transparent!important;
+ min-height:37px!important;border-radius:8px!important;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-buttons button:hover{
+ background:#edf4ff!important;color:var(--bo-blue)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-buttons :is([data-room3d-control="left"],[data-room3d-control="right"]){
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-quick-help{
+ background:#fff!important;color:var(--bo-text)!important;border-color:var(--bo-line)!important;
+ box-shadow:0 12px 30px #2749752a!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-quick-help :is(strong,p,small){
+ color:var(--bo-text)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-quick-help kbd{
+ color:#255d9f!important;background:#eaf2ff!important;border-color:#c4d9f7!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-quick-help button[data-room3d-control="close-help"]{
+ background:#fff!important;color:var(--bo-navy)!important;border-color:#d5e1ef!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-notice{
+ background:#fff!important;color:#577089!important;border-top:1px solid var(--bo-line)!important;
+ font-size:12px!important;min-height:29px!important;padding:7px 12px!important;
+}
+/* Properties: low-chrome, practical labels, no emerald sections. */
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock :is(.floor-editor-inspector,.room-detail){
+ background:#fff!important;color:var(--bo-text)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-inspector-top :is(h3,b),
+body.bo-ocean.sb-hybrid-active #rooms-view .room-detail :is(h2,h3){
+ color:var(--bo-navy)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock :is(label,legend,.floor-link-label){
+ color:#4b6078!important;font-size:13px!important;font-weight:600!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock :is(input,select,textarea){
+ background:#fff!important;color:var(--bo-text)!important;
+ border:1px solid #cbd9e8!important;border-radius:8px!important;font-size:14px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock :is(input,select,textarea):focus{
+ border-color:#6899ec!important;outline:2px solid #c6dcff!important;outline-offset:1px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock fieldset{
+ background:#fff!important;color:#40586f!important;border-color:var(--bo-line)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock .workspace-inspector-section{
+ background:#fff!important;border-color:var(--bo-line)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock .workspace-inspector-section>summary{
+ color:#26435f!important;background:#f8faff!important;font-size:13px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock .workspace-inspector-section>summary:hover{
+ background:#eff5ff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock .workspace-inspector-section>fieldset{
+ border-top-color:var(--bo-line)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock button:not(.hybrid-dock-tabs button){
+ background:#fff!important;color:#315a81!important;border:1px solid #d4e0ee!important;
+ border-radius:8px!important;min-height:39px!important;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock button:not(.hybrid-dock-tabs button):hover{
+ background:#edf5ff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock .hybrid-sim-action{
+ background:#155eef!important;color:#fff!important;border:1px solid #155eef!important;
+ font-size:13px!important;min-height:43px!important;margin:8px 12px 12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock .hybrid-sim-action:hover{
+ background:#104bbf!important;color:#fff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view :is(.floor-inspector-hint,.floor-inspector-top small,.room-detail p,.room-side-placeholder){
+ color:#657d95!important;font-size:12px!important;line-height:1.55!important;
+}
+/* Journey: compact navigation strip by default. The underlying graph and scrolling remain intact. */
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey{
+ flex:0 0 94px!important;background:#fff!important;color:var(--bo-text)!important;
+ border-top:1px solid var(--bo-line)!important;
+ padding:8px 16px!important;min-height:0!important;box-shadow:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey.is-expanded{
+ flex-basis:min(44vh,385px)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-title{
+ min-height:35px!important;margin:0 0 5px!important;gap:11px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-title strong{
+ color:var(--bo-navy)!important;font-size:13px!important;font-weight:800!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-title span{
+ color:#778ba0!important;font-size:11px!important;line-height:1.4!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view #hybrid-preview{
+ background:#155eef!important;color:#fff!important;border:1px solid #155eef!important;
+ border-radius:8px!important;min-height:34px!important;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view #hybrid-journey-expand,
+body.bo-ocean.sb-hybrid-active #rooms-view #hybrid-layout-compare{
+ background:#fff!important;color:#3a6193!important;border:1px solid #d9e5f3!important;
+ border-radius:8px!important;min-height:34px!important;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-list{
+ gap:10px!important;padding:2px 0 6px!important;
+ scrollbar-color:#b5c8e1 transparent;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-group{
+ border-right:1px solid #e5edf7!important;padding-right:10px!important;gap:3px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-level{
+ color:#536c87!important;font-size:11px!important;min-height:16px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-level small{color:#8192a5!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-step{
+ background:#fff!important;border:1px solid #dee8f3!important;
+ border-top:3px solid color-mix(in srgb,var(--journey-color),#155eef 55%)!important;
+ border-radius:9px!important;min-width:160px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-step .hybrid-journey-task{
+ background:transparent!important;color:#213c58!important;box-shadow:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-task strong{
+ color:#213c58!important;font-size:12px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-task small{
+ color:#71859c!important;font-size:11px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-location{
+ color:#2a63a4!important;background:#f3f8ff!important;border-top:1px solid #dfeafa!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-orphan{
+ background:#fffaf0!important;color:#805b23!important;border-top-color:#f0dcb4!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-step button:hover{
+ background:#edf4ff!important;
+}
+/* Surface consistency in simulation, dialogs, reports and secondary panels. */
+body.bo-ocean #simulation-view{
+ background:var(--bo-bg)!important;color:var(--bo-text)!important;
+}
+body.bo-ocean #simulation-view :is(.sim-stat,.sim-card,.sim-journey,.sim-comparison){
+ box-shadow:none!important;border-color:#dce6f0!important;
+}
+body.bo-ocean #simulation-view .sim-journey{background:#fff!important}
+body.bo-ocean #simulation-view :is(.sim-journey-head h2,.sim-compare-head h3){
+ color:var(--bo-navy)!important;
+}
+body.bo-ocean #simulation-view :is(.sim-journey-step,.sim-journey-insights button):focus-visible{
+ outline:3px solid var(--bo-focus)!important;outline-offset:2px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view :is(button,select,input,summary,[tabindex="0"]):focus-visible{
+ outline:3px solid var(--bo-focus)!important;outline-offset:2px!important;
+}
+@media (max-width:1400px){
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-title #hybrid-journey-note{display:none!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar{padding:5px 8px!important;gap:5px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .bo-canvas-tools button{padding:7px 8px!important}
+}
+@media (max-width:900px){
+ body.bo-ocean.sb-hybrid-active #rooms-view .rooms-shell{grid-template-columns:minmax(0,1fr)!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock,
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock{
+  box-shadow:0 14px 38px #1a3a5e22!important;border:1px solid var(--bo-line)!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-mobile-panels{
+  background:#fff!important;border-bottom:1px solid var(--bo-line)!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-mobile-panels button{
+  background:#f3f7fd!important;color:#2b598b!important;border:1px solid #dbe6f4!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .room3d-wall-control{display:none!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar .bo-canvas-tools span{display:none}
+ body.bo-ocean .topbar .identity{max-width:130px;min-width:112px}
+ body.bo-ocean .topbar .brandline strong{font-size:15px!important}
+}
+@media (max-width:600px){
+ body.bo-ocean .topbar,body.bo-ocean.sb-hybrid-active .topbar{
+  min-height:58px!important;height:58px!important;padding:0 9px!important;gap:6px!important;
+ }
+ body.bo-ocean .topbar .identity{display:none!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view.rooms-view{height:calc(100dvh - 58px)!important}
+ body.bo-ocean .hybrid-top-modes button{min-width:70px!important;padding:7px 10px!important}
+ body.bo-ocean .topbar #save-status.save-state{max-width:85px!important;font-size:10px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .room-mode-switch{
+  padding:4px!important;overflow-x:auto!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .room-mode-switch button{
+  min-height:36px!important;padding:8px 9px!important;font-size:11px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey{
+  flex-basis:84px!important;padding:5px 8px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-title{gap:5px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-journey-title strong{font-size:12px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view #hybrid-layout-compare{display:none!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view #hybrid-journey-expand,
+ body.bo-ocean.sb-hybrid-active #rooms-view #hybrid-preview{
+  padding:6px 7px!important;font-size:11px!important;min-height:36px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar{
+  height:49px!important;min-height:49px!important;flex-basis:49px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-toolbar h3{max-width:95px!important;font-size:12px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-more>summary{
+  font-size:0;padding:8px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view .bo-toolbar-more>summary span{font-size:18px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar{left:7px!important;top:10px!important;width:63px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar button{font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.bo-ocean *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
