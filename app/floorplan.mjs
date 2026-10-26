@@ -71,7 +71,7 @@ export function resizeFurniture(doc,id,width,height){
  o.width=w;o.height=h;return o;
 }
 
-export function occupied(a,b){const [aw,ah]=furnitureDimensions(a),[bw,bh]=furnitureDimensions(b);return a.x<b.x+bw && a.x+aw>b.x && a.y<b.y+bh && a.y+ah>b.y}
+export function occupied(a,b){if(FURNITURE[a.kind]?.visualOnly||FURNITURE[b.kind]?.visualOnly)return false;const [aw,ah]=furnitureDimensions(a),[bw,bh]=furnitureDimensions(b);return a.x<b.x+bw && a.x+aw>b.x && a.y<b.y+bh && a.y+ah>b.y}
 function validateRoom(doc,roomId){if(!roomById(doc,roomId))throw Error('Escolha um ambiente existente.');}
 function normalizeSpot(obj,x,y,rotation=obj.rotation){const dim=furnitureDimensions({...obj,rotation});return {x:clamp(Math.round(Number(x)||0),0,GRID.columns-dim[0]),y:clamp(Math.round(Number(y)||0),0,GRID.rows-dim[1]),rotation};}
 export function putFurniture(doc,{roomId,kind,x=1,y=1,nodeId='',rotation=0,width,height}){
