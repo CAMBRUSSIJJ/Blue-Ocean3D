@@ -21,7 +21,7 @@ export function initSiteOverview({root,getDocument,mutate,onOpen,onCreate,onMess
  let drag=null,paint=null,mode='view',pairFrom='',pairTo='';
  const p71=installP71Overview({root,getDocument,roomSpot,report:siteReport,onMessage,
   moveRoom:(id,x,y)=>apply(doc=>moveRoom(doc,id,x,y),'Ambiente reposicionado.'),
-  onRoomSelect:id=>root.dispatchEvent(new CustomEvent('p71-room-selected',{detail:{id}}))});
+  onRoomSelect:id=>root.dispatchEvent(new CustomEvent('p71-room-selected',{detail:{id},bubbles:true}))});
  function render(){const d=getDocument(),rooms=d.environments||[],report=siteReport(d),hall=corridors(d);if(!rooms.some(r=>r.id===pairFrom))pairFrom=rooms[0]?.id||'';if(!rooms.some(r=>r.id===pairTo)||pairFrom===pairTo)pairTo=rooms.find(r=>r.id!==pairFrom)?.id||'';
   const maxX=Math.max(36,...rooms.map(r=>roomSpot(d,r.id).x+GRID.columns+5),...hall.map(c=>c.x+5)),maxY=Math.max(23,...rooms.map(r=>roomSpot(d,r.id).y+GRID.rows+5),...hall.map(c=>c.y+5)),w=maxX*STEP,h=maxY*STEP+42;
   root.innerHTML=`<header class="site-head"><div><span class="panel-eyebrow">ETAPA 1 · PLANEJAR O ESPAÇO</span><h3>Visão geral física do serviço</h3><p>Organize primeiro as áreas, entradas e corredores. Depois abra cada ambiente para mobiliá-lo e configurar as atividades.</p></div><div class="site-head-actions"><button type="button" class="bo-site-create" data-site-create-room>＋ Novo ambiente</button><button type="button" data-site-reset>↺ Organizar salas</button><span class="site-summary">${rooms.length} ambientes · ${hall.length} células de corredor · ${report.linked}/${report.links.length} percursos possíveis</span></div></header>
