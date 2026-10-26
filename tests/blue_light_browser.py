@@ -51,7 +51,8 @@ with sync_playwright() as pw:
  # Journey remains one graph, available in expanded mode.
  journey=page.locator('#hybrid-journey')
  page.locator('#bo-workflow-service').click()
- page.locator('#hybrid-journey-expand').click()
+ if page.locator('#hybrid-journey-expand').get_attribute('aria-expanded')!='true':
+  page.locator('#hybrid-journey-expand').click()
  assert 'is-expanded' in journey.get_attribute('class').split()
  expect(page.locator('#hybrid-journey-list [data-hybrid-step]').first).to_be_visible()
  page.locator('#hybrid-journey-expand').click()
