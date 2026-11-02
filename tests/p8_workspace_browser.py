@@ -24,6 +24,28 @@ with sync_playwright() as pw:
  page.locator('#bo-workflow-service').click()
  expect(page.locator('#p8-flow-surface')).to_be_visible()
  assert page.locator('.p8-flow-card').count()>0
+ # The map must occupy the entire available workspace, without a legacy white
+ # strip, cropped cards or duplicate Journey footer (reported on Firefox).
+ assert page.locator('#p8-flow-surface').evaluate("el => el.parentElement.classList.contains('rooms-main')")
+ expect(page.locator('.room-workflow-drawer')).to_be_hidden()
+ expect(page.locator('#hybrid-journey')).to_be_hidden()
+ expect(page.locator('.p71-dock-actions')).to_be_hidden()
+ for width,height in [(1536,959),(1280,720)]:
+  page.set_viewport_size({'width':width,'height':height})
+  dims=page.evaluate("""() => {
+   const rect=s=>document.querySelector(s).getBoundingClientRect();
+   const flow=rect('#p8-flow-surface'),board=rect('.p8-flow-board'),
+    viewport=rect('#rooms-view'),head=rect('.p8-flow-head');
+   return {flow:{top:flow.top,bottom:flow.bottom,width:flow.width,height:flow.height},
+    boardHeight:board.height,headHeight:head.height,viewportBottom:viewport.bottom}
+  }""")
+  assert dims['flow']['height']>=300,dims
+  assert dims['boardHeight']>=160,dims
+  assert dims['flow']['bottom']<=height+3,dims
+  assert dims['flow']['bottom']<=dims['viewportBottom']+3,dims
+  assert dims['flow']['width']>width*.85,dims
+  print('P8 geometry',width,height,dims)
+ page.set_viewport_size({'width':1440,'height':850})
  page.locator('.p8-flow-card').first.click()
  expect(page.locator('#room-task-dialog')).to_be_visible()
  page.locator('#room-task-close').click()
