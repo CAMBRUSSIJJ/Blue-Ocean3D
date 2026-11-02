@@ -224,6 +224,44 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');}if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
+ const quickDialog=document.createElement('dialog');
+ quickDialog.id='p72-activity-dialog';
+ quickDialog.className='room-create-dialog p72-activity-dialog';
+ quickDialog.setAttribute('aria-labelledby','p72-activity-heading');
+ quickDialog.innerHTML='<form id="p72-activity-form"><div class="room-create-top"><div><span class="panel-eyebrow">ATIVIDADE DO SERVIÇO</span><h2 id="p72-activity-heading">Nova atividade</h2><p>Crie agora; detalhes e conexões podem ser definidos depois.</p></div><button type="button" data-p72-cancel aria-label="Fechar">×</button></div><label>Ambiente<select name="room" id="p72-activity-room" required></select></label><label>O que acontece?<input name="title" id="p72-activity-title" maxlength="100" placeholder="Ex.: Receber cliente" required></label><label>Duração prevista (min)<input name="duration" type="number" min="0" max="100000" step="0.5" value="5" required></label><p class="p72-dialog-error" role="alert" hidden></p><div class="room-create-footer"><button type="button" class="button muted" data-p72-cancel>Cancelar</button><button type="submit" class="button primary">Adicionar atividade</button></div></form>';
+ root.append(quickDialog);
+ quickDialog.addEventListener('click',event=>{if(event.target.closest('[data-p72-cancel]'))quickDialog.close();});
+ function openQuickActivityDialog(roomId=ui.selected){
+  const d=getDocument(),rooms=d.environments||[];
+  if(!rooms.length){openCreateDialog();status('Crie um ambiente antes de adicionar atividades.');return;}
+  const form=quickDialog.querySelector('form');
+  form.reset();
+  const roomSelect=quickDialog.querySelector('#p72-activity-room');
+  roomSelect.replaceChildren(...rooms.map(room=>new Option(room.name,room.id)));
+  roomSelect.value=rooms.some(room=>room.id===roomId)?roomId:rooms[0].id;
+  quickDialog.querySelector('.p72-dialog-error').hidden=true;
+  if(!quickDialog.open)quickDialog.showModal();
+  quickDialog.querySelector('#p72-activity-title').focus();
+ }
+ quickDialog.querySelector('form').addEventListener('submit',event=>{
+  event.preventDefault();
+  const form=event.currentTarget,roomId=form.elements.room.value,title=form.elements.title.value.trim(),duration=Number(form.elements.duration.value);
+  const error=quickDialog.querySelector('.p72-dialog-error');
+  if(!title||!getDocument().environments.some(room=>room.id===roomId)||!Number.isFinite(duration)||duration<0||duration>100000){
+   error.textContent='Confira o ambiente, o nome e a duração.';error.hidden=false;return;
+  }
+  try{
+   mutate(doc=>{
+    const room=doc.environments.find(item=>item.id===roomId);
+    const {node}=insertComponent(doc,{type:'activity',stage:0,fields:{title,duration,team:room.team||''}});
+    assignRoom(doc,node.id,roomId);
+   });
+   ui.selected=roomId;
+   quickDialog.close();
+   draw();
+   status('Atividade criada. Abra-a no fluxo para editar ou conectar ao próximo passo.');
+  }catch(err){error.textContent='Não foi possível adicionar: '+err.message;error.hidden=false;}
+ });
  function apply(change,message){try{mutate(change);draw();status(message||'Ambientes atualizados.');}catch(e){status('Não foi possível: '+e.message);console.error('Erro ao atualizar ambiente:',e)}}
  function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(false);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
  function roomCard(r,proj){const isUnassigned=r.id==='unassigned',selected=ui.selected===r.id;
