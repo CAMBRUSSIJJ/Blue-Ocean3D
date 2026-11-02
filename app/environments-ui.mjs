@@ -366,10 +366,10 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  root.addEventListener('click',async e=>{const kit=e.target.closest('[data-add-room-kit]'),remove=e.target.closest('[data-delete-template]'),sel=e.target.closest('[data-room-select]'),room=e.target.closest('.room-tile'),item=e.target.closest('[data-room-node]'),add=e.target.closest('[data-room-add]');
    const hybridRoom=e.target.closest('[data-hybrid-room]');if(hybridRoom&&!e.target.closest('[data-hybrid-step]')){select(hybridRoom.dataset.hybridRoom);return}const hybridStep=e.target.closest('[data-hybrid-step]');if(hybridStep){if(hybridStep.dataset.hybridRoomId&&ui.selected!==hybridStep.dataset.hybridRoomId)select(hybridStep.dataset.hybridRoomId);openTask(hybridStep.dataset.hybridStep);return}const review=e.target.closest('[data-room-review]');if(review){openTask(review.dataset.roomReview);return}
    if(remove){e.stopPropagation();if(!await confirmAction({title:'Excluir modelo?',message:'O modelo reutilizável será excluído, mas os ambientes existentes não serão alterados.',confirmLabel:'Excluir modelo'}))return;apply(d=>{d.roomTemplates=d.roomTemplates.filter(t=>t.id!==remove.dataset.deleteTemplate)},'Modelo removido.');return}
-   if(kit){const key=kit.dataset.addRoomKit;apply(d=>{const v=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,v.document);ui.selected=v.room.id},'Kit inserido: ambiente, peças e conexões criados.');return}
+   if(kit){const key=kit.dataset.addRoomKit;let createdId=null;apply(d=>{const v=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,v.document);createdId=v.room.id;ui.selected=createdId},'Kit inserido: ambiente, peças e conexões criados.');if(createdId&&getDocument().environments.some(r=>r.id===createdId))select(createdId);return}
    const move=e.target.closest('[data-room-move]');if(move){e.stopPropagation();const dialog=$('#room-move-dialog');dialog.dataset.node=move.dataset.roomMove;$('#room-move-to').innerHTML=`<option value="">Sem ambiente</option>`+(getDocument().environments||[]).map(r=>`<option value="${esc(r.id)}" ${getDocument().nodes.find(n=>n.id===move.dataset.roomMove)?.environmentId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');dialog.showModal();return}
    if(sel){select(sel.dataset.roomSelect);return}
-   if(add){select(add.dataset.roomAdd);setDetails(true);setTimeout(()=>$('#room-new-part-type')?.focus(),0);return}
+   if(add){select(add.dataset.roomAdd);openQuickActivityDialog(add.dataset.roomAdd);return}
    if(item){openTask(item.dataset.roomNode);return}
    if(room){select(room.dataset.roomId==='unassigned'?null:room.dataset.roomId)}
  });
@@ -389,23 +389,15 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  $('#room-toggle-object-inspector').addEventListener('click',()=>setObjectInspector(!root.querySelector('.rooms-shell').classList.contains('show-object-inspector')));
  $('#room-create-close').addEventListener('click',()=>$('#room-create-dialog').close());
  $('#room-create-cancel').addEventListener('click',()=>$('#room-create-dialog').close());
- $('#room-create-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#room-create-dialog-name').value.trim(),key=$('#room-create-mode').value;if(!name){$('#room-create-dialog-name').focus();return}apply(d=>{if(key){const result=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,result.document);ui.selected=result.room.id;if(result.room.name!==name)updateRoom(d,result.room.id,{name});}else{ui.selected=createRoom(d,{name}).id;}},'Novo ambiente criado e aberto.');$('#room-create-dialog').close();e.target.reset();});
+ $('#room-create-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#room-create-dialog-name').value.trim(),key=$('#room-create-mode').value;if(!name){$('#room-create-dialog-name').focus();return}let createdId=null;apply(d=>{if(key){const result=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,result.document);createdId=result.room.id;ui.selected=createdId;if(result.room.name!==name)updateRoom(d,result.room.id,{name});}else{createdId=createRoom(d,{name}).id;ui.selected=createdId;}},'Novo ambiente criado e aberto.');if(createdId&&getDocument().environments.some(r=>r.id===createdId)){$('#room-create-dialog').close();e.target.reset();select(createdId);}});
  $('#floor-structure-tools').addEventListener('click',e=>{if(!e.target.closest('[data-floor-structure]')||ui.display==='visual')return;ui.display='visual';root.querySelectorAll('[data-room-display]').forEach(x=>{const yes=x.dataset.roomDisplay==='visual';x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes))});studioMode();draw();$('#floor-editor-notice').textContent='Edite paredes, portas e passagens com precisão na planta 2D.';});
  $('#room-kit-tabs').addEventListener('click',e=>{let button=e.target.closest('[data-room-template-tab]');if(button){ui.kitTab=button.dataset.roomTemplateTab;renderCatalog()}});
- $('#room-create-btn').addEventListener('click',()=>{const name=$('#room-create-name').value.trim();if(!name){$('#room-create-name').focus();return}apply(d=>{const r=createRoom(d,{name});ui.selected=r.id},'Ambiente vazio criado.');$('#room-create-name').value='';});
+ $('#room-create-btn').addEventListener('click',()=>{const name=$('#room-create-name').value.trim();if(!name){$('#room-create-name').focus();return}let createdId=null;apply(d=>{const r=createRoom(d,{name});createdId=r.id;ui.selected=r.id},'Ambiente vazio criado.');if(createdId&&getDocument().environments.some(r=>r.id===createdId)){select(createdId);$('#room-create-name').value='';}});
  $('#room-create-name').addEventListener('keydown',e=>{if(e.key==='Enter'){$('#room-create-btn').click();e.preventDefault()}});
  $('#room-search').addEventListener('input',e=>{ui.search=e.target.value.toLocaleLowerCase('pt-BR');draw()});
  $('#room-team-organize').addEventListener('click',()=>{const d=getDocument();const matches=d.nodes.filter(n=>!n.environmentId&&n.team?.trim()&&d.environments.some(r=>r.team?.trim()&&r.team.toLocaleLowerCase('pt-BR')===n.team.trim().toLocaleLowerCase('pt-BR')));if(!matches.length){status('Não há peças sem ambiente com equipe correspondente.');return;}apply(d=>{for(const n of matches){const room=d.environments.find(r=>r.team.toLocaleLowerCase('pt-BR')===n.team.trim().toLocaleLowerCase('pt-BR'));assignRoom(d,n.id,room.id)}},`${matches.length} peças organizadas por equipe.`);});
  $('#room-move-confirm').addEventListener('click',()=>{const dialog=$('#room-move-dialog'),node=dialog.dataset.node,target=$('#room-move-to').value;dialog.close();apply(d=>assignRoom(d,node,target),'Peça transferida, preservando suas conexões.');});
- $('#floor-add-task').addEventListener('click',()=>{
-   if(!getDocument().environments?.length){openCreateDialog();status('Crie um ambiente para adicionar atividades.');return;}
-   if(!roomById(getDocument(),ui.selected))ui.selected=getDocument().environments[0].id;
-   setFurniture(false);setObjectInspector(false);setDetails(true);
-   renderInspector();
-   $('#room-new-part-type').value='activity';
-   $('#room-new-part-type').focus();
-   status('Configure a atividade no painel do ambiente e clique em Adicionar peça.');
- });
+ $('#floor-add-task').addEventListener('click',()=>openQuickActivityDialog());
  $('#room-toggle-details').addEventListener('click',()=>{
    const open=!root.querySelector('.rooms-shell').classList.contains('show-details');
    if(open){setFurniture(false);setObjectInspector(false);}setDetails(open);
