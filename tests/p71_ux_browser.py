@@ -13,7 +13,7 @@ with sync_playwright() as pw:
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  site=page.locator('#site-overview')
  expect(site).to_be_visible(timeout=15000)
- expect(site.locator('.site-head h3')).to_contain_text('Visão geral física')
+ expect(site.locator('.site-head h3')).to_contain_text('Espaços do serviço')
  expect(site.locator('.p71-toolbar-heading')).to_contain_text('Ferramentas')
  expect(site.locator('.p71-zoom-controls')).to_be_visible()
  expect(site.locator('.p71-legend')).to_be_visible()
