@@ -11,6 +11,7 @@ import {initWorkspaceControls} from './workspace-controls.mjs';
 import {buildJourneyGraph} from './journey-flow.mjs';
 import {initLayoutReview} from './layout-review-ui.mjs';
 import {mountFlowBar} from './p72-flow.mjs';
+import {mountP8Workflow} from './p8-workflow.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const palette=['#1F927F','#587EB7','#B67E48','#9373B4','#D0748F','#5692AA','#7B9167'];
@@ -40,7 +41,7 @@ function installHybridLayout(root){
   e.currentTarget.setAttribute('aria-expanded',String(expanded));
   e.currentTarget.textContent=expanded?'Recolher':'Expandir';
  });
- const switcher=document.createElement('nav');switcher.className='hybrid-top-modes bo-workflow-steps p7-tabs';switcher.setAttribute('aria-label','Áreas independentes do Blue Ocean 3D');switcher.innerHTML='<button type="button" id="hybrid-construct" data-bo-stage="plan" class="active" aria-current="page">Visão geral do serviço</button><button type="button" id="bo-workflow-mount" data-bo-stage="mount">Ambiente 3D</button><button type="button" id="bo-workflow-floor" data-bo-stage="floor2d">Planta 2D</button><button type="button" id="bo-workflow-service" data-bo-stage="service">Fluxo e conexões</button><button type="button" id="hybrid-simulate" data-bo-stage="scenario">Simular</button><button type="button" id="bo-workflow-analyze" data-bo-stage="analyze">Analisar</button>';
+ const switcher=document.createElement('nav');switcher.className='hybrid-top-modes bo-workflow-steps p7-tabs';switcher.setAttribute('aria-label','Áreas independentes do Blue Ocean 3D');switcher.innerHTML='<button type="button" id="hybrid-construct" data-bo-stage="spaces" class="active" aria-current="page">Espaços</button><button type="button" id="bo-workflow-service" data-bo-stage="service">Funcionamento</button><button type="button" id="hybrid-simulate" data-bo-stage="scenario">Simulação</button><button type="button" id="bo-workflow-analyze" data-bo-stage="analyze">Resultados</button>';
  document.querySelector('.topbar')?.insertBefore(switcher,document.querySelector('.top-actions'));
  switcher.addEventListener('click',event=>{const button=event.target.closest('[data-bo-stage]');if(!button)return;root.dispatchEvent(new CustomEvent('bo-workflow-navigate',{detail:{stage:button.dataset.boStage}}));});
  const move=document.createElement('button');move.type='button';move.className='hybrid-move active';move.textContent='↖ Mover';move.addEventListener('click',()=>{const active=root.querySelector('.room3d-structure-bar [aria-pressed="true"]');if(active)active.click();root.querySelector('#floor-clear-selection')?.click();move.classList.add('active');});document.querySelector('.room3d-structure-bar')?.prepend(move);
@@ -127,6 +128,15 @@ function renderHybridJourney(doc,selected){
 
 export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const root=$('#rooms-view'),hybrid=installHybridLayout(root),ui={active:false,selected:null,editing:null,search:'',stage:0,kitTab:'catalog',display:'overview'};
+ const spacesSubnav=document.createElement('nav');
+ spacesSubnav.className='p8-space-tabs';
+ spacesSubnav.setAttribute('aria-label','Visualizações dos espaços');
+ spacesSubnav.innerHTML='<button type="button" data-p8-space="overview" aria-current="page">Visão geral</button><button type="button" data-p8-space="three">Ambiente 3D</button><button type="button" data-p8-space="visual">Planta 2D</button>';
+ root.querySelector('.rooms-shell').before(spacesSubnav);
+ spacesSubnav.addEventListener('click',event=>{
+  const btn=event.target.closest('[data-p8-space]');if(!btn)return;
+  openWorkflow(btn.dataset.p8Space==='overview'?'plan':btn.dataset.p8Space==='three'?'mount':'floor2d');
+ });
  const flowGuide=mountFlowBar({
   root,getDocument,getDisplay:()=>ui.display,getSelected:()=>ui.selected,
   onAction(action){
