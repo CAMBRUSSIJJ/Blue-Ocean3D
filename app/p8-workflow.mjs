@@ -23,7 +23,9 @@ export function mountP8Workflow({root,getDocument,onEdit,onNew,onConnect}){
  container.id='p8-flow-surface';
  container.setAttribute('aria-label','Mapa operacional do serviço');
  container.innerHTML='<header class="p8-flow-head"><div><span class="p8-eyebrow">MAPA OPERACIONAL DO SERVIÇO</span><h2>Como o serviço funciona</h2><p>Crie atividades diretamente no mapa e conecte o próximo passo.</p></div><div class="p8-flow-head-actions"><button type="button" class="p8-primary" data-p8-flow="new">+ Atividade</button><button type="button" data-p8-flow="connect">↗ Conectar atividades</button></div></header><div class="p8-flow-board"></div><footer class="p8-flow-footer"></footer>';
- root.querySelector('#room-grid').before(container);
+ // Mount as a first-class workspace. The legacy room-grid is inside an old
+ // <details> drawer; mounting there clips the flow and exposes empty toolbar rows.
+ root.querySelector('.room-workflow-drawer').before(container);
  container.addEventListener('click',event=>{
   const btn=event.target.closest('[data-p8-flow]');
   if(!btn)return;
