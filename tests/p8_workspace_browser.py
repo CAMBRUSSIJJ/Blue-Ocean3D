@@ -11,12 +11,15 @@ with sync_playwright() as pw:
  page.on('pageerror',lambda error:errors.append(str(error)))
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
+ expect(page.locator('.p82-overview-caption')).to_contain_text('atividades')
+ assert page.locator('[data-site-open-flow]').count()>1
  nav=page.locator('.p7-tabs [data-bo-stage]')
  expect(nav).to_have_count(4)
  assert nav.all_text_contents()==['Espaços','Funcionamento','Simulação','Resultados']
  expect(page.locator('.p8-space-tabs')).to_be_visible()
  page.locator('#bo-workflow-mount').click()
  expect(page.locator('#room-3d-stage')).to_be_visible(timeout=15000)
+ expect(page.locator('#p82-room-operation')).to_be_visible()
  page.locator('#bo-workflow-floor').click()
  expect(page.locator('#floor-editor-map')).to_be_visible(timeout=15000)
  page.locator('#hybrid-construct').click()
@@ -24,6 +27,21 @@ with sync_playwright() as pw:
  page.locator('#bo-workflow-service').click()
  expect(page.locator('#p8-flow-surface')).to_be_visible()
  assert page.locator('.p8-flow-card').count()>0
+ # Service definition, not just room and activity list.
+ page.locator('[data-p8-flow="context"]').click()
+ expect(page.locator('#p82-context-dialog')).to_be_visible()
+ page.locator('#p82-context-dialog [name="audience"]').fill('Pacientes da clínica')
+ page.locator('#p82-context-dialog [name="trigger"]').fill('Chegada e identificação do paciente')
+ page.locator('#p82-context-dialog [name="outcome"]').fill('Consulta concluída e orientações entregues')
+ page.locator('#p82-context-form button[type="submit"]').click()
+ expect(page.locator('#p82-context-dialog')).to_be_hidden()
+ assert page.evaluate('doc.serviceContext.audience')=='Pacientes da clínica'
+ expect(page.locator('.p82-readiness')).to_be_visible()
+ page.locator('.p82-readiness summary').click()
+ expect(page.locator('.p82-readiness-facts')).to_be_visible()
+ # P8.2 never draws fake links based only on display order.
+ assert page.locator('.p8-flow-arrow').count()<=page.evaluate('doc.edges.length')
+
  # The map must occupy the entire available workspace, without a legacy white
  # strip, cropped cards or duplicate Journey footer (reported on Firefox).
  assert page.locator('#p8-flow-surface').evaluate("el => el.parentElement.classList.contains('rooms-main')")
@@ -59,6 +77,17 @@ with sync_playwright() as pw:
  page.locator('#p8-project-form button[type="submit"]').click()
  expect(page.locator('#p8-project-dialog')).to_be_hidden()
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
+ page.locator('#bo-workflow-service').click()
+ page.locator('[data-p8-flow="new"]').first.click()
+ expect(page.locator('#p72-activity-dialog')).to_be_visible()
+ page.locator('#p72-activity-title').fill('Enviar confirmação por e-mail')
+ page.locator('#p72-activity-form [name="duration"]').fill('2')
+ expect(page.locator('#p72-activity-room')).to_have_value('')
+ page.locator('#p72-activity-form button[type="submit"]').click()
+ expect(page.locator('#p72-activity-dialog')).to_be_hidden()
+ assert page.evaluate("doc.environments.length===0 && doc.nodes.some(n=>n.title==='Enviar confirmação por e-mail'&&!n.environmentId)")
+ page.locator('#hybrid-construct').click()
+
  page.locator('#p8-projects-button').click()
  expect(page.locator('.p8-project-card')).to_have_count(2)
  expect(page.locator('#p8-projects-home')).to_contain_text('Projeto P8 Teste')
