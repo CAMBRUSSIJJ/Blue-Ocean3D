@@ -12,7 +12,7 @@ with sync_playwright() as pw:
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
  expect(page.locator('.p82-overview-caption')).to_contain_text('atividades')
- assert page.locator('[data-site-open-flow]').count()>1
+ assert page.locator('[data-site-open-flow]').count()==1  # One clear global action; per-room link moved to inspector
  nav=page.locator('.p7-tabs [data-bo-stage]')
  expect(nav).to_have_count(4)
  assert nav.all_text_contents()==['Espaços','Funcionamento','Simulação','Resultados']

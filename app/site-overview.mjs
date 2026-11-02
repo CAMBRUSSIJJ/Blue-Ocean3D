@@ -18,7 +18,7 @@ export function transitions(doc){const nodes=new Map((doc.nodes||[]).map(n=>[n.i
 export function siteReport(doc){const r=siteRouteReport(doc);return {...r,rooms:(doc.environments||[]).length};}
 function wallsSVG(doc,id){let chunks=[];for(let x=0;x<GRID.columns;x++)for(let y=0;y<=GRID.rows;y++){const e=edgeType(doc,id,'h',x,y);if(e!=='open')chunks.push(`<line x1="${x*STEP}" y1="${y*STEP}" x2="${(x+1)*STEP}" y2="${y*STEP}" stroke="${e==='door'?'#155eef':'#687f95'}" stroke-width="${e==='door'?5:6}" stroke-dasharray="${e==='door'?'4 5':''}"/>`);}for(let x=0;x<=GRID.columns;x++)for(let y=0;y<GRID.rows;y++){const e=edgeType(doc,id,'v',x,y);if(e!=='open')chunks.push(`<line x1="${x*STEP}" y1="${y*STEP}" x2="${x*STEP}" y2="${(y+1)*STEP}" stroke="${e==='door'?'#155eef':'#687f95'}" stroke-width="${e==='door'?5:6}" stroke-dasharray="${e==='door'?'4 5':''}"/>`);}return chunks.join('')}
 export function initSiteOverview({root,getDocument,mutate,onOpen,onCreate,onMessage,onShowFlow}){
- let drag=null,paint=null,mode='view',pairFrom='',pairTo='',connectFrom='';
+ let drag=null,paint=null,mode='view',pairFrom='',pairTo='',connectFrom='',feedback='';
  const p71=installP71Overview({root,getDocument,roomSpot,report:siteReport,onMessage,
   moveRoom:(id,x,y)=>apply(doc=>moveRoom(doc,id,x,y),'Ambiente reposicionado.'),
   onRoomSelect:id=>root.dispatchEvent(new CustomEvent('p71-room-selected',{detail:{id},bubbles:true}))});
@@ -26,12 +26,13 @@ export function initSiteOverview({root,getDocument,mutate,onOpen,onCreate,onMess
   const maxX=Math.max(36,...rooms.map(r=>roomSpot(d,r.id).x+GRID.columns+5),...hall.map(c=>c.x+5)),maxY=Math.max(23,...rooms.map(r=>roomSpot(d,r.id).y+GRID.rows+5),...hall.map(c=>c.y+5)),w=maxX*STEP,h=maxY*STEP+42;
   root.innerHTML=`<header class="site-head"><div><span class="panel-eyebrow">PLANTA GERAL · SERVIÇO</span><h3>Espaços do serviço</h3><p>Organize salas, mobiliário e circulação. Abra cada ambiente para editar o interior em 3D.</p></div><div class="site-head-actions"><button type="button" class="bo-site-create" data-site-create-room>＋ Novo ambiente</button><button type="button" data-site-reset>↺ Organizar salas</button><span class="site-summary">${rooms.length} ambientes · ${hall.length} células de corredor · ${report.linked}/${report.links.length} percursos possíveis</span></div></header>
   <div class="p82-overview-caption"><span><b>${rooms.length}</b> ambientes</span><span><b>${d.nodes.filter(n=>n.type==='activity'||n.type==='decision').length}</b> atividades</span><span><b>${report.linked}/${report.links.length}</b> percursos possíveis</span><button type="button" data-site-open-flow>↗ Funcionamento</button></div><div class="site21-tools" aria-label="Ferramentas de circulação"><div class="site21-modes" role="group" aria-label="Desenhar corredor"><button data-site-mode="view" class="${mode==='view'?'active':''}" aria-pressed="${mode==='view'}">↔ Mover salas</button><button data-site-mode="paint" class="${mode==='paint'?'active':''}" aria-pressed="${mode==='paint'}">▦ Desenhar corredor</button><button data-site-mode="erase" class="${mode==='erase'?'active':''}" aria-pressed="${mode==='erase'}">⌫ Apagar corredor</button><button data-site-mode="connect" class="${mode==='connect'?'active':''}" aria-pressed="${mode==='connect'}" ${rooms.length<2?'disabled':''}>↗ Ligar A → B</button></div><div class="site21-pair"><label>De <select id="site21-from">${rooms.map(r=>`<option value="${esc(r.id)}" ${r.id===pairFrom?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label><label>Para <select id="site21-to">${rooms.map(r=>`<option value="${esc(r.id)}" ${r.id===pairTo?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label><button data-site-connect ${!pairFrom||!pairTo?'disabled':''}>＋ Conectar com corredor</button><button data-site-connect-all>✓ Conectar fluxo</button></div></div>
-  ${!rooms.length?'<div class="bo-site-empty"><strong>Comece pelo desenho do serviço.</strong><p>Adicione o primeiro ambiente à planta, depois organize suas salas, entradas e corredores.</p><button type="button" data-site-create-room>＋ Criar primeiro ambiente</button></div>':''}<p class="site21-instruction">${mode==='paint'?'Arraste no espaço livre para desenhar o corredor.':mode==='erase'?'Arraste para apagar as células de corredor.':mode==='connect'?(connectFrom?'Selecione a sala de destino na planta.':'Clique na sala de origem e depois na sala de destino para criar uma ligação física.'):'Arraste o título da sala para movê-la ou escolha uma ferramenta de corredor.'} Corredores não podem atravessar salas; uma passagem exige porta externa acessível.</p>
+  ${!rooms.length?'<div class="bo-site-empty"><strong>Comece pelo desenho do serviço.</strong><p>Adicione o primeiro ambiente à planta, depois organize suas salas, entradas e corredores.</p><button type="button" data-site-create-room>＋ Criar primeiro ambiente</button></div>':''}<p class="site-feedback" role="status" aria-live="polite" hidden></p><p class="site21-instruction">${mode==='paint'?'Arraste no espaço livre para desenhar o corredor.':mode==='erase'?'Arraste para apagar as células de corredor.':mode==='connect'?(connectFrom?'Selecione a sala de destino na planta.':'Clique na sala de origem e depois na sala de destino para criar uma ligação física.'):'Arraste o título da sala para movê-la ou escolha uma ferramenta de corredor.'} Corredores não podem atravessar salas; uma passagem exige porta externa acessível.</p>
   <div class="site-scroll"><div class="site-canvas ${mode!=='view'?'site21-editing':''}" data-site-grid style="width:${w}px;height:${h}px"><div class="site21-cells" aria-hidden="true">${hall.map(c=>`<span class="site21-corridor" data-x="${c.x}" data-y="${c.y}" style="left:${c.x*STEP}px;top:${c.y*STEP+42}px"></span>`).join('')}</div><svg class="site-link" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${report.links.map(link=>link.path?`<polyline points="${link.path.map(p=>`${p.x*STEP},${p.y*STEP+42}`).join(' ')}" fill="none" stroke="#0891b2" stroke-width="5" opacity=".7" stroke-linejoin="round" stroke-linecap="round"/>`:(()=>{const a=roomSpot(d,link.from),b=roomSpot(d,link.to);return `<line x1="${(a.x+6)*STEP}" y1="${(a.y+4)*STEP+42}" x2="${(b.x+6)*STEP}" y2="${(b.y+4)*STEP+42}" stroke="#d2935d" stroke-width="3" stroke-dasharray="8 7"/>`})()).join('')}</svg>
-  ${rooms.map(r=>{const pos=roomSpot(d,r.id),objects=validFurniture(d).filter(o=>o.roomId===r.id);return `<section class="site-room" data-site-room="${esc(r.id)}" style="left:${pos.x*STEP}px;top:${pos.y*STEP+42}px;width:${W}px"><div class="site-room-handle" data-site-drag="${esc(r.id)}"><b>${esc(r.icon||'▣')} ${esc(r.name)}</b><button type="button" data-site-open="${esc(r.id)}">↗ Editar 3D</button><button type="button" class="p82-room-flow-link" data-site-open-flow="${esc(r.id)}">Fluxo</button></div><svg viewBox="0 0 ${W} ${H}" class="site-room-svg" role="img" aria-label="Planta de ${esc(r.name)}"><rect width="${W}" height="${H}" fill="#f3f7fd"/>${Array.from({length:GRID.columns-1},(_,i)=>`<line x1="${(i+1)*STEP}" x2="${(i+1)*STEP}" y1="0" y2="${H}" stroke="#dce7f2"/>`).join('')}${Array.from({length:GRID.rows-1},(_,i)=>`<line x1="0" x2="${W}" y1="${(i+1)*STEP}" y2="${(i+1)*STEP}" stroke="#dce7f2"/>`).join('')}${objects.map(o=>{const [fw,fh]=furnitureDimensions(o);return `<rect x="${o.x*STEP+2}" y="${o.y*STEP+2}" width="${fw*STEP-4}" height="${fh*STEP-4}" rx="4" fill="#bed4eb" stroke="#427cad"/>`}).join('')}${wallsSVG(d,r.id)}</svg><small>${(GRID.columns*cellMeters(d,r.id)).toFixed(1)} × ${(GRID.rows*cellMeters(d,r.id)).toFixed(1)} m · ${objects.length} móveis · <b>${d.nodes.filter(n=>n.environmentId===r.id&&(n.type==='activity'||n.type==='decision')).length} atividades</b></small></section>`}).join('')}</div></div><div class="site-notes"><b>Diagnóstico do percurso entre atividades</b>${report.links.length?report.links.map(l=>{const a=rooms.find(r=>r.id===l.from),b=rooms.find(r=>r.id===l.to);return `<p class="${l.connected?'site-ok':'site-warning'}">${l.connected?'✓':'⚠'} ${esc(a?.name||'Sala')} → ${esc(b?.name||'Sala')}: ${l.connected?`rota transitável · ${l.steps} células`:'rota física bloqueada ou corredor ausente'} ${!l.connected?`<button data-site-quick-connect="1" data-from="${esc(l.from)}" data-to="${esc(l.to)}">Criar corredor ↗</button>`:''}</p>`}).join(''):'<p>Adicione conexões entre atividades para verificar trajetos operacionais. Você também pode conectar duas salas diretamente acima.</p>'}<p class="site-disclaimer">O percurso considera portas, paredes e móveis em células esquemáticas. A planta pode reunir salas com escalas diferentes: as distâncias em células não são medidas precisas nem modificam a duração, a fila ou o custo da simulação.</p></div>`;
+  ${rooms.map(r=>{const pos=roomSpot(d,r.id),objects=validFurniture(d).filter(o=>o.roomId===r.id);return `<section class="site-room" data-site-room="${esc(r.id)}" style="left:${pos.x*STEP}px;top:${pos.y*STEP+42}px;width:${W}px"><div class="site-room-handle" data-site-drag="${esc(r.id)}" title="Arraste para mover a sala"><b>⠿ ${esc(r.icon||'▣')} ${esc(r.name)}</b><button type="button" data-site-open="${esc(r.id)}">↗ 3D</button></div><svg viewBox="0 0 ${W} ${H}" class="site-room-svg" role="img" aria-label="Planta de ${esc(r.name)}"><rect width="${W}" height="${H}" fill="#f3f7fd"/>${Array.from({length:GRID.columns-1},(_,i)=>`<line x1="${(i+1)*STEP}" x2="${(i+1)*STEP}" y1="0" y2="${H}" stroke="#dce7f2"/>`).join('')}${Array.from({length:GRID.rows-1},(_,i)=>`<line x1="0" x2="${W}" y1="${(i+1)*STEP}" y2="${(i+1)*STEP}" stroke="#dce7f2"/>`).join('')}${objects.map(o=>{const [fw,fh]=furnitureDimensions(o);return `<rect x="${o.x*STEP+2}" y="${o.y*STEP+2}" width="${fw*STEP-4}" height="${fh*STEP-4}" rx="4" fill="#bed4eb" stroke="#427cad"/>`}).join('')}${wallsSVG(d,r.id)}</svg><small>${(GRID.columns*cellMeters(d,r.id)).toFixed(1)} × ${(GRID.rows*cellMeters(d,r.id)).toFixed(1)} m · ${objects.length} móveis · <b>${d.nodes.filter(n=>n.environmentId===r.id&&(n.type==='activity'||n.type==='decision')).length} atividades</b></small></section>`}).join('')}</div></div><div class="site-notes"><b>Diagnóstico do percurso entre atividades</b>${report.links.length?report.links.map(l=>{const a=rooms.find(r=>r.id===l.from),b=rooms.find(r=>r.id===l.to);return `<p class="${l.connected?'site-ok':'site-warning'}">${l.connected?'✓':'⚠'} ${esc(a?.name||'Sala')} → ${esc(b?.name||'Sala')}: ${l.connected?`rota transitável · ${l.steps} células`:'rota física bloqueada ou corredor ausente'} ${!l.connected?`<button data-site-quick-connect="1" data-from="${esc(l.from)}" data-to="${esc(l.to)}">Criar corredor ↗</button>`:''}</p>`}).join(''):'<p>Adicione conexões entre atividades para verificar trajetos operacionais. Você também pode conectar duas salas diretamente acima.</p>'}<p class="site-disclaimer">O percurso considera portas, paredes e móveis em células esquemáticas. A planta pode reunir salas com escalas diferentes: as distâncias em células não são medidas precisas nem modificam a duração, a fila ou o custo da simulação.</p></div>`;
   p71.enhance();
+  const message=root.querySelector('.site-feedback');if(message){message.textContent=feedback;message.hidden=!feedback;}
  }
- function notify(s){onMessage?.(s)}
+ function notify(s){feedback=s;const message=root.querySelector('.site-feedback');if(message){message.textContent=s;message.hidden=!s;}onMessage?.(s)}
  function apply(fn,msg){try{mutate(fn);notify(msg);render()}catch(e){notify('⚠ '+e.message);render()}}
  root.addEventListener('click',e=>{const flowAction=e.target.closest('[data-site-open-flow]');if(flowAction){onShowFlow?.(flowAction.dataset.siteOpenFlow||null);return;}if(e.target.closest('[data-site-create-room]')){onCreate?.();return;}const open=e.target.closest('[data-site-open]');if(open){onOpen(open.dataset.siteOpen);return;}
  const modeButton=e.target.closest('[data-site-mode]');if(modeButton){mode=modeButton.dataset.siteMode;connectFrom='';render();return;}
@@ -54,24 +55,89 @@ export function initSiteOverview({root,getDocument,mutate,onOpen,onCreate,onMess
  }
  if(e.target.closest('[data-site-connect-all]')){let result;apply(d=>{result=connectServiceCorridors(d)},'Corredores gerados para o fluxo: '+(result?.report.linked||0)+'/'+(result?.report.links.length||0)+' trajetos transitáveis.'+(result?.errors.length?' Revise '+result.errors.length+' ligação(ões) sem saída.':''));return;}
  const auto=e.target.closest('[data-site-connect],[data-site-quick-connect]');if(auto){const a=auto.dataset.from||pairFrom,b=auto.dataset.to||pairTo;apply(d=>connectWithCorridor(d,a,b),'Corredor conectado; percurso conferido pelas portas e móveis.');return;}
- if(e.target.closest('[data-site-reset]'))apply(d=>{const l=positions(d);for(const r of d.environments||[])delete l[r.id]},'Posições padrão restauradas (desde que não ocupem corredores).');});
+ if(e.target.closest('[data-site-reset]'))apply(d=>{
+   const rooms=d.environments||[],hall=corridors(d);
+   for(let i=0;i<rooms.length;i++){
+    const x=i%3*14,y=Math.floor(i/3)*10;
+    if(hall.some(point=>point.x>=x&&point.x<x+GRID.columns&&point.y>=y&&point.y<y+GRID.rows))throw Error('As posições padrão têm corredores. Apague ou mova esses trechos primeiro.');
+   }
+   const spots=positions(d);
+   for(const room of rooms)delete spots[room.id];
+  },'Posições padrão restauradas. Atividades e móveis preservados.');});
  root.addEventListener('change',e=>{if(e.target.id==='site21-from')pairFrom=e.target.value;if(e.target.id==='site21-to')pairTo=e.target.value;});
  function paintAt(e){const canvas=root.querySelector('.site-canvas');if(!canvas)return;const r=canvas.getBoundingClientRect(),scale=p71.state.zoom,x=Math.floor((e.clientX-r.left)/(STEP*scale)),y=Math.floor((e.clientY-r.top-42*scale)/(STEP*scale)),k=`${x}:${y}`;if(!paint||paint.last===k)return;paint.last=k;paint.cells.set(k,{x,y});
  if(x<0||y<0||x>=200||y>=200)return;const room=(getDocument().environments||[]).some(r=>{const p=roomSpot(getDocument(),r.id);return x>=p.x&&x<p.x+GRID.columns&&y>=p.y&&y<p.y+GRID.rows});if(room){notify('⚠ Corredores não atravessam salas. Use portas externas.');paint.cells.delete(k);return;}
  const cell=canvas.querySelector(`.site21-corridor[data-x="${x}"][data-y="${y}"]`);if(mode==='paint'){if(!cell){const el=document.createElement('span');el.className='site21-corridor';el.dataset.x=x;el.dataset.y=y;el.style.left=x*STEP+'px';el.style.top=y*STEP+42+'px';canvas.querySelector('.site21-cells').appendChild(el)}}else cell?.remove();}
- root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.closest('button,select'))return;const bar=e.target.closest('[data-site-drag]');if(mode==='view'&&bar){const id=bar.dataset.siteDrag,spot=roomSpot(getDocument(),id);drag={id,x:e.clientX,y:e.clientY,spot,move:false};bar.setPointerCapture?.(e.pointerId);return;}
-  if((mode==='paint'||mode==='erase')&&e.target.closest('[data-site-grid]')&&!e.target.closest('[data-site-room]')){paint={last:null,cells:new Map()};root.querySelector('[data-site-grid]').setPointerCapture?.(e.pointerId);paintAt(e)}});
- root.addEventListener('pointermove',e=>{if(paint){paintAt(e);return;}if(!drag)return;const dx=Math.round((e.clientX-drag.x)/(STEP*p71.state.zoom)),dy=Math.round((e.clientY-drag.y)/(STEP*p71.state.zoom));drag.next={x:Math.max(0,drag.spot.x+dx),y:Math.max(0,drag.spot.y+dy)};if(dx||dy)drag.move=true;const el=[...root.querySelectorAll('[data-site-room]')].find(x=>x.dataset.siteRoom===drag.id);if(el){el.style.left=drag.next.x*STEP+'px';el.style.top=(drag.next.y*STEP+42)+'px';el.classList.add('dragging')}});
- function end(){if(paint){const batch=paint;paint=null;if(batch.cells.size){apply(d=>{for(const c of batch.cells.values())setCorridor(d,c.x,c.y,mode==='paint')},mode==='paint'?'Trecho de corredor desenhado.':'Trecho de corredor apagado.');}else render();return;}if(!drag)return;const d=drag;drag=null;if(d.move)apply(doc=>moveRoom(doc,d.id,d.next.x,d.next.y),'Ambiente reposicionado; confira os corredores.');else render();}
+
+ // Capture on stable root so drag remains active across the whole canvas.
+ // Click-and-drag anywhere on a room EXCEPT its actual buttons.
+ root.addEventListener('pointerdown',e=>{
+  if(e.button!==0||e.target.closest('button,select,input,textarea,summary'))return;
+  const card=e.target.closest('[data-site-room]');
+  if(mode==='view'&&card){
+   const id=card.dataset.siteRoom,spot=roomSpot(getDocument(),id);
+   p71.selectRoom(id);
+   drag={id,pointerId:e.pointerId,x:e.clientX,y:e.clientY,spot,next:{...spot},move:false,collides:false};
+   root.setPointerCapture?.(e.pointerId);
+   card.classList.add('p83-drag-armed');
+   e.preventDefault();
+   return;
+  }
+  if((mode==='paint'||mode==='erase')&&e.target.closest('[data-site-grid]')&&!card){
+   paint={pointerId:e.pointerId,last:null,cells:new Map()};
+   root.setPointerCapture?.(e.pointerId);
+   paintAt(e);
+   e.preventDefault();
+  }
+ });
+ root.addEventListener('pointermove',e=>{
+  if(paint){if(paint.pointerId===e.pointerId)paintAt(e);return;}
+  if(!drag||drag.pointerId!==e.pointerId)return;
+  const dx=Math.round((e.clientX-drag.x)/(STEP*p71.state.zoom));
+  const dy=Math.round((e.clientY-drag.y)/(STEP*p71.state.zoom));
+  drag.next={x:Math.max(0,Math.min(190,drag.spot.x+dx)),y:Math.max(0,Math.min(190,drag.spot.y+dy))};
+  if(Math.abs(e.clientX-drag.x)>4||Math.abs(e.clientY-drag.y)>4)drag.move=true;
+  const room=[...root.querySelectorAll('[data-site-room]')].find(el=>el.dataset.siteRoom===drag.id);
+  if(room){
+   const candidate=drag.next,doc=getDocument();
+   const collides=(doc.environments||[]).some(r=>r.id!==drag.id&&overlaps(candidate,roomSpot(doc,r.id)))||
+    corridors(doc).some(c=>c.x>=candidate.x&&c.x<candidate.x+GRID.columns&&c.y>=candidate.y&&c.y<candidate.y+GRID.rows);
+   drag.collides=collides;
+   room.style.left=candidate.x*STEP+'px';
+   room.style.top=(candidate.y*STEP+42)+'px';
+   room.classList.toggle('p83-drag-invalid',collides);
+   room.classList.toggle('dragging',drag.move);
+   root.classList.toggle('p83-room-dragging',drag.move);
+  }
+ });
+ function endInteraction(event,cancelled=false){
+  if(paint){
+   if(event?.pointerId!==paint.pointerId)return;
+   const stroke=paint;paint=null;
+   if(!cancelled&&stroke.cells.size){
+    apply(doc=>{for(const cell of stroke.cells.values())setCorridor(doc,cell.x,cell.y,mode==='paint')},mode==='paint'?'Corredor desenhado.':'Corredor apagado.');
+   }else render();
+   return;
+  }
+  if(!drag||event?.pointerId!==drag.pointerId)return;
+  const moved=drag;drag=null;
+  root.classList.remove('p83-room-dragging');
+  if(cancelled||!moved.move){render();return;}
+  if(moved.collides){notify('⚠ Não é possível sobrepor salas ou corredores. A posição anterior foi preservada.');render();return;}
+  apply(doc=>moveRoom(doc,moved.id,moved.next.x,moved.next.y),'Sala movida. As atividades, móveis e paredes foram preservados.');
+ }
+ root.addEventListener('pointerup',e=>endInteraction(e,false));
+ root.addEventListener('pointercancel',e=>endInteraction(e,true));
+ root.addEventListener('lostpointercapture',e=>{if(drag?.pointerId===e.pointerId)endInteraction(e,true);if(paint?.pointerId===e.pointerId)endInteraction(e,true)});
  root.addEventListener('keydown',event=>{
   if(mode!=='connect'||!['Enter',' '].includes(event.key)||!event.target.matches('[data-site-room]'))return;
   event.preventDefault();
   const id=event.target.dataset.siteRoom;
-  if(!connectFrom){connectFrom=id;root.querySelectorAll('[data-site-room]').forEach(el=>el.classList.toggle('p72-connect-origin',el.dataset.siteRoom===id));notify('Origem selecionada. Escolha a sala de destino e pressione Enter.');return;}
+  if(!connectFrom){connectFrom=id;root.querySelectorAll('[data-site-room]').forEach(el=>el.classList.toggle('p72-connect-origin',el.dataset.siteRoom===id));notify('Origem selecionada. Escolha outra sala para criar a ligação física.');return;}
   if(connectFrom===id){notify('Selecione uma sala de destino diferente.');return;}
   const from=connectFrom;connectFrom='';mode='view';
-  apply(d=>connectWithCorridor(d,from,id),'Ligação física criada. Confira o percurso.');
+  apply(doc=>connectWithCorridor(doc,from,id),'Ligação física criada. Confira o percurso.');
  });
- root.addEventListener('pointerup',end);root.addEventListener('pointercancel',end);
+
  return {render,fit:p71.fit};
 }

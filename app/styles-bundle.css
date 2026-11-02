@@ -3106,3 +3106,92 @@ body.bo-ocean.sb-hybrid-active #rooms-view .site-room>small b{color:#155eef;font
  body.bo-ocean.sb-hybrid-active #rooms-view .p82-context-progress{display:none}
 }
 
+/* P8.3 — responsive, genuinely draggable floorplan cards */
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room{
+ cursor:grab!important;
+ touch-action:none;
+ user-select:none;
+ -webkit-user-select:none;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room:active,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room.dragging{
+ cursor:grabbing!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room .site-room-handle{
+ height:35px!important;
+ min-height:35px!important;
+ padding:4px 6px!important;
+ display:flex!important;
+ flex-wrap:nowrap!important;
+ overflow:hidden!important;
+ gap:4px!important;
+ cursor:grab!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room .site-room-handle b{
+ display:block!important;
+ min-width:0!important;
+ flex:1 1 auto!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+ white-space:nowrap!important;
+ font-size:11px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room .site-room-handle button{
+ flex:0 0 auto!important;
+ min-height:24px!important;
+ padding:2px 7px!important;
+ font-size:10px!important;
+ border-radius:5px!important;
+ cursor:pointer!important;
+ touch-action:manipulation!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room>small{
+ max-width:100%!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+ white-space:nowrap!important;
+ padding:5px 7px!important;
+ font-size:10px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room.dragging{
+ z-index:40!important;
+ opacity:.88;
+ filter:drop-shadow(0 10px 17px #244a8e45)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room.p83-drag-invalid{
+ border-color:#d3585c!important;
+ box-shadow:0 0 0 3px #da4d5d3a,0 8px 20px #83243a36!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-room.p83-drag-invalid .site-room-handle{
+ background:#ffe8eb!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-scroll{
+ cursor:default!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-feedback:not([hidden]){
+ display:block!important;
+ padding:9px 12px!important;
+ margin:5px 10px 9px!important;
+ color:#174977!important;
+ background:#edf4fe!important;
+ border:1px solid #cee0f8!important;
+ border-radius:7px!important;
+ font-size:11px!important;
+ line-height:1.5!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-feedback:not([hidden]):first-letter{font-weight:800}
+body.bo-ocean.sb-hybrid-active #rooms-view .p83-plan-flow-button{
+ display:block;
+ background:#f2f7ff;
+ color:#1a5aaa;
+ border:1px solid #bcd4f8;
+ border-radius:7px;
+ padding:10px;
+ min-height:37px;
+ font-size:11px;
+ font-weight:730;
+ width:100%;
+ margin:8px 0 0;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view .p83-plan-flow-button[hidden]{display:none!important}
+

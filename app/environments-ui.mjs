@@ -167,9 +167,17 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   planInspector.querySelector('#p71-plan-info').textContent=
    'Posição na planta: coluna '+(pos.x+1)+', linha '+(pos.y+1)+'. Arraste o título da sala ou use as setas (Shift + seta move 5 células).';
   planInspector.querySelector('#p71-plan-edit').hidden=false;
+  planInspector.querySelector('#p83-plan-flow')?.removeAttribute('hidden');
   hybrid.workspace.setCollapsed('right',false);
  });
  planInspector.querySelector('#p71-plan-edit').addEventListener('click',()=>select(ui.selected));
+ const inspectFlowButton=document.createElement('button');
+ inspectFlowButton.type='button';inspectFlowButton.id='p83-plan-flow';
+ inspectFlowButton.className='p83-plan-flow-button';
+ inspectFlowButton.textContent='↗ Ver atividades deste ambiente';
+ inspectFlowButton.hidden=true;
+ planInspector.append(inspectFlowButton);
+ inspectFlowButton.addEventListener('click',()=>{if(!ui.selected)return;openWorkflow('service');p8Flow.setFocusRoom(ui.selected);});
  const p8Flow=mountP8Workflow({
   root,getDocument,onEdit:id=>openTask(id),
   onNew:()=>openQuickActivityDialog(),

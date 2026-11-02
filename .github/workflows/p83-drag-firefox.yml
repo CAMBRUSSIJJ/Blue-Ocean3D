@@ -1,0 +1,22 @@
+name: Blue Ocean 3D · P8.3 Firefox Drag
+on:
+  push:
+    branches: [fix/p82-overview-drag-controls]
+  pull_request:
+    paths:
+      - app/**
+      - tests/p83_drag_browser.py
+      - .github/workflows/p83-drag-firefox.yml
+permissions:
+  contents: read
+jobs:
+  drag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Playwright Chromium and Firefox
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium firefox
+      - name: Verify drag and 3D from Firefox and Chromium
+        run: python3 tests/p83_drag_browser.py

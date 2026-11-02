@@ -29,6 +29,25 @@ with sync_playwright() as pw:
  fit_value=page.evaluate("getComputedStyle(document.querySelector('.site-canvas')).transform")
  assert fit_value!='none'
  room=cards.first
+ # P8.3: drag the miniature itself; the old implementation only accepted
+ # the narrow header, which was almost fully occupied by action buttons.
+ room_id=room.get_attribute('data-site-room')
+ before=page.evaluate("(id)=>siteRoomSpot(doc,id)",room_id)
+ svg=room.locator('.site-room-svg')
+ box=svg.bounding_box()
+ assert box is not None
+ scale=int(site.locator('#p71-zoom-value').inner_text().replace('%',''))/100
+ page.mouse.move(box['x']+box['width']*.55,box['y']+box['height']*.45)
+ page.mouse.down()
+ page.mouse.move(box['x']+box['width']*.55+20*scale,box['y']+box['height']*.45,steps=6)
+ page.mouse.up()
+ after=page.evaluate("(id)=>siteRoomSpot(doc,id)",room_id)
+ assert after['x']==before['x']+1,(before,after)
+ assert after['y']==before['y'],(before,after)
+ expect(site.locator('.site-feedback')).to_contain_text('Sala movida')
+ # Room remains editable and linked to the real same 3D document.
+ room=site.locator('[data-site-room="'+room_id+'"]')
+ expect(room.locator('[data-site-open]')).to_be_visible()
  room.focus()
  page.keyboard.press('Enter')
  expect(page.locator('#p71-plan-title')).to_be_visible()
