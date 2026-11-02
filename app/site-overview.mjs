@@ -60,19 +60,76 @@ export function initSiteOverview({root,getDocument,mutate,onOpen,onCreate,onMess
  function paintAt(e){const canvas=root.querySelector('.site-canvas');if(!canvas)return;const r=canvas.getBoundingClientRect(),scale=p71.state.zoom,x=Math.floor((e.clientX-r.left)/(STEP*scale)),y=Math.floor((e.clientY-r.top-42*scale)/(STEP*scale)),k=`${x}:${y}`;if(!paint||paint.last===k)return;paint.last=k;paint.cells.set(k,{x,y});
  if(x<0||y<0||x>=200||y>=200)return;const room=(getDocument().environments||[]).some(r=>{const p=roomSpot(getDocument(),r.id);return x>=p.x&&x<p.x+GRID.columns&&y>=p.y&&y<p.y+GRID.rows});if(room){notify('⚠ Corredores não atravessam salas. Use portas externas.');paint.cells.delete(k);return;}
  const cell=canvas.querySelector(`.site21-corridor[data-x="${x}"][data-y="${y}"]`);if(mode==='paint'){if(!cell){const el=document.createElement('span');el.className='site21-corridor';el.dataset.x=x;el.dataset.y=y;el.style.left=x*STEP+'px';el.style.top=y*STEP+42+'px';canvas.querySelector('.site21-cells').appendChild(el)}}else cell?.remove();}
- root.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.closest('button,select'))return;const bar=e.target.closest('[data-site-drag]');if(mode==='view'&&bar){const id=bar.dataset.siteDrag,spot=roomSpot(getDocument(),id);drag={id,x:e.clientX,y:e.clientY,spot,move:false};bar.setPointerCapture?.(e.pointerId);return;}
-  if((mode==='paint'||mode==='erase')&&e.target.closest('[data-site-grid]')&&!e.target.closest('[data-site-room]')){paint={last:null,cells:new Map()};root.querySelector('[data-site-grid]').setPointerCapture?.(e.pointerId);paintAt(e)}});
- root.addEventListener('pointermove',e=>{if(paint){paintAt(e);return;}if(!drag)return;const dx=Math.round((e.clientX-drag.x)/(STEP*p71.state.zoom)),dy=Math.round((e.clientY-drag.y)/(STEP*p71.state.zoom));drag.next={x:Math.max(0,drag.spot.x+dx),y:Math.max(0,drag.spot.y+dy)};if(dx||dy)drag.move=true;const el=[...root.querySelectorAll('[data-site-room]')].find(x=>x.dataset.siteRoom===drag.id);if(el){el.style.left=drag.next.x*STEP+'px';el.style.top=(drag.next.y*STEP+42)+'px';el.classList.add('dragging')}});
- function end(){if(paint){const batch=paint;paint=null;if(batch.cells.size){apply(d=>{for(const c of batch.cells.values())setCorridor(d,c.x,c.y,mode==='paint')},mode==='paint'?'Trecho de corredor desenhado.':'Trecho de corredor apagado.');}else render();return;}if(!drag)return;const d=drag;drag=null;if(d.move)apply(doc=>moveRoom(doc,d.id,d.next.x,d.next.y),'Ambiente reposicionado; confira os corredores.');else render();}
+
+ // Capture on stable root so drag remains active across the whole canvas.
+ // Click-and-drag anywhere on a room EXCEPT its actual buttons.
+ root.addEventListener('pointerdown',e=>{
+  if(e.button!==0||e.target.closest('button,select,input,textarea,summary'))return;
+  const card=e.target.closest('[data-site-room]');
+  if(mode==='view'&&card){
+   const id=card.dataset.siteRoom,spot=roomSpot(getDocument(),id);
+   p71.selectRoom(id);
+   drag={id,pointerId:e.pointerId,x:e.clientX,y:e.clientY,spot,next:{...spot},move:false,collides:false};
+   root.setPointerCapture?.(e.pointerId);
+   card.classList.add('p83-drag-armed');
+   e.preventDefault();
+   return;
+  }
+  if((mode==='paint'||mode==='erase')&&e.target.closest('[data-site-grid]')&&!card){
+   paint={pointerId:e.pointerId,last:null,cells:new Map()};
+   root.setPointerCapture?.(e.pointerId);
+   paintAt(e);
+   e.preventDefault();
+  }
+ });
+ root.addEventListener('pointermove',e=>{
+  if(paint){if(paint.pointerId===e.pointerId)paintAt(e);return;}
+  if(!drag||drag.pointerId!==e.pointerId)return;
+  const dx=Math.round((e.clientX-drag.x)/(STEP*p71.state.zoom));
+  const dy=Math.round((e.clientY-drag.y)/(STEP*p71.state.zoom));
+  drag.next={x:Math.max(0,Math.min(190,drag.spot.x+dx)),y:Math.max(0,Math.min(190,drag.spot.y+dy))};
+  if(Math.abs(e.clientX-drag.x)>4||Math.abs(e.clientY-drag.y)>4)drag.move=true;
+  const room=[...root.querySelectorAll('[data-site-room]')].find(el=>el.dataset.siteRoom===drag.id);
+  if(room){
+   const candidate=drag.next,doc=getDocument();
+   const collides=(doc.environments||[]).some(r=>r.id!==drag.id&&overlaps(candidate,roomSpot(doc,r.id)))||
+    corridors(doc).some(c=>c.x>=candidate.x&&c.x<candidate.x+GRID.columns&&c.y>=candidate.y&&c.y<candidate.y+GRID.rows);
+   drag.collides=collides;
+   room.style.left=candidate.x*STEP+'px';
+   room.style.top=(candidate.y*STEP+42)+'px';
+   room.classList.toggle('p83-drag-invalid',collides);
+   room.classList.toggle('dragging',drag.move);
+   root.classList.toggle('p83-room-dragging',drag.move);
+  }
+ });
+ function endInteraction(event,cancelled=false){
+  if(paint){
+   if(event?.pointerId!==paint.pointerId)return;
+   const stroke=paint;paint=null;
+   if(!cancelled&&stroke.cells.size){
+    apply(doc=>{for(const cell of stroke.cells.values())setCorridor(doc,cell.x,cell.y,mode==='paint')},mode==='paint'?'Corredor desenhado.':'Corredor apagado.');
+   }else render();
+   return;
+  }
+  if(!drag||event?.pointerId!==drag.pointerId)return;
+  const moved=drag;drag=null;
+  root.classList.remove('p83-room-dragging');
+  if(cancelled||!moved.move){render();return;}
+  if(moved.collides){notify('⚠ Não é possível sobrepor salas ou corredores. A posição anterior foi preservada.');render();return;}
+  apply(doc=>moveRoom(doc,moved.id,moved.next.x,moved.next.y),'Sala movida. As atividades, móveis e paredes foram preservados.');
+ }
+ root.addEventListener('pointerup',e=>endInteraction(e,false));
+ root.addEventListener('pointercancel',e=>endInteraction(e,true));
+ root.addEventListener('lostpointercapture',e=>{if(drag?.pointerId===e.pointerId)endInteraction(e,true);if(paint?.pointerId===e.pointerId)endInteraction(e,true)});
  root.addEventListener('keydown',event=>{
   if(mode!=='connect'||!['Enter',' '].includes(event.key)||!event.target.matches('[data-site-room]'))return;
   event.preventDefault();
   const id=event.target.dataset.siteRoom;
-  if(!connectFrom){connectFrom=id;root.querySelectorAll('[data-site-room]').forEach(el=>el.classList.toggle('p72-connect-origin',el.dataset.siteRoom===id));notify('Origem selecionada. Escolha a sala de destino e pressione Enter.');return;}
+  if(!connectFrom){connectFrom=id;root.querySelectorAll('[data-site-room]').forEach(el=>el.classList.toggle('p72-connect-origin',el.dataset.siteRoom===id));notify('Origem selecionada. Escolha outra sala para criar a ligação física.');return;}
   if(connectFrom===id){notify('Selecione uma sala de destino diferente.');return;}
   const from=connectFrom;connectFrom='';mode='view';
-  apply(d=>connectWithCorridor(d,from,id),'Ligação física criada. Confira o percurso.');
+  apply(doc=>connectWithCorridor(doc,from,id),'Ligação física criada. Confira o percurso.');
  });
- root.addEventListener('pointerup',end);root.addEventListener('pointercancel',end);
+
  return {render,fit:p71.fit};
 }
