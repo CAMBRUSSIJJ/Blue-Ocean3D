@@ -2772,6 +2772,7 @@ body.bo-ocean.sb-hybrid-active #rooms-view .p72-dialog-error[hidden]{display:non
  body.bo-ocean.sb-hybrid-active #rooms-view .p72-context *{transition:none!important}
 }
 
+
 /* SOURCE: p8-workspace.css */
 /* Blue Ocean 3D P8 — Service Workspace. Evolve the UI without forking model or engine. */
 body.bo-ocean{--bo-blue:#1256e8;--bo-blue-dark:#0643c5;--bo-bg:#f5f7fb;--bo-canvas:#f3f6fc;--bo-ink:#173456;--bo-line:#dee7f3;--bo-card:#fff;--bo-soft:#edf3ff;color:var(--bo-ink)}
