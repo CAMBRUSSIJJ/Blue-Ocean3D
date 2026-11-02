@@ -68,6 +68,14 @@ export function installP71Overview({root,getDocument,moveRoom,report,roomSpot,on
   const tools=root.querySelector('.site21-tools');
   if(tools){
    tools.insertAdjacentHTML('afterbegin','<strong class="p71-toolbar-heading">Ferramentas da planta</strong>');
+   const pair=tools.querySelector('.site21-pair');
+   if(pair){
+    const advanced=document.createElement('details');
+    advanced.className='p72-connection-options';
+    advanced.innerHTML='<summary>Mais opções de conexão</summary>';
+    pair.before(advanced);
+    advanced.append(pair);
+   }
    tools.insertAdjacentHTML('beforeend','<div class="p71-zoom-controls" aria-label="Zoom e enquadramento"><button type="button" data-p71-zoom="out" aria-label="Diminuir zoom">−</button><output id="p71-zoom-value">100%</output><button type="button" data-p71-zoom="in" aria-label="Aumentar zoom">＋</button><button type="button" data-p71-zoom="fit">Ajustar à tela</button></div>');
    tools.insertAdjacentHTML('afterend','<div class="p71-legend"><span><i class="p71-key corridor"></i> Corredor físico</span><span><i class="p71-key route"></i> Percurso transitável</span><span><i class="p71-key blocked"></i> Ligação bloqueada</span></div>');
   }
