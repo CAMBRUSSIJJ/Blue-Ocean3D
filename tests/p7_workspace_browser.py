@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""P7 interactive acceptance: six independent tabs, real library filters, separated analysis."""
+"""P8 interactive acceptance: four workspaces, real library filters, separated analysis."""
 from pathlib import Path
 from inline_app import inline_app
 from playwright.sync_api import sync_playwright, expect
@@ -12,9 +12,9 @@ with sync_playwright() as pw:
  page.on('pageerror',lambda error:errors.append(str(error)))
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  nav=page.locator('.p7-tabs [data-bo-stage]')
- expect(nav).to_have_count(6)
+ expect(nav).to_have_count(4)
  assert [x.strip() for x in nav.all_text_contents()]==[
-  'Visão geral do serviço','Ambiente 3D','Planta 2D','Fluxo e conexões','Simular','Analisar'
+  'Espaços','Funcionamento','Simulação','Resultados'
  ]
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
  page.locator('#bo-workflow-mount').click()
@@ -37,7 +37,7 @@ with sync_playwright() as pw:
  page.locator('#bo-workflow-floor').click()
  expect(page.locator('#floor-editor-map')).to_be_visible()
  page.locator('#bo-workflow-service').click()
- expect(page.locator('.room-workflow-drawer')).to_be_visible()
+ expect(page.locator('#p8-flow-surface')).to_be_visible()
  page.locator('#hybrid-simulate').click()
  expect(page.locator('#p7-runtime')).to_be_visible(timeout=15000)
  expect(page.locator('#p7-analysis')).to_be_hidden()
@@ -61,5 +61,5 @@ with sync_playwright() as pw:
  page.set_viewport_size({'width':700,'height':760})
  expect(page.locator('#p7-start')).to_be_visible()
  assert not errors,errors
- print('PASS P7 Chromium: six tabs, 40 products, people, accent filters, physical editor, distinct simulation and analysis')
+ print('PASS P8 Chromium: four workspaces, 40 products, people, accent filters, physical editor, distinct simulation and analysis')
  browser.close()
