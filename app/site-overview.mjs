@@ -55,7 +55,15 @@ export function initSiteOverview({root,getDocument,mutate,onOpen,onCreate,onMess
  }
  if(e.target.closest('[data-site-connect-all]')){let result;apply(d=>{result=connectServiceCorridors(d)},'Corredores gerados para o fluxo: '+(result?.report.linked||0)+'/'+(result?.report.links.length||0)+' trajetos transitáveis.'+(result?.errors.length?' Revise '+result.errors.length+' ligação(ões) sem saída.':''));return;}
  const auto=e.target.closest('[data-site-connect],[data-site-quick-connect]');if(auto){const a=auto.dataset.from||pairFrom,b=auto.dataset.to||pairTo;apply(d=>connectWithCorridor(d,a,b),'Corredor conectado; percurso conferido pelas portas e móveis.');return;}
- if(e.target.closest('[data-site-reset]'))apply(d=>{const l=positions(d);for(const r of d.environments||[])delete l[r.id]},'Posições padrão restauradas (desde que não ocupem corredores).');});
+ if(e.target.closest('[data-site-reset]'))apply(d=>{
+   const rooms=d.environments||[],hall=corridors(d);
+   for(let i=0;i<rooms.length;i++){
+    const x=i%3*14,y=Math.floor(i/3)*10;
+    if(hall.some(point=>point.x>=x&&point.x<x+GRID.columns&&point.y>=y&&point.y<y+GRID.rows))throw Error('As posições padrão têm corredores. Apague ou mova esses trechos primeiro.');
+   }
+   const spots=positions(d);
+   for(const room of rooms)delete spots[room.id];
+  },'Posições padrão restauradas. Atividades e móveis preservados.');});
  root.addEventListener('change',e=>{if(e.target.id==='site21-from')pairFrom=e.target.value;if(e.target.id==='site21-to')pairTo=e.target.value;});
  function paintAt(e){const canvas=root.querySelector('.site-canvas');if(!canvas)return;const r=canvas.getBoundingClientRect(),scale=p71.state.zoom,x=Math.floor((e.clientX-r.left)/(STEP*scale)),y=Math.floor((e.clientY-r.top-42*scale)/(STEP*scale)),k=`${x}:${y}`;if(!paint||paint.last===k)return;paint.last=k;paint.cells.set(k,{x,y});
  if(x<0||y<0||x>=200||y>=200)return;const room=(getDocument().environments||[]).some(r=>{const p=roomSpot(getDocument(),r.id);return x>=p.x&&x<p.x+GRID.columns&&y>=p.y&&y<p.y+GRID.rows});if(room){notify('⚠ Corredores não atravessam salas. Use portas externas.');paint.cells.delete(k);return;}
