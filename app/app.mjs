@@ -145,13 +145,13 @@ const projectHome=mountP8Projects({
  workspace:document.querySelector('#app .workspace'),
  store:projectStore,
  onOpen:id=>{
-  try{projectStore.save(doc);doc=projectStore.open(id);ensureRoomModel(doc);validateDocument(doc);undo=[];redo=[];selection=null;connectionSuggestion=null;placingType=null;persist();renderAll();showRooms();}
+  try{projectStore.save(doc);doc=projectStore.open(id);ensureRoomModel(doc);validateDocument(doc);undo=[];redo=[];selection=null;connectionSuggestion=null;placingType=null;rooms.state.display='overview';rooms.state.selected=null;persist();renderAll();showRooms();}
   catch(error){notice('Não foi possível abrir o projeto: '+error.message,true);}
  },
  onCreate:name=>{
   projectStore.save(doc);
   doc=createDocument(name);ensureRoomModel(doc);undo=[];redo=[];selection=null;connectionSuggestion=null;placingType=null;
-  projectStore.create(doc);persist();renderAll();showRooms();
+  projectStore.create(doc);rooms.state.display='overview';rooms.state.selected=null;persist();renderAll();showRooms();
  }
 });
 function showHome(){
