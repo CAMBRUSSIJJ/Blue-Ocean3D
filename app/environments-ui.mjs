@@ -145,7 +145,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    if(action==='furniture'){hybrid.workspace.setCollapsed('left',false);setFurniture(true);return;}
    if(action==='building-tools'){hybrid.workspace.setCollapsed('left',false);setFurniture(true);root.querySelector('#floor-structure-tools')?.scrollIntoView({block:'nearest'});return;}
    if(action==='new-activity')return openQuickActivityDialog();
-   if(action==='connect-activity'){const task=getDocument().nodes?.find(n=>n.type==='activity')||getDocument().nodes?.[0];if(task)openTask(task.id);return;}
+   if(action==='connect-activity'){openWorkflow('service');root.querySelector('[data-p8-flow="connect"]')?.click();return;}
    if(action==='simulate')return openWorkflow('scenario');
   }
  });
@@ -156,7 +156,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const planInspector=document.createElement('section');planInspector.className='p71-plan-inspector';
  planInspector.innerHTML='<p class="p71-panel-eyebrow">ESPAÇO FÍSICO</p><h3 id="p71-plan-title">Selecione um ambiente</h3><p id="p71-plan-info">Clique em uma sala na planta para inspecioná-la. Use as setas para mover uma sala selecionada.</p><button type="button" id="p71-plan-edit" hidden>Abrir ambiente 3D</button>';
  root.querySelector('.hybrid-right-dock').append(planInspector);
- const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
+ const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),onShowFlow:id=>{openWorkflow('service');p8Flow.setFocusRoom(id);},onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
  root.addEventListener('p71-room-selected',e=>{
   const room=getDocument().environments?.find(x=>x.id===e.detail.id);
   if(!room)return;
@@ -173,7 +173,9 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const p8Flow=mountP8Workflow({
   root,getDocument,onEdit:id=>openTask(id),
   onNew:()=>openQuickActivityDialog(),
-  onConnect:()=>{const step=getDocument().nodes?.find(n=>n.type==='activity')||getDocument().nodes?.[0];if(step)openTask(step.id);else openQuickActivityDialog();}
+  onConnect:()=>{},
+  onLink:(from,to)=>{mutate(d=>addEdge(d,{from,to,type:'sequence'}));draw();status('Ligação operacional registrada.');},
+  onSaveContext:fields=>{mutate(d=>{d.serviceContext=fields;});draw();status('Contexto operacional salvo.');}
  });
  const floor=initFloorEditor({getDocument,mutate,onEdit:id=>openTask(id),onSelectRoom:id=>{ui.selected=id;renderInspector();}});
  const studio3d=initRoom3D({element:$('#room-3d-stage'),getDocument,getRoomId:()=>ui.selected,getSelection:()=>floor.state.selected,getSelections:()=>[...floor.state.selectedIds],getPlacing:()=>floor.state.placing,mutate,onSelect:(id,additive=false)=>{floor.selectObject(id,additive);setObjectInspector(Boolean(floor.state.selected));},onPlaced:()=>{floor.state.placing=null;draw();},onCancel:()=>{floor.state.placing=null;floor.state.structure=null;floor.render();},onMessage:msg=>$('#floor-editor-notice').textContent=msg,onUnavailable:()=>{if(!ui.active||ui.display!=='three')return;ui.display='visual';root.querySelectorAll('[data-room-display]').forEach(x=>{const yes=x.dataset.roomDisplay==='visual';x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes))});studioMode();draw();$('#floor-editor-notice').textContent='3D indisponível neste navegador. A planta 2D permanece editável.';}});
@@ -217,6 +219,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   if(!ui.active)document.querySelector('.rail-btn[data-view="rooms"]')?.click();
   ui.display=step==='plan'?'overview':step==='service'?'cards':step==='floor2d'?'visual':'three';
   if(step==='plan'){root.classList.remove('p71-plan-selected');hybrid.workspace.setCollapsed('right',true)}
+  if(step==='service')p8Flow.setFocusRoom(null);
   studioMode();draw();
   if(step==='plan')requestAnimationFrame(()=>{const site=root.querySelector('#site-overview');if(site)site.scrollTop=0;overview.fit();});
  }
@@ -225,6 +228,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   const step=ui.display==='overview'?'plan':ui.display==='cards'?'service':ui.display==='visual'?'floor2d':'mount';
   root.dataset.workflowStep=step;activeWorkflowStep(step);
    spacesSubnav.hidden=ui.display==='cards';
+   flow3dButton.hidden=ui.display!=='three'&&ui.display!=='visual';
    spacesSubnav.querySelectorAll('[data-p8-space]').forEach(btn=>{
     const active=btn.dataset.p8Space===ui.display;
     btn.classList.toggle('active',active);
@@ -246,21 +250,23 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');}if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
+ const flow3dButton=document.createElement('button');flow3dButton.type='button';flow3dButton.id='p82-room-operation';flow3dButton.className='p82-3d-flow-button';flow3dButton.textContent='↗ Ver atividades da sala';flow3dButton.title='Ver o funcionamento vinculado a este ambiente';
+ root.querySelector('.floor-editor-toolbar')?.append(flow3dButton);
+ flow3dButton.addEventListener('click',()=>{openWorkflow('service');p8Flow.setFocusRoom(ui.selected);});
  const quickDialog=document.createElement('dialog');
  quickDialog.id='p72-activity-dialog';
  quickDialog.className='room-create-dialog p72-activity-dialog';
  quickDialog.setAttribute('aria-labelledby','p72-activity-heading');
- quickDialog.innerHTML='<form id="p72-activity-form"><div class="room-create-top"><div><span class="panel-eyebrow">ATIVIDADE DO SERVIÇO</span><h2 id="p72-activity-heading">Nova atividade</h2><p>Crie agora; detalhes e conexões podem ser definidos depois.</p></div><button type="button" data-p72-cancel aria-label="Fechar">×</button></div><label>Ambiente<select name="room" id="p72-activity-room" required></select></label><label>O que acontece?<input name="title" id="p72-activity-title" maxlength="100" placeholder="Ex.: Receber cliente" required></label><label>Duração prevista (min)<input name="duration" type="number" min="0" max="100000" step="0.5" value="5" required></label><p class="p72-dialog-error" role="alert" hidden></p><div class="room-create-footer"><button type="button" class="button muted" data-p72-cancel>Cancelar</button><button type="submit" class="button primary">Adicionar atividade</button></div></form>';
+ quickDialog.innerHTML='<form id="p72-activity-form"><div class="room-create-top"><div><span class="panel-eyebrow">ATIVIDADE DO SERVIÇO</span><h2 id="p72-activity-heading">Nova atividade</h2><p>Crie agora; detalhes e conexões podem ser definidos depois.</p></div><button type="button" data-p72-cancel aria-label="Fechar">×</button></div><label>Ambiente (opcional)<select name="room" id="p72-activity-room"></select></label><label>O que acontece?<input name="title" id="p72-activity-title" maxlength="100" placeholder="Ex.: Receber cliente" required></label><label>Duração prevista (min)<input name="duration" type="number" min="0" max="100000" step="0.5" value="0" required></label><p class="p72-dialog-error" role="alert" hidden></p><div class="room-create-footer"><button type="button" class="button muted" data-p72-cancel>Cancelar</button><button type="submit" class="button primary">Adicionar atividade</button></div></form>';
  root.append(quickDialog);
  quickDialog.addEventListener('click',event=>{if(event.target.closest('[data-p72-cancel]'))quickDialog.close();});
  function openQuickActivityDialog(roomId=ui.selected){
   const d=getDocument(),rooms=d.environments||[];
-  if(!rooms.length){openCreateDialog();status('Crie um ambiente antes de adicionar atividades.');return;}
   const form=quickDialog.querySelector('form');
   form.reset();
   const roomSelect=quickDialog.querySelector('#p72-activity-room');
-  roomSelect.replaceChildren(...rooms.map(room=>new Option(room.name,room.id)));
-  roomSelect.value=rooms.some(room=>room.id===roomId)?roomId:rooms[0].id;
+  roomSelect.replaceChildren(new Option('Digital / sem ambiente físico',''),...rooms.map(room=>new Option(room.name,room.id)));
+  roomSelect.value=rooms.some(room=>room.id===roomId)?roomId:'';
   quickDialog.querySelector('.p72-dialog-error').hidden=true;
   if(!quickDialog.open)quickDialog.showModal();
   quickDialog.querySelector('#p72-activity-title').focus();
@@ -269,16 +275,16 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   event.preventDefault();
   const form=event.currentTarget,roomId=form.elements.room.value,title=form.elements.title.value.trim(),duration=Number(form.elements.duration.value);
   const error=quickDialog.querySelector('.p72-dialog-error');
-  if(!title||!getDocument().environments.some(room=>room.id===roomId)||!Number.isFinite(duration)||duration<0||duration>100000){
+  if(!title||(roomId&&!getDocument().environments.some(room=>room.id===roomId))||!Number.isFinite(duration)||duration<0||duration>100000){
    error.textContent='Confira o ambiente, o nome e a duração.';error.hidden=false;return;
   }
   try{
    mutate(doc=>{
     const room=doc.environments.find(item=>item.id===roomId);
-    const {node}=insertComponent(doc,{type:'activity',stage:0,fields:{title,duration,team:room.team||''}});
-    assignRoom(doc,node.id,roomId);
+    const {node}=insertComponent(doc,{type:'activity',stage:0,fields:{title,duration,team:room?.team||''}});
+    if(room)assignRoom(doc,node.id,room.id);
    });
-   ui.selected=roomId;
+   if(roomId)ui.selected=roomId;
    quickDialog.close();
    draw();
    status('Atividade criada. Abra-a no fluxo para editar ou conectar ao próximo passo.');
@@ -315,12 +321,15 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    holder.querySelector('#room-delete-btn').addEventListener('click',async()=>{if(!await confirmAction({title:'Excluir ambiente?',message:`“${room.name}” será excluído. As ${nodes.length} atividades permanecerão no serviço, sem ambiente.`,confirmLabel:'Excluir ambiente'}))return;apply(d=>deleteRoom(d,room.id),'Ambiente removido; peças preservadas.');ui.selected=null;draw();});
  }
  // Activities can be configured and connected without opening the hidden legacy blueprint editor.
+ const roomAssignment=document.createElement('label');roomAssignment.innerHTML='Ambiente físico (opcional)<select id="p82-task-room" name="room"></select>';
+ root.querySelector('#room-task-form .room-task-fields')?.append(roomAssignment);
  function openTask(id){
    const d=getDocument(),n=d.nodes.find(x=>x.id===id);if(!n){status('Peça não encontrada.');return}
    ui.editing=id;
    const dialog=$('#room-task-dialog'),form=$('#room-task-form');form.elements.title.value=n.title||'';
    form.elements.team.value=n.team||'';form.elements.owner.value=n.owner||'';
    form.elements.duration.value=n.duration??0;form.elements.cost.value=n.cost??0;
+   const roomSelect=dialog.querySelector('#p82-task-room');if(roomSelect){roomSelect.replaceChildren(new Option('Digital / sem ambiente físico',''),...(d.environments||[]).map(r=>new Option(r.name,r.id)));roomSelect.value=n.environmentId||'';}
    form.elements.description.value=n.description||'';
    $('#task-stage').innerHTML=d.stages.map((st,i)=>`<option value="${i}" ${i===n.stage?'selected':''}>${esc(st.name)}</option>`).join('');
    $('#room-task-heading').textContent=n.title;
@@ -350,7 +359,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  $('#room-task-form').addEventListener('submit',e=>{
    e.preventDefault();const id=ui.editing,fd=new FormData(e.currentTarget),title=String(fd.get('title')||'').trim(),duration=Number(fd.get('duration')),cost=Number(fd.get('cost')),stage=Number(fd.get('stage'));
    if(!title||!Number.isFinite(duration)||duration<0||duration>100000||!Number.isFinite(cost)||cost<0||cost>1e9){$('#room-task-status').textContent='Confira o nome, duração e custo.';return;}
-   apply(d=>{const n=d.nodes.find(x=>x.id===id);if(!n)throw Error('Peça removida.');Object.assign(n,{title,team:String(fd.get('team')||'').trim().slice(0,80),owner:String(fd.get('owner')||'').trim().slice(0,100),description:String(fd.get('description')||'').trim().slice(0,500),duration,cost,stage});},'Atividade salva.');
+   apply(d=>{const n=d.nodes.find(x=>x.id===id);if(!n)throw Error('Peça removida.');Object.assign(n,{title,team:String(fd.get('team')||'').trim().slice(0,80),owner:String(fd.get('owner')||'').trim().slice(0,100),description:String(fd.get('description')||'').trim().slice(0,500),duration,cost,stage});assignRoom(d,id,String(fd.get('room')||'')||null);},'Atividade salva.');
    // Keep the dialog open, but refresh connections after changing team or title.
    if(ui.editing)openTask(ui.editing);
    $('#room-task-status').textContent='✓ Alterações salvas.';
