@@ -131,7 +131,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const spacesSubnav=document.createElement('nav');
  spacesSubnav.className='p8-space-tabs';
  spacesSubnav.setAttribute('aria-label','Visualizações dos espaços');
- spacesSubnav.innerHTML='<button type="button" data-p8-space="overview" aria-current="page">Visão geral</button><button type="button" data-p8-space="three">Ambiente 3D</button><button type="button" data-p8-space="visual">Planta 2D</button>';
+ spacesSubnav.innerHTML='<button type="button" data-p8-space="overview" aria-current="page">Visão geral</button><button type="button" id="bo-workflow-mount" data-p8-space="three">Ambiente 3D</button><button type="button" id="bo-workflow-floor" data-p8-space="visual">Planta 2D</button>';
  root.querySelector('.rooms-shell').before(spacesSubnav);
  spacesSubnav.addEventListener('click',event=>{
   const btn=event.target.closest('[data-p8-space]');if(!btn)return;
@@ -207,7 +207,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    });
  }
  function openWorkflow(step){
-  if(step==='spaces')step=['overview','three','visual'].includes(ui.display)?({overview:'plan',three:'mount',visual:'floor2d'}[ui.display]):'plan';
+  if(step==='spaces')step='plan';
    if(step==='scenario'||step==='analyze'){
    document.querySelector('.rail-btn[data-view="simulation"]')?.click();
    document.querySelector('#simulation-view')?.dispatchEvent(new CustomEvent('p7-section',{detail:{mode:step==='analyze'?'analyze':'simulate'}}));
