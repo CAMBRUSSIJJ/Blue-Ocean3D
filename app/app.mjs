@@ -10,6 +10,7 @@ import {autoFurnish,reconcileFloorplan} from './floorplan.mjs';
 import {inferRelation} from './tools.mjs';
 import {initTools} from './tools-ui.mjs';
 import {initView3D} from './view3d-ui.mjs';
+import {makeProjectStore,mountP8Projects} from './p8-projects.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const SVGNS='http://www.w3.org/2000/svg';
@@ -30,7 +31,10 @@ function environmentDemo(){
 }
 const saveIndicator=$('#save-status');
 try{const data=localStorage.getItem(KEY);doc=data?JSON.parse(data):environmentDemo();ensureRoomModel(doc);validateDocument(doc)}catch(e){console.warn('Projeto local inválido, abrindo exemplo',e);doc=environmentDemo()}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(doc));saveIndicator.classList.remove('is-error');saveIndicator.textContent='● Salvo às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});saveIndicator.setAttribute('aria-label','Projeto salvo automaticamente')}catch(e){saveIndicator.classList.add('is-error');saveIndicator.innerHTML='⚠ Não foi possível salvar <button type="button" class="save-backup" data-save-backup>Baixar backup</button>';saveIndicator.setAttribute('aria-label','Erro no salvamento automático. Baixe um backup do projeto.');notice('Espaço de armazenamento indisponível. Use “Baixar backup” para não perder o projeto.',true)}}
+let projectStorage;
+try{projectStorage=localStorage}catch{projectStorage={getItem:()=>null,setItem:()=>{}}}
+const projectStore=makeProjectStore(projectStorage,doc);
+function persist(){projectStore.save(doc);try{localStorage.setItem(KEY,JSON.stringify(doc));saveIndicator.classList.remove('is-error');saveIndicator.textContent='● Salvo às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});saveIndicator.setAttribute('aria-label','Projeto salvo automaticamente')}catch(e){saveIndicator.classList.add('is-error');saveIndicator.innerHTML='⚠ Não foi possível salvar <button type="button" class="save-backup" data-save-backup>Baixar backup</button>';saveIndicator.setAttribute('aria-label','Erro no salvamento automático. Baixe um backup do projeto.');notice('Espaço de armazenamento indisponível. Use “Baixar backup” para não perder o projeto.',true)}}
 function commit(){undo.push(JSON.stringify(doc));if(undo.length>70)undo.shift();redo.length=0}
 function revert(direction){let from=direction==='undo'?undo:redo,to=direction==='undo'?redo:undo;if(!from.length)return;to.push(JSON.stringify(doc));doc=JSON.parse(from.pop());selection=null;pendingLink=null;persist();renderAll();notice(direction==='undo'?'Ação desfeita.':'Ação refeita.')}
 function notice(message,warning=false){const el=$('#status-message');el.textContent=message;el.classList.toggle('toast-warning',warning)}
@@ -133,9 +137,36 @@ function showExplore(){rooms?.hide();view3d?.hide();simulator?.hide();shownCad=f
 function mutateRoom(change){const snapshot=JSON.stringify(doc);commit();try{change(doc);ensureRoomModel(doc);reconcileFloorplan(doc);validateDocument(doc);touch(doc);persist();renderAll();}catch(e){doc=JSON.parse(snapshot);undo.pop();renderAll();throw e}}
 const rooms=initRoomBuilder({getDocument:()=>doc,mutate:mutateRoom,
  onEdit:id=>rooms.openTask(id),onBack:()=>showSimulation()});
-function showRooms(){explorer?.hide();simulator?.hide();view3d?.hide();shownCad=false;placingType=null;placementPreview=null;syncPlacementUI();$('#editor-view').hidden=true;$('#cadcraft-view').hidden=true;rooms.show();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view==='rooms'));}
+function showRooms(){projectHome?.hide();explorer?.hide();simulator?.hide();view3d?.hide();shownCad=false;placingType=null;placementPreview=null;syncPlacementUI();$('#editor-view').hidden=true;$('#cadcraft-view').hidden=true;rooms.show();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view==='rooms'));}
 const simulator=initSimulator({getDocument:()=>doc,onBack:()=>showRooms(),onEdit:id=>{showRooms();rooms.openTask(id)}});
-function showSimulation(){explorer?.hide();rooms?.hide();view3d?.hide();shownCad=false;placingType=null;placementPreview=null;syncPlacementUI();$('#editor-view').hidden=true;$('#cadcraft-view').hidden=true;simulator.show();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view==='simulation'));}
+function showSimulation(){projectHome?.hide();explorer?.hide();rooms?.hide();view3d?.hide();shownCad=false;placingType=null;placementPreview=null;syncPlacementUI();$('#editor-view').hidden=true;$('#cadcraft-view').hidden=true;simulator.show();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view==='simulation'));}
+
+const projectHome=mountP8Projects({
+ workspace:document.querySelector('#app .workspace'),
+ store:projectStore,
+ onOpen:id=>{
+  try{projectStore.save(doc);doc=projectStore.open(id);ensureRoomModel(doc);validateDocument(doc);undo=[];redo=[];selection=null;connectionSuggestion=null;placingType=null;rooms.state.display='overview';rooms.state.selected=null;persist();renderAll();showRooms();}
+  catch(error){notice('Não foi possível abrir o projeto: '+error.message,true);}
+ },
+ onCreate:name=>{
+  projectStore.save(doc);
+  doc=createDocument(name);ensureRoomModel(doc);undo=[];redo=[];selection=null;connectionSuggestion=null;placingType=null;
+  projectStore.create(doc);rooms.state.display='overview';rooms.state.selected=null;persist();renderAll();showRooms();
+ }
+});
+function showHome(){
+ explorer?.hide();rooms?.hide();simulator?.hide();view3d?.hide();
+ $('#editor-view').hidden=true;$('#cadcraft-view').hidden=true;
+ document.querySelectorAll('[data-view]').forEach(el=>el.classList.remove('active'));
+ document.querySelectorAll('.bo-workflow-steps [data-bo-stage]').forEach(el=>{el.classList.remove('active');el.removeAttribute('aria-current')});
+ projectHome.show();
+}
+const homeButton=document.createElement('button');homeButton.type='button';homeButton.id='p8-projects-button';homeButton.textContent='Projetos';homeButton.setAttribute('aria-label','Abrir meus projetos');
+document.querySelector('.topbar .top-actions')?.prepend(homeButton);
+homeButton.addEventListener('click',showHome);
+document.querySelector('.topbar .identity')?.addEventListener('click',showHome);
+document.querySelector('.topbar .identity')?.setAttribute('title','Abrir meus projetos');
+
 function completeLink(from,to){const rel=inferRelation(doc,from,to);if(!rel){notice('Essas peças já estão conectadas assim.',true);draw();return}commit();try{const edge=addEdge(doc,{from,to,type:rel.type,label:rel.label});selection={kind:'edge',id:edge.id};connectionSuggestion=null;persist();renderAll();notice(`Conectadas: ${EDGE_TYPES[rel.type].title}. Não é isso? Troque o tipo no painel à direita.`)}catch(err){undo.pop();notice(err.message,true);renderAll()}}
 function removeItem(kind,id){commit();kind==='node'?deleteNode(doc,id):deleteEdge(doc,id);selection=null;connectionSuggestion=null;persist();renderAll();notice('Removido. Ctrl+Z desfaz.')}
 function isDropZone(p){return p.x>=STAGE_X&&p.x<=canvasWidth(doc)&&p.y>=HEADER_H&&p.y<=canvasHeight()}
@@ -163,7 +194,7 @@ function showView3D(){explorer?.hide();rooms?.hide();simulator?.hide();shownCad=
 function bind(){
  $('#catalog-search').addEventListener('input',e=>{catalogSearch=e.target.value.toLowerCase().trim();renderLibrary()});
  $('#project-name').addEventListener('change',e=>{const value=e.target.value.trim();if(!value){e.target.value=doc.name;return}commit();doc.name=value.slice(0,100);touch(doc);persist();renderAll()});
- $('#new-project').addEventListener('click',async()=>{if(!await confirmAction({title:'Criar serviço vazio?',message:'O serviço atual será substituído. Você poderá desfazer a operação.',confirmLabel:'Criar serviço',destructive:false}))return;commit();doc=createDocument('Meu novo serviço');selection=null;connectionSuggestion=null;placingType=null;persist();renderAll();focusStart();showRooms();notice('Serviço vazio criado. Use + Novo ambiente para começar.');});
+ $('#new-project').addEventListener('click',()=>{showHome();projectHome.element.querySelector('#p8-project-create')?.click();});
  $('#mobile-library').addEventListener('click',()=>document.body.classList.toggle('catalog-open'));$('#close-catalog').addEventListener('click',closeCatalog);
  $('#dismiss-guide').addEventListener('click',()=>{$('#builder-intro').hidden=true;try{localStorage.setItem('service-cad-lab/guide-hidden','1')}catch{}});try{$('#builder-intro').hidden=localStorage.getItem('service-cad-lab/guide-hidden')==='1'}catch{}
  $('#cancel-placement').addEventListener('click',()=>{placingType=null;placementPreview=null;renderAll();notice('Colocação cancelada.')});

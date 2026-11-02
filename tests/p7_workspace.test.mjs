@@ -6,11 +6,11 @@ import {FURNITURE,putFurniture,linkFurniture} from '../app/floorplan.mjs';
 import {normalizeCatalogText,matchesFurniture} from '../app/catalog-filter.mjs';
 import {blockedCells} from '../app/floorplan-navigation.mjs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-test('P7: six independent tabs are wired to single workspace and preserved modes',()=>{
+test('P8: four top-level workspaces preserve internal 2D/3D modes',()=>{
  const text=read('app/environments-ui.mjs');
- for(const id of ['hybrid-construct','bo-workflow-mount','bo-workflow-floor','bo-workflow-service','hybrid-simulate','bo-workflow-analyze'])
+ for(const id of ['hybrid-construct','bo-workflow-service','hybrid-simulate','bo-workflow-analyze'])
   assert.ok(text.includes('id="'+id+'"'),id);
- assert.match(text,/data-bo-stage="floor2d"/);
+ assert.match(text,/data-p8-space="visual"/);
  assert.match(text,/Abrir/);
  assert.doesNotMatch(text,/>1 Planejar</);
  const renderer=read('app/simulation-ui.mjs');
@@ -55,5 +55,6 @@ test('P7: print/export actions survive simulation/analysis DOM partition',()=>{
  assert.match(source,/exportTools/);
  assert.match(source,/renderCharts\(result\)/);
  const files=JSON.parse(read('app/css-manifest.json'));
- assert.equal(files.at(-1),'p71-ux.css');
+ assert.ok(files.includes('p71-ux.css'));
+ assert.equal(files.at(-1),'p8-workspace.css');
 });

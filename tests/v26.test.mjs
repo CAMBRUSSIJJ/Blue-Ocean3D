@@ -16,7 +16,8 @@ test('v2.3.2: uma folha carregada pelo navegador e fontes ordenadas',()=>{
 test('v2.3.2: remoções e substituições sem confirm nativo',()=>{
  const src=app('app.mjs')+app('environments-ui.mjs');
  assert.doesNotMatch(src,/\b(?:window\.)?confirm\s*\(/);
- assert.ok((src.match(/await confirmAction\(/g)||[]).length>=7);
+ assert.ok((src.match(/await confirmAction\(/g)||[]).length>=6);
+ assert.match(app('p8-projects.mjs'),/makeProjectStore/);
  assert.match(app('confirm-dialog.mjs'),/dialog\.showModal\(\)/);
  assert.match(app('confirm-dialog.mjs'),/previous\.focus/);
  assert.match(app('index.html'),/id="sb-confirm-dialog"/);

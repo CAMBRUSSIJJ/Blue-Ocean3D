@@ -35,5 +35,6 @@ test('P7.1: styled overview has valid contrast targets and does not overlay reop
  assert.match(css,/\.p71-plan-inspector/);
  assert.match(css,/\.p71-zoom-controls/);
  const manifest=JSON.parse(read('app/css-manifest.json'));
- assert.equal(manifest.at(-1),'p71-ux.css');
+ assert.ok(manifest.includes('p71-ux.css'));
+ assert.equal(manifest.at(-1),'p8-workspace.css');
 });

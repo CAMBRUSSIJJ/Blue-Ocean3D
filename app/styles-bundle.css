@@ -2772,3 +2772,263 @@ body.bo-ocean.sb-hybrid-active #rooms-view .p72-dialog-error[hidden]{display:non
  body.bo-ocean.sb-hybrid-active #rooms-view .p72-context *{transition:none!important}
 }
 
+
+/* SOURCE: p8-workspace.css */
+/* Blue Ocean 3D P8 — Service Workspace. Evolve the UI without forking model or engine. */
+body.bo-ocean{--bo-blue:#1256e8;--bo-blue-dark:#0643c5;--bo-bg:#f5f7fb;--bo-canvas:#f3f6fc;--bo-ink:#173456;--bo-line:#dee7f3;--bo-card:#fff;--bo-soft:#edf3ff;color:var(--bo-ink)}
+body.bo-ocean .topbar,body.bo-ocean.sb-hybrid-active .topbar{height:61px!important;min-height:61px!important;padding:0 clamp(12px,1.5vw,24px)!important;gap:18px!important;background:#fff!important}
+body.bo-ocean .topbar .identity{flex:0 0 155px!important;min-width:135px!important;cursor:pointer}
+body.bo-ocean .topbar .app-overline{letter-spacing:.01em!important;font-size:11px!important;color:#152e54!important}
+body.bo-ocean .topbar .brandline strong{font-size:10px!important;letter-spacing:.1em!important;text-transform:uppercase}
+body.bo-ocean .topbar .identity:before{content:'◈';display:grid;place-items:center;float:left;width:30px;height:30px;margin-right:9px;border-radius:8px;background:#155eef;color:#fff;font-size:19px;font-weight:800}
+body.bo-ocean .topbar .brandline{padding-top:2px}
+body.bo-ocean .p7-tabs{align-self:stretch!important;justify-content:flex-start!important;gap:10px!important}
+body.bo-ocean .p7-tabs button{min-height:61px!important;border-radius:0!important;padding:10px 13px!important;font-size:13px!important;font-weight:650!important;color:#71819b!important}
+body.bo-ocean .p7-tabs button[aria-current="page"]{box-shadow:inset 0 -3px #1256e8!important;color:#1256e8!important}
+body.bo-ocean .topbar #ai-launch{display:none!important}
+body.bo-ocean .topbar .project-field{max-width:235px!important;min-width:145px!important}
+body.bo-ocean .topbar .project-field span{font-size:10px!important}
+body.bo-ocean .topbar #save-status{font-size:11px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view.rooms-view{height:calc(100dvh - 61px)!important;min-height:480px!important;background:#f5f7fb!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-space-tabs{display:flex;align-items:center;gap:5px;padding:10px 24px 0;background:#f5f7fb;border:0;min-height:45px;flex:0 0 auto}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-space-tabs[hidden],body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-space-tabs{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-space-tabs button{border:1px solid transparent;background:transparent;color:#5f7897;border-radius:7px 7px 0 0;min-height:36px;padding:9px 15px;font-size:12px;font-weight:750}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-space-tabs button[aria-current="page"]{color:#1356dd;background:#fff;border-color:#dce5f2;border-bottom-color:#fff}
+body.bo-ocean.sb-hybrid-active #rooms-view .p72-context{padding:10px 24px!important;min-height:65px!important;box-shadow:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p72-context-title{font-size:19px!important;letter-spacing:-.035em;line-height:1.28!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p72-context-description{font-size:12px!important;color:#6b7e97!important;margin-top:4px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p72-context .p72-primary{background:#1256e8!important;border-color:#1256e8!important;border-radius:6px!important;min-height:37px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p72-context .p72-secondary{border-radius:6px!important;min-height:37px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .rooms-shell,body.bo-ocean.sb-hybrid-active #rooms-view .rooms-main{background:#f5f7fb!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .rooms-shell{padding:14px clamp(12px,1.2vw,22px)!important;gap:12px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-left-dock,body.bo-ocean.sb-hybrid-active #rooms-view .hybrid-right-dock{border:1px solid #e1e8f3!important;border-radius:11px!important;overflow:hidden!important;background:#fff!important;box-shadow:0 4px 14px #1a41650a!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-overview{background:#fff!important;border:1px solid #e1e8f3!important;border-radius:11px!important;padding:12px!important;box-shadow:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-scroll{border:1px solid #edf1f7!important;border-radius:10px!important;background-color:#fff!important;background-image:radial-gradient(#dfe7f3 1px,transparent 1px)!important;background-size:18px 18px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-head{padding:7px 12px 12px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-head h3{font-size:16px!important;letter-spacing:-.025em!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-head-actions .site-summary{font-size:10px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site21-tools{border:1px solid #e2e9f4!important;border-radius:8px!important;background:#fff!important;padding:7px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site21-modes{gap:3px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site21-modes button{min-height:34px!important;font-size:11px!important;padding:6px 9px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p71-legend{font-size:10px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .site-room{border-radius:7px!important;box-shadow:0 5px 14px #1c4e8310!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p71-plan-inspector{padding:18px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p71-plan-inspector .p71-panel-eyebrow{color:#2462cc!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor{border-radius:10px!important;border:1px solid #e0e8f2!important;box-shadow:none!important;background:#f1f6fd!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-stage{min-height:430px!important;background:#eaf2fc!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .floor-editor-map{background:#f3f7ff!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-structure-bar{box-shadow:0 2px 12px #274b7420!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .room3d-buttons{box-shadow:0 2px 12px #274b741c!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .room-workflow-drawer{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .room-grid{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-surface{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-surface{display:flex!important;flex-direction:column;flex:1 1 auto;min-height:0;width:100%;border:1px solid #e0e8f2;background:#fff;border-radius:12px;overflow:auto}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-surface[hidden]{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .hybrid-left-dock,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .hybrid-right-dock,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .workspace-splitter,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p71-dock-actions{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-shell{display:block!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main{width:100%!important;max-width:none!important;min-width:0!important;display:flex!important;flex-direction:column}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head{padding:20px 25px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border-bottom:1px solid #e8edf6}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-eyebrow{font-size:10px;letter-spacing:.08em;font-weight:800;color:#1c63bb}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head h2{font-size:20px;color:#193f6a;margin:4px 0 6px;letter-spacing:-.03em}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head p{font-size:12px;color:#66809c;margin:0}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head-actions button,
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-empty button{border:1px solid #cfdcf0;color:#215eae;background:#fff;padding:9px 13px;min-height:38px;border-radius:7px;font-size:12px;font-weight:730}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head-actions .p8-primary,
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-empty button{background:#1256e8;color:#fff;border-color:#1256e8}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-board{flex:1 1 auto;min-height:250px;padding:16px clamp(15px,4vw,55px);background-color:#fbfdff;background-image:linear-gradient(to right,#e8eef6 1px,transparent 1px),linear-gradient(to bottom,#e8eef6 1px,transparent 1px);background-size:19px 19px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-list{max-width:950px;margin:0 auto}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-row{display:grid;grid-template-columns:minmax(120px,210px) minmax(220px,430px);justify-content:center;gap:20px;min-height:111px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-lane{padding:19px 8px 0;display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap;align-content:start;color:#3f6186;font-size:12px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-lane-icon{display:inline-grid;place-items:center;height:22px;width:22px;border-radius:5px;background:#edf4ff;color:var(--p8-accent);font-size:11px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-lane b{margin-top:3px;flex:1 1 75px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-lane small{width:100%;padding-left:29px;color:#90a0b2;font-size:10px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-path{position:relative;padding:6px 0 27px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-card{width:100%;display:flex;gap:12px;align-items:center;text-align:left;background:#fff;border:1px solid #dbe6f4;border-left:4px solid #1256e8;border-radius:8px;box-shadow:0 4px 14px #1d3f710a;padding:13px 14px;min-height:78px;color:#193d64}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-card:hover{border-color:#86aeef;box-shadow:0 7px 20px #214e8118}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-number{background:#ecf3ff;color:#195dd9;border-radius:7px;padding:8px;font-size:10px;font-weight:800}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-info{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-info strong{font-size:13px;overflow-wrap:anywhere}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-info small{color:#6c839b;font-size:10px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-arrow{color:#346ac4}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-arrow{position:absolute;bottom:-2px;left:50%;color:#2468d9;font-size:22px;transform:translateX(-50%)}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-empty{display:grid;place-items:center;gap:10px;text-align:center;padding:70px 20px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-empty h3{font-size:18px;color:#173d65;margin:0}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-empty p{font-size:12px;color:#6a7e95;margin:0 0 9px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-empty-illustration{display:grid;place-items:center;background:#eaf2ff;color:#155eef;width:52px;height:52px;border-radius:14px;font-size:30px}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-disclaimer,
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-warning{font-size:11px;color:#6b82a0;text-align:center;max-width:700px;margin:14px auto}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-warning{color:#a85f2f}
+body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-footer{border-top:1px solid #e3eaf5;padding:10px 20px;color:#7186a1;font-size:11px;background:#fff}
+body.bo-ocean #simulation-view{background:#f5f7fb!important}
+body.bo-ocean #simulation-view .p7-sim-header,body.bo-ocean #simulation-view .p7-analysis-header{padding:12px 6px 20px!important;border:0!important;background:transparent!important}
+body.bo-ocean #simulation-view :is(.p7-sim-header,.p7-analysis-header) h1{font-size:24px!important;letter-spacing:-.03em}
+body.bo-ocean #simulation-view .p7-sim-runtime .sim-floor-card{border-radius:11px!important;box-shadow:none!important;padding:15px!important}
+body.bo-ocean #simulation-view .p7-analysis-charts,body.bo-ocean #simulation-view .sim-stats > *{border-radius:11px!important;box-shadow:none!important}
+body.bo-ocean #simulation-view .p7-analysis .sim-stats{gap:10px!important}
+body.bo-ocean #simulation-view .p7-chart-row .p7-chart-track i{background:#2d70df!important}
+@media(max-width:1000px){
+ body.bo-ocean .topbar .identity{flex:0 0 120px!important;min-width:115px!important}
+ body.bo-ocean .p7-tabs{gap:1px!important}
+ body.bo-ocean .p7-tabs button{padding:9px 7px!important;font-size:11px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p72-context{padding:9px 13px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-space-tabs{padding-left:13px}
+}
+@media(max-width:720px){
+ body.bo-ocean .topbar,body.bo-ocean.sb-hybrid-active .topbar{flex-wrap:wrap!important;height:auto!important;min-height:64px!important}
+ body.bo-ocean .p7-tabs{order:3;flex:1 1 100%!important;max-width:100%!important;overflow-x:auto!important}
+ body.bo-ocean .p7-tabs button{min-height:38px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view.rooms-view{height:calc(100dvh - 105px)!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-head{flex-direction:column;padding:15px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-row{grid-template-columns:minmax(90px,1fr) minmax(150px,2fr);gap:10px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-board{padding:14px 10px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-lane{font-size:11px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-flow-card{padding:10px 8px;gap:7px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-info strong{font-size:11px}
+ body.bo-ocean.sb-hybrid-active #rooms-view .p8-card-number{display:none}
+}
+@media(prefers-reduced-motion:reduce){body.bo-ocean .p8-flow-surface *{animation:none!important;transition:none!important}}
+
+/* Real project library, built from locally saved service documents. */
+body.bo-ocean .topbar #p8-projects-button{
+ display:inline-flex;align-items:center;justify-content:center;gap:5px;
+ min-height:36px;padding:7px 11px;border:1px solid #d9e3f1;border-radius:7px;
+ background:#fff;color:#315b86;font-size:12px;font-weight:700;cursor:pointer
+}
+body.bo-ocean .topbar #p8-projects-button:hover{background:#edf4ff;color:#1256e8}
+body.bo-ocean.p8-home-visible .topbar .p7-tabs{display:none!important}
+body.bo-ocean #p8-projects-home[hidden]{display:none!important}
+body.bo-ocean #p8-projects-home{
+ display:block;min-height:calc(100dvh - 61px);overflow:auto;padding:clamp(18px,3vw,48px);
+ background:#f5f7fb;color:#17385c
+}
+body.bo-ocean #p8-projects-home .p8-home-inner{max-width:1320px;margin:0 auto}
+body.bo-ocean #p8-projects-home .p8-home-header{display:flex;justify-content:space-between;align-items:center;gap:22px;margin:0 0 28px}
+body.bo-ocean #p8-projects-home .p8-eyebrow{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:#1755b5}
+body.bo-ocean #p8-projects-home h1{font-size:clamp(24px,2.4vw,35px);line-height:1.2;color:#122e50;margin:7px 0 8px;letter-spacing:-.055em;font-weight:770}
+body.bo-ocean #p8-projects-home .p8-home-header p{margin:0;color:#6b7f99;font-size:13px}
+body.bo-ocean #p8-projects-home .p8-home-primary{border:1px solid #155eef;background:#155eef;color:#fff;padding:11px 17px;min-height:42px;border-radius:7px;font-weight:720;font-size:13px}
+body.bo-ocean #p8-projects-home .p8-project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px}
+body.bo-ocean #p8-projects-home .p8-project-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid #dce6f3;border-radius:12px;background:#fff;box-shadow:0 4px 18px #1642700a;min-height:285px}
+body.bo-ocean #p8-projects-home .p8-project-thumbnail{margin:13px 13px 0;padding:16px;flex:1;min-height:160px;border-radius:9px;background:#edf3fc;display:flex;align-items:center;justify-content:center}
+body.bo-ocean #p8-projects-home .p8-cover-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:86%;max-width:290px}
+body.bo-ocean #p8-projects-home .p8-cover-room{display:grid;place-items:center;border:1px solid #a5c2e9;background:#f8fbff;border-radius:3px;color:#456584;min-height:48px;padding:8px 5px;text-align:center;font-size:9px;font-weight:700;overflow:hidden}
+body.bo-ocean #p8-projects-home .p8-project-meta{padding:13px 17px 7px;display:flex;justify-content:space-between;gap:7px}
+body.bo-ocean #p8-projects-home .p8-project-meta>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+body.bo-ocean #p8-projects-home .p8-project-meta strong{font-size:14px;line-height:1.3;color:#213e60;overflow-wrap:anywhere}
+body.bo-ocean #p8-projects-home .p8-project-meta small{font-size:10px;color:#8092a6}
+body.bo-ocean #p8-projects-home .p8-active-badge{height:24px;padding:4px 8px;color:#1256e8;font-size:10px;border-radius:5px;background:#edf3ff}
+body.bo-ocean #p8-projects-home .p8-project-card>button{align-self:stretch;display:flex;justify-content:space-between;align-items:center;padding:9px 17px 15px;border:0;background:#fff;color:#1256e8;font-size:12px;font-weight:700;text-align:left}
+body.bo-ocean #p8-projects-home .p8-project-card>button:hover{color:#09388c}
+body.bo-ocean #p8-projects-home .p8-new-project-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:repeating-linear-gradient(-45deg,#f8fbff,#f8fbff 8px,#f3f7fd 8px,#f3f7fd 16px);border:2px dashed #c8daef;border-radius:12px;min-height:285px;padding:18px 26px;text-align:center}
+body.bo-ocean #p8-projects-home .p8-new-plus{height:52px;width:52px;border-radius:50%;display:grid;place-items:center;border:1px solid #bad2f4;background:#e6f0ff;color:#155eef;font-size:30px}
+body.bo-ocean #p8-projects-home .p8-new-project-card strong{color:#244c78;font-size:14px}
+body.bo-ocean #p8-projects-home .p8-new-project-card small{font-size:11px;color:#7187a2;line-height:1.5;max-width:220px}
+body.bo-ocean #p8-projects-home .p8-storage-disclaimer{margin-top:24px;padding:13px 17px;background:#eaf1fd;border-radius:7px;font-size:11px;color:#5d7695}
+body.bo-ocean #p8-projects-home .p8-project-dialog{max-width:min(460px,calc(100vw - 28px));width:100%;padding:24px;background:#fff;color:#234160;border:1px solid #d6e3f2;border-radius:14px;box-shadow:0 24px 90px #102d4f35}
+body.bo-ocean #p8-projects-home .p8-project-dialog::backdrop{background:#19375362}
+body.bo-ocean #p8-projects-home .p8-project-dialog form{display:flex;flex-direction:column;gap:17px}
+body.bo-ocean #p8-projects-home .p8-project-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+body.bo-ocean #p8-projects-home .p8-project-dialog h2{font-size:22px;letter-spacing:-.03em;margin:0}
+body.bo-ocean #p8-projects-home .p8-project-dialog-head button{border:0;background:transparent;color:#60778e;font-size:21px}
+body.bo-ocean #p8-projects-home .p8-project-dialog label{display:flex;flex-direction:column;gap:8px;font-weight:700;font-size:13px}
+body.bo-ocean #p8-projects-home .p8-project-dialog input{border:1px solid #cad9ed;border-radius:8px;min-height:44px;padding:10px 12px;background:#fff;color:#16395b;font-size:14px}
+body.bo-ocean #p8-projects-home .p8-project-dialog p{margin:0;color:#7289a0;font-size:12px}
+body.bo-ocean #p8-projects-home .p8-project-dialog-actions{display:flex;justify-content:flex-end;gap:9px}
+body.bo-ocean #p8-projects-home .p8-project-dialog-actions button{min-height:38px;padding:8px 15px;border:1px solid #d0dceb;border-radius:8px;background:#fff;color:#285177;font-weight:700;font-size:12px}
+body.bo-ocean #p8-projects-home .p8-project-dialog-actions button[type="submit"]{background:#155eef;color:#fff;border-color:#155eef}
+@media(max-width:1100px){
+ body.bo-ocean #p8-projects-home .p8-project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ body.bo-ocean #p8-projects-home .p8-project-grid{grid-template-columns:1fr}
+ body.bo-ocean #p8-projects-home .p8-home-header{align-items:flex-start;flex-direction:column}
+ body.bo-ocean #p8-projects-home{padding:15px}
+}
+
+/* P8.1 — Funcionamento uses one continuous workspace. Legacy drawers stay mounted
+   for data/actions but must not occupy layout space or clip the operational map. */
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"].rooms-view{
+ display:flex!important;
+ flex-direction:column!important;
+ height:calc(100dvh - 61px)!important;
+ min-height:0!important;
+ overflow:hidden!important;
+ padding:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] :is(
+ .rooms-hero,.room-how,.room-check,.room-stats,.p8-space-tabs
+){display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-shell{
+ display:flex!important;
+ flex:1 1 auto!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ height:auto!important;
+ overflow:hidden!important;
+ padding:12px clamp(12px,1.2vw,22px)!important;
+ margin:0!important;
+ gap:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main{
+ display:flex!important;
+ flex:1 1 auto!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ height:100%!important;
+ overflow:hidden!important;
+ padding:0!important;
+ gap:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main > :is(
+ .p71-dock-actions,.hybrid-mobile-panels,.room-main-toolbar,.room-tab-nav,
+ .room-mode-switch,.floor-editor,.room-workflow-drawer,.room-connections,
+ .site-overview
+){display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main > .p71-dock-actions:has(.workspace-reopen:not([hidden])){
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .hybrid-journey,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .hybrid-journey.is-expanded{
+ display:none!important;
+ flex:0 0 0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main > .p8-flow-surface{
+ display:flex!important;
+ flex:1 1 auto!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ height:100%!important;
+ max-height:100%!important;
+ width:100%!important;
+ overflow:hidden!important;
+ margin:0!important;
+ border:1px solid #dce6f4!important;
+ background:#fff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-head{
+ flex:0 0 auto!important;
+ padding:15px clamp(12px,2vw,25px)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-board{
+ flex:1 1 auto!important;
+ min-height:0!important;
+ overflow:auto!important;
+ scrollbar-gutter:stable;
+ overscroll-behavior:contain;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-footer{
+ flex:0 0 auto!important;
+}
+@media(max-width:720px){
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"].rooms-view{
+  height:calc(100dvh - 105px)!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-shell{
+  padding:8px!important;
+ }
+}
+

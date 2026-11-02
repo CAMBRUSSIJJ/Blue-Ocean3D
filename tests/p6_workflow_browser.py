@@ -22,7 +22,7 @@ with sync_playwright() as playwright:
  page.locator('#room-create-form button[type="submit"]').click()
  expect(page.locator('#room-create-dialog')).to_be_hidden()
  assert page.evaluate('doc.environments.length')==old+1
- expect(page.locator('#site-overview')).to_contain_text('Sala P6 de Teste')
+ expect(page.locator('#room-studio-heading')).to_contain_text('Sala P6 de Teste')
  page.locator('#bo-workflow-mount').click()
  expect(page.locator('#room-3d-stage')).to_be_visible(timeout=12000)
  expect(page.locator('#bo-workflow-mount')).to_have_attribute('aria-current','page')
@@ -35,9 +35,8 @@ with sync_playwright() as playwright:
  camera.click()
  expect(controls.locator('[data-room3d-control="left"]')).to_be_hidden()
  page.locator('#bo-workflow-service').click()
- expect(page.locator('.room-workflow-drawer')).to_be_visible()
- expect(page.locator('.room-connections')).to_be_visible()
- expect(page.locator('#room-current-activities')).to_be_visible()
+ expect(page.locator('#p8-flow-surface')).to_be_visible()
+ assert page.locator('.p8-flow-card').count()>0
  expect(page.locator('#bo-workflow-service')).to_have_attribute('aria-current','page')
  page.locator('#hybrid-simulate').click()
  expect(page.locator('#simulation-view')).to_be_visible()
