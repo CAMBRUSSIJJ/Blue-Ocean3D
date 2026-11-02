@@ -125,11 +125,11 @@ export function installP71Overview({root,getDocument,moveRoom,report,roomSpot,on
   const route=event.target.closest('[data-site-inspect-route]');
   if(route){selectRoute(route.dataset.siteInspectRoute);return}
   const room=event.target.closest('.site-room');
-  if(room&&!event.target.closest('button'))selectRoom(room.dataset.siteRoom);
+  if(room&&!event.target.closest('button')&&!root.classList.contains('p72-connecting'))selectRoom(room.dataset.siteRoom);
  });
  root.addEventListener('keydown',event=>{
   const card=event.target.closest('.site-room');
-  if(!card||event.target!==card)return;
+  if(!card||event.target!==card||root.classList.contains('p72-connecting'))return;
   if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRoom(card.dataset.siteRoom);return}
   const steps={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
   const delta=steps[event.key];if(!delta)return;
