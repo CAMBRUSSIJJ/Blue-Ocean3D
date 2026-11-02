@@ -9,7 +9,7 @@ const contrast=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05
 test('light design system is the last reproducible CSS source',()=>{
  const files=JSON.parse(read('app/css-manifest.json'));
  assert.ok(files.includes('p71-ux.css'));
- assert.equal(files.at(-1),'p8-workspace.css');
+ assert.equal(files.at(-1),'p84-space-planner.css');
  const expected=['/* Service Builder v2.3.2 | generated file; edit individual CSS source files. */',
   ...files.map(f=>'\n/* SOURCE: '+f+' */\n'+read('app/'+f))].join('\n')+'\n';
  assert.equal(read('app/styles-bundle.css'),expected);
