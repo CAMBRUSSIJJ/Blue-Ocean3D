@@ -48,14 +48,11 @@ with sync_playwright() as pw:
  menu.locator('summary').click()
  expect(menu.locator('#floor-auto')).to_be_visible()
  menu.locator('summary').click()
- # Journey remains one graph, available in expanded mode.
- journey=page.locator('#hybrid-journey')
+ # P8 replaces the duplicate bottom journey with one operational map.
  page.locator('#bo-workflow-service').click()
- if page.locator('#hybrid-journey-expand').get_attribute('aria-expanded')!='true':
-  page.locator('#hybrid-journey-expand').click()
- assert 'is-expanded' in journey.get_attribute('class').split()
- expect(page.locator('#hybrid-journey-list [data-hybrid-step]').first).to_be_visible()
- page.locator('#hybrid-journey-expand').click()
+ expect(page.locator('#p8-flow-surface')).to_be_visible()
+ expect(page.locator('#hybrid-journey')).to_be_hidden()
+ assert page.locator('.p8-flow-card').count()>0
  page.locator('#hybrid-construct').click()
  page.locator('#bo-workflow-mount').click()
  # Previous scene modes and service data remain untouched.
