@@ -30,9 +30,8 @@ try:
    page.goto(url+path,wait_until='domcontentloaded')
    expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
    page.locator('#bo-workflow-service').click()
-   if page.locator('#hybrid-journey-expand').get_attribute('aria-expanded')!='true':
-    page.locator('#hybrid-journey-expand').click()
-   expect(page.locator('#hybrid-journey-list')).to_be_visible(timeout=15000)
+   expect(page.locator('#p8-flow-surface')).to_be_visible(timeout=15000)
+   expect(page.locator('#hybrid-journey')).to_be_hidden()
    page.locator('#hybrid-construct').click()
    page.locator('#bo-workflow-mount').click()
    page.locator('.bo-toolbar-more summary').click()
