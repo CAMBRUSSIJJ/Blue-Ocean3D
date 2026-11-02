@@ -44,5 +44,5 @@ test('P6: new 3D daylight floor checks Blue Ocean theme instead of legacy dark-m
  assert.match(room,/0xe0e9f5/);
  const files=JSON.parse(read('app/css-manifest.json'));
  assert.ok(files.includes('p71-ux.css'));
- assert.equal(files.at(-1),'p8-workspace.css');
+ assert.equal(files.at(-1),'p84-space-planner.css');
 });

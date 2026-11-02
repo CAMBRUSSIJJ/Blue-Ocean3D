@@ -56,5 +56,5 @@ test('P7: print/export actions survive simulation/analysis DOM partition',()=>{
  assert.match(source,/renderCharts\(result\)/);
  const files=JSON.parse(read('app/css-manifest.json'));
  assert.ok(files.includes('p71-ux.css'));
- assert.equal(files.at(-1),'p8-workspace.css');
+ assert.equal(files.at(-1),'p84-space-planner.css');
 });

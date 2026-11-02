@@ -156,7 +156,18 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const planInspector=document.createElement('section');planInspector.className='p71-plan-inspector';
  planInspector.innerHTML='<p class="p71-panel-eyebrow">ESPAÇO FÍSICO</p><h3 id="p71-plan-title">Selecione um ambiente</h3><p id="p71-plan-info">Clique em uma sala na planta para inspecioná-la. Use as setas para mover uma sala selecionada.</p><button type="button" id="p71-plan-edit" hidden>Abrir ambiente 3D</button>';
  root.querySelector('.hybrid-right-dock').append(planInspector);
- const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),onShowFlow:id=>{openWorkflow('service');p8Flow.setFocusRoom(id);},onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
+ const overview=initSiteOverview({root:$('#site-overview'),getDocument,mutate,onCreate:()=>openCreateDialog(),
+  onShowFlow:id=>{openWorkflow('service');p8Flow.setFocusRoom(id);},
+  onUpdateRoom:(id,changes)=>{mutate(doc=>updateRoom(doc,id,changes));status('Propriedades do ambiente atualizadas.');},
+  onDeleteRoom:async id=>{
+   const room=getDocument().environments?.find(r=>r.id===id);
+   if(!room)return false;
+   const count=roomNodes(getDocument(),id).length;
+   const confirmed=await confirmAction({title:'Excluir ambiente?',message:'“'+room.name+'” será removido. As '+count+' atividades permanecerão no serviço, sem ambiente físico.',confirmLabel:'Excluir ambiente'});
+   if(!confirmed)return false;
+   mutate(doc=>deleteRoom(doc,id));status('Ambiente removido; atividades preservadas.');return true;
+  },
+  onOpen:id=>{ui.display='three';root.querySelectorAll('[data-room-display]').forEach(x=>{const on=x.dataset.roomDisplay==='three';x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});select(id);studioMode();},onMessage:msg=>$('#floor-editor-notice').textContent=msg});
  root.addEventListener('p71-room-selected',e=>{
   const room=getDocument().environments?.find(x=>x.id===e.detail.id);
   if(!room)return;

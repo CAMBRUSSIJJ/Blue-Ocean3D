@@ -1,0 +1,313 @@
+/* Blue Ocean 3D P8.4 — faithful, functional adaptation of space_planner.html.
+ * A focused canvas with bottom tools and contextual properties; real canonical
+ * geometry, routing, room editor and actions remain authoritative.
+ */
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"].rooms-view{
+ display:flex!important;flex-direction:column!important;overflow:hidden!important;
+ min-height:0!important;height:calc(100dvh - 61px)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .rooms-shell{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:minmax(0,1fr)!important;
+ flex:1 1 auto!important;min-height:0!important;
+ height:auto!important;overflow:hidden!important;
+ padding:8px!important;margin:0!important;gap:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .hybrid-left-dock,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .hybrid-right-dock,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .workspace-splitter{
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .rooms-main{
+ display:flex!important;flex-direction:column!important;
+ grid-column:1!important;grid-row:1!important;min-width:0!important;min-height:0!important;
+ width:100%!important;height:100%!important;max-width:none!important;
+ overflow:hidden!important;gap:0!important;background:#fff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p71-dock-actions{
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] #site-overview.p84-space-planner{
+ display:flex!important;flex-direction:column!important;position:relative!important;
+ flex:1 1 auto!important;min-height:0!important;height:100%!important;
+ margin:0!important;padding:0!important;
+ background:#fff!important;border:1px solid #dae4f1!important;
+ border-radius:10px!important;overflow:hidden!important;
+ box-shadow:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-head{
+ padding:13px 22px 10px!important;min-height:62px!important;flex:0 0 auto!important;
+ background:#fff!important;border-bottom:1px solid #ecf1f8!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-head h3{
+ font-size:16px!important;color:#173f6a!important;font-weight:760!important;letter-spacing:-.025em!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-head-actions{display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p82-overview-caption{
+ display:flex!important;align-items:center!important;gap:7px!important;margin:0!important;
+ padding:8px 22px!important;flex:0 0 auto!important;background:#fff!important;
+ border-bottom:1px solid #edf2f8!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p82-overview-caption span{
+ background:#f6f9fd!important;border:0!important;color:#627e9b!important;
+ padding:5px 9px!important;min-height:27px!important;font-size:10px!important
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p82-overview-caption b{
+ font-size:11px!important;color:#155eef!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p82-overview-caption button{
+ margin-left:auto!important;min-height:30px!important;font-size:11px!important;
+ background:#edf4ff!important;border-radius:6px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site21-tools,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p71-legend{
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site21-instruction{
+ display:block!important;min-height:24px!important;margin:0!important;
+ padding:5px 22px!important;font-size:10px!important;
+ flex:0 0 auto!important;color:#71869e!important;background:#fff!important;
+ border-bottom:1px solid #edf3fa!important;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-scroll{
+ display:block!important;flex:1 1 auto!important;min-height:0!important;
+ height:auto!important;max-height:none!important;
+ margin:0!important;padding:20px 20px 92px!important;overflow:auto!important;
+ border:0!important;border-radius:0!important;
+ background-color:#f8fafc!important;
+ background-image:radial-gradient(#cbd5e1 1.2px,transparent 1.2px)!important;
+ background-size:24px 24px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room{
+ border:1px solid #a9c3e1!important;border-radius:9px!important;
+ background:rgba(255,255,255,.97)!important;
+ box-shadow:0 4px 13px #27477b16!important;
+ overflow:visible!important;transition:box-shadow .12s ease!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room:hover{
+ box-shadow:0 7px 18px #234e881f!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room.p71-selected-room{
+ border-color:#155eef!important;box-shadow:0 0 0 3px #2d75ed38!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room-handle{
+ border:0!important;border-bottom:1px solid #e6edf5!important;
+ border-radius:8px 8px 0 0!important;bottom:auto!important;top:0!important;position:relative!important;
+ background:#fff!important;height:35px!important;min-height:35px!important;
+ padding:5px 8px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room-handle b{
+ color:#25476f!important;font-size:11px!important;font-weight:750!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room-handle button{
+ border-radius:5px!important;background:#eaf2ff!important;color:#155eef!important;
+ font-size:10px!important;font-weight:750!important;
+ min-height:24px!important;padding:3px 8px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room-svg{
+ border:0!important;border-radius:0!important;height:160px!important;box-sizing:border-box!important;
+ background:#f2f7fe!important;margin:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room>small{
+ position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+ border:0!important;border-top:1px solid #e6edf5!important;
+ border-radius:0 0 8px 8px!important;background:#f9fbfe!important;
+ color:#66819b!important;min-height:27px!important;line-height:1.4!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room.dragging{
+ z-index:25!important;cursor:grabbing!important;filter:drop-shadow(0 12px 20px #274f8728)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-room.p83-drag-invalid{
+ border-color:#d45363!important;box-shadow:0 0 0 3px #d453633c!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools{
+ position:absolute;z-index:50;left:50%;bottom:20px;transform:translateX(-50%);
+ display:flex!important;align-items:center;justify-content:center;gap:5px;
+ padding:7px!important;min-height:54px!important;
+ background:rgba(255,255,255,.98);border:1px solid #d8e3f1;border-radius:32px;
+ box-shadow:0 12px 40px #22436628;white-space:nowrap;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools button,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tools-more>summary{
+ display:inline-flex!important;align-items:center;justify-content:center;
+ width:38px;height:38px;flex:0 0 38px;
+ padding:0!important;border:1px solid transparent!important;
+ background:transparent!important;color:#55718e!important;
+ font-size:19px!important;font-weight:740!important;cursor:pointer;
+ border-radius:50%!important;list-style:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tools-more>summary::-webkit-details-marker{display:none}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools button.active,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools button[aria-pressed="true"]{
+ color:#1256e8!important;background:#e8f1ff!important;border-color:#c8dcfb!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools button:hover,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tools-more>summary:hover{
+ background:#edf3fa!important;color:#215d9d!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tool-divider{
+ background:#dae5f0;height:23px;width:1px;flex:0 0 1px;margin:0 1px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tools-more{position:relative}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu{
+ display:none;position:absolute;bottom:50px;right:-10px;width:min(300px,calc(100vw - 32px));
+ max-height:min(60vh,460px);overflow:auto;padding:10px;z-index:70;
+ background:#fff;border:1px solid #d7e2ef;border-radius:11px;
+ box-shadow:0 12px 45px #173b6628;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tools-more[open] .p84-menu{display:block!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu [data-site-reset]{
+ display:block!important;width:100%!important;min-height:38px!important;
+ padding:8px 10px!important;font-size:12px!important;color:#375a7b!important;
+ background:#f7faff!important;border:1px solid #dbe7f4!important;border-radius:6px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu .p72-connection-options{
+ display:block!important;width:100%!important;padding:6px!important;margin-top:8px;
+ border:1px solid #dce6f0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu .p72-connection-options>summary{
+ display:block!important;padding:7px 8px!important;font-size:12px!important;color:#2e5b88!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu .site21-pair{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;padding:6px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu .site21-pair label{display:flex!important;gap:8px!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-menu .site21-pair button{
+ width:100%!important;min-height:36px!important;flex:auto!important;
+ border-radius:6px!important;font-size:12px!important;padding:8px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p71-zoom-controls.p84-floating-zoom{
+ position:absolute!important;z-index:45!important;bottom:22px!important;right:20px!important;
+ display:flex!important;align-items:center!important;gap:3px!important;float:none!important;
+ margin:0!important;padding:6px!important;background:#fff!important;
+ border:1px solid #d7e1ef!important;border-radius:9px!important;
+ box-shadow:0 9px 28px #143c661b!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-zoom button{
+ border:0!important;min-height:33px!important;padding:5px 9px!important;
+ background:#fff!important;color:#537495!important;border-radius:6px!important;
+ font-size:14px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-zoom output{
+ font-size:11px!important;width:47px!important;text-align:center!important;color:#557291!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-zoom button[data-p71-zoom="fit"]{
+ font-size:10px!important;width:auto!important;padding:6px!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties{
+ display:flex;flex-direction:column;position:absolute;z-index:65;
+ top:0;right:0;bottom:0;width:min(312px,90%);
+ overflow:hidden;background:#fff;border-left:1px solid #dbe5f0;
+ box-shadow:-12px 0 40px #23446925;color:#243f60;
+ animation:p84-panel-in .16s ease-out both;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties[hidden]{display:none!important}
+@keyframes p84-panel-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-head{
+ display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+ padding:20px 18px 16px;border-bottom:1px solid #eaf0f6;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-eyebrow{
+ color:#1b62b9;font-size:10px;font-weight:800;letter-spacing:.065em;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-head h3{
+ margin:4px 0 0;color:#173e68;font-size:19px;letter-spacing:-.025em;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-head>button{
+ border:0;background:#f2f6fc;color:#597697;font-size:20px;
+ border-radius:7px;width:30px;height:30px;cursor:pointer;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-content{
+ padding:18px;overflow:auto;display:flex;flex-direction:column;gap:22px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] #p84-room-form{
+ display:flex;flex-direction:column;gap:14px;margin:0;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] #p84-room-form label{
+ display:flex;flex-direction:column;gap:7px;color:#466585;font-size:12px;font-weight:700;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] #p84-room-name{
+ min-height:40px;background:#fbfdff;color:#193d64;
+ border:1px solid #cbdced;border-radius:7px;padding:8px 10px;
+ font-size:13px;font-family:inherit;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-room-metrics{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-room-metrics>div{
+ padding:9px 7px;background:#f4f8fe;border:1px solid #e7eff9;
+ border-radius:8px;display:flex;flex-direction:column;gap:7px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-room-metrics small{
+ font-size:10px;color:#768ba2;line-height:1.2;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-room-metrics strong{font-size:14px;color:#174a86}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-room-dimensions{margin:-6px 0 0;color:#778ba0;font-size:10px}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-colors{padding:0;border:0;margin:0}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-colors legend{
+ font-size:12px;font-weight:700;color:#446480;margin-bottom:9px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-colors>div{display:flex;flex-wrap:wrap;gap:7px}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-color-chip{
+ width:25px;height:25px;border-radius:50%;background:var(--p84-chip);
+ border:2px solid #fff;outline:1px solid #d7e3ef;cursor:pointer;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-color-chip[aria-pressed="true"]{
+ outline:3px solid #155eef;outline-offset:2px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-save-room{
+ border:1px solid #155eef;background:#155eef;color:#fff;border-radius:7px;
+ min-height:39px;font-size:12px;font-weight:750;cursor:pointer;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-links{
+ border-top:1px solid #e7edf5;padding-top:15px;display:flex;flex-direction:column;gap:8px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-links button{
+ background:#fff;color:#275986;border:1px solid #d4e1f0;
+ text-align:left;border-radius:7px;padding:10px 12px;font-weight:700;font-size:12px;
+ min-height:40px;cursor:pointer;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-links button:hover{background:#f2f7fd}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties-links button.p84-danger{
+ color:#c3444e;border-color:#f2d9dd;margin-top:10px;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-room-hint{
+ font-size:11px;color:#768da6;line-height:1.55;margin:0;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-notes{
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-notes.p84-visible{
+ display:block!important;flex:0 0 auto!important;max-height:22vh!important;
+ overflow:auto!important;margin:0!important;border-radius:0!important;
+ border-top:1px solid #dae6f2!important;box-shadow:0 -4px 12px #234d750b!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .site-feedback.p84-status-feedback:not([hidden]){
+ position:absolute;z-index:52;bottom:84px;left:20px;right:auto;
+ max-width:min(420px,calc(100% - 40px));margin:0!important;
+ border-radius:8px!important;background:#fff!important;box-shadow:0 5px 25px #21406e26!important;
+}
+@media(max-width:950px){
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties{width:min(300px,85%)}
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools{left:16px;transform:none}
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-zoom{right:12px!important}
+}
+@media(max-width:650px){
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools{
+  bottom:15px;left:9px;gap:2px;padding:5px!important;min-height:47px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-tools button,
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-tools-more>summary{
+  width:31px;height:31px;flex-basis:31px;font-size:15px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-floating-zoom{
+  bottom:75px!important;right:10px!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .site-head{padding:10px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p82-overview-caption{padding:5px 8px!important}
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-space-planner .p82-overview-caption span:last-of-type{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="plan"] .p84-properties{animation:none!important}
+}

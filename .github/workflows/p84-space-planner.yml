@@ -1,0 +1,32 @@
+name: Blue Ocean 3D · P8.4 Space Planner
+on:
+  push:
+    branches: [feat/blueocean3d-p84-space-planner-real-ui]
+  pull_request:
+    paths: [app/**, tests/**, scripts/**, .github/workflows/p84-space-planner.yml]
+permissions:
+  contents: read
+jobs:
+  planner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Syntax, contracts and reproducible CSS
+        run: |
+          node --check app/p84-space-planner.mjs
+          node --check app/site-overview.mjs
+          node --check app/environments-ui.mjs
+          npm test
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+          node scripts/build-vercel.mjs
+          test -f dist/app/index.html
+      - name: Install Chromium and Firefox
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium firefox
+      - name: Interactive planner Firefox and Chromium
+        run: |
+          python3 tests/p84_space_planner_browser.py
+          python3 tests/p83_drag_browser.py
+          python3 tests/p8_workspace_browser.py
