@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Full P3 smoke: canonical flow -> expandable journey -> linked simulated events and rooms."""
+"""Full P3 smoke: canonical flow -> P8 full-page map -> linked simulated events and rooms."""
 from pathlib import Path
 from inline_app import inline_app
 from playwright.sync_api import sync_playwright, expect
@@ -13,15 +13,17 @@ with sync_playwright() as pw:
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
  expect(page.locator('#site-overview')).to_be_visible(timeout=15000)
  page.locator('#bo-workflow-service').click()
+ # P8 uses the same canonical graph in a full-page operational map.
+ # The earlier bottom journey is retained for compatibility but intentionally hidden.
  journey=page.locator('#hybrid-journey-list')
- expect(journey).to_be_visible(timeout=12000)
+ expect(journey).to_be_hidden()
  tasks=page.evaluate("doc.nodes.length")
- assert journey.locator('[data-hybrid-step]').count()==tasks,(tasks,journey.locator('[data-hybrid-step]').count())
- button=page.locator('#hybrid-journey-expand')
- if button.get_attribute('aria-expanded')!='true': button.click()
- expect(button).to_have_attribute('aria-expanded','true')
- page.locator('[data-hybrid-room]').first.click()
- expect(page.locator('#room-studio-heading')).to_contain_text('Editando:',timeout=8000)
+ assert journey.locator('[data-hybrid-step]').count()==tasks
+ expect(page.locator('#p8-flow-surface')).to_be_visible(timeout=12000)
+ assert page.locator('.p8-flow-card').count()==page.evaluate("doc.nodes.filter(n=>['activity','decision'].includes(n.type)).length")
+ page.locator('.p8-flow-card').first.click()
+ expect(page.locator('#room-task-dialog')).to_be_visible()
+ page.locator('#room-task-close').click()
  page.locator('#hybrid-simulate').click()
  if page.locator('#sim-allow-parallel').count():
   page.locator('#sim-allow-parallel').check()
@@ -41,5 +43,5 @@ with sync_playwright() as pw:
   sim_rows.first.click()
   assert page.evaluate('simulator.state.selected.caseIndex')==2
  assert not errors,errors
- print('PASS P3 Chromium: complete ordered journey, room navigation, simulator selection and case switching')
+ print('PASS P3 Chromium: complete operational map, activity editing, simulator selection and case switching')
  browser.close()
