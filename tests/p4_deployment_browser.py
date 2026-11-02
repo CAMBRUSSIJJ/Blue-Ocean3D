@@ -33,6 +33,7 @@ try:
    if page.locator('#hybrid-journey-expand').get_attribute('aria-expanded')!='true':
     page.locator('#hybrid-journey-expand').click()
    expect(page.locator('#hybrid-journey-list')).to_be_visible(timeout=15000)
+   page.locator('#hybrid-construct').click()
    page.locator('#bo-workflow-mount').click()
    page.locator('.bo-toolbar-more summary').click()
    expect(page.locator('#hybrid-layout-compare')).to_be_visible()
