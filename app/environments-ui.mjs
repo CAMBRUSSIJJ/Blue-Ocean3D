@@ -10,6 +10,7 @@ import {confirmAction} from './confirm-dialog.mjs';
 import {initWorkspaceControls} from './workspace-controls.mjs';
 import {buildJourneyGraph} from './journey-flow.mjs';
 import {initLayoutReview} from './layout-review-ui.mjs';
+import {mountFlowBar} from './p72-flow.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const palette=['#1F927F','#587EB7','#B67E48','#9373B4','#D0748F','#5692AA','#7B9167'];
@@ -126,6 +127,18 @@ function renderHybridJourney(doc,selected){
 
 export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const root=$('#rooms-view'),hybrid=installHybridLayout(root),ui={active:false,selected:null,editing:null,search:'',stage:0,kitTab:'catalog',display:'overview'};
+ const flowGuide=mountFlowBar({
+  root,getDocument,getDisplay:()=>ui.display,getSelected:()=>ui.selected,
+  onAction(action){
+   if(action==='create-room')return openCreateDialog();
+   if(action==='open-room')return openWorkflow('mount');
+   if(action==='furniture'){hybrid.workspace.setCollapsed('left',false);setFurniture(true);return;}
+   if(action==='building-tools'){hybrid.workspace.setCollapsed('left',false);setFurniture(true);root.querySelector('#floor-structure-tools')?.scrollIntoView({block:'nearest'});return;}
+   if(action==='new-activity')return openQuickActivityDialog();
+   if(action==='connect-activity'){const task=getDocument().nodes?.find(n=>n.type==='activity')||getDocument().nodes?.[0];if(task)openTask(task.id);return;}
+   if(action==='simulate')return openWorkflow('scenario');
+  }
+ });
  const layoutReview=initLayoutReview({root,getDocument,getRoomId:()=>ui.selected});
  root.querySelector('#hybrid-layout-compare').addEventListener('click',()=>layoutReview.open());
  root.querySelector('.rooms-shell').classList.add('studio-full','show-object-inspector');
@@ -197,7 +210,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   root.dataset.workflowStep=step;activeWorkflowStep(step);
   const journey=root.querySelector('#hybrid-journey');
   if(journey&&ui.display==='cards'){journey.classList.add('is-expanded');const toggle=journey.querySelector('#hybrid-journey-expand');toggle?.setAttribute('aria-expanded','true');if(toggle)toggle.textContent='Recolher';}
-  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}else{setFurniture(true);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
+  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
    if(is3d)studio3d.activate();else studio3d.deactivate();if(isCards){floor.hide();root.querySelector('.room-workflow-drawer').open=true;}else if(isOverview){floor.hide();overview.render()}else floor.show();
  }
  function renderTabs(){const d=getDocument(),nav=$('#room-tab-nav');nav.innerHTML=(d.environments||[]).map(r=>`<button type="button" data-room-tab="${esc(r.id)}" class="room-tab ${ui.selected===r.id?'active':''}" role="tab" aria-selected="${ui.selected===r.id?'true':'false'}" tabindex="${ui.selected===r.id?0:-1}" aria-controls="floor-editor"><span class="room-tab-icon" style="--tab-color:${esc(r.color||'#228b75')}">${esc(r.icon)}</span>${esc(short(r.name,23))}<small>${d.nodes.filter(n=>n.environmentId===r.id).length} atividades</small></button>`).join('')+`<button type="button" class="room-tab-add" id="room-tab-add">＋ Novo ambiente</button>`;
@@ -212,7 +225,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
  function apply(change,message){try{mutate(change);draw();status(message||'Ambientes atualizados.');}catch(e){status('Não foi possível: '+e.message);console.error('Erro ao atualizar ambiente:',e)}}
- function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(true);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
+ function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(false);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
  function roomCard(r,proj){const isUnassigned=r.id==='unassigned',selected=ui.selected===r.id;
    const names=r.nodes.filter(n=>!ui.search||[n.title,n.team,n.owner].join(' ').toLocaleLowerCase('pt-BR').includes(ui.search)).slice(0,12);
    const more=r.nodes.length-names.length;
@@ -310,7 +323,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    $('#room-stats').innerHTML=[['▦','Ambientes',d.environments?.length||0],['▣','Peças organizadas',proj.assigned],['◇','Sem ambiente',proj.unassigned],['↗','Ligações entre ambientes',proj.links.reduce((a,l)=>a+l.count,0)]].map(([icon,l,v])=>`<div class="room-stat"><span>${icon}</span><b>${v}</b><small>${l}</small></div>`).join('');
    $('#room-grid').innerHTML=shown.map(r=>roomCard(r,proj)).join('')+roomCard(proj.rooms.find(r=>r.id==='unassigned'),proj);
    $('#room-count-label').textContent=`${shown.length} ambientes • ${d.nodes.length} peças totais`;
-   renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
+   renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();flowGuide.render();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
  }
  root.addEventListener('click',async e=>{const kit=e.target.closest('[data-add-room-kit]'),remove=e.target.closest('[data-delete-template]'),sel=e.target.closest('[data-room-select]'),room=e.target.closest('.room-tile'),item=e.target.closest('[data-room-node]'),add=e.target.closest('[data-room-add]');
    const hybridRoom=e.target.closest('[data-hybrid-room]');if(hybridRoom&&!e.target.closest('[data-hybrid-step]')){select(hybridRoom.dataset.hybridRoom);return}const hybridStep=e.target.closest('[data-hybrid-step]');if(hybridStep){if(hybridStep.dataset.hybridRoomId&&ui.selected!==hybridStep.dataset.hybridRoomId)select(hybridStep.dataset.hybridRoomId);openTask(hybridStep.dataset.hybridStep);return}const review=e.target.closest('[data-room-review]');if(review){openTask(review.dataset.roomReview);return}
