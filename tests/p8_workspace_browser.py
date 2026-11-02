@@ -32,6 +32,7 @@ with sync_playwright() as pw:
  expect(page.locator('.p71-dock-actions')).to_be_hidden()
  for width,height in [(1536,959),(1280,720)]:
   page.set_viewport_size({'width':width,'height':height})
+  page.wait_for_timeout(150)  # allow dynamic viewport units and flex tracks to settle
   dims=page.evaluate("""() => {
    const rect=s=>document.querySelector(s).getBoundingClientRect();
    const flow=rect('#p8-flow-surface'),board=rect('.p8-flow-board'),
