@@ -1,0 +1,37 @@
+name: Blue Ocean 3D · P8 Service Workspace
+on:
+  push:
+    branches: [feat/blueocean3d-p8-service-workspace]
+  pull_request:
+    paths:
+      - app/**
+      - tests/**
+      - scripts/**
+      - .github/workflows/p8-workspace.yml
+permissions:
+  contents: read
+jobs:
+  p8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Syntax, contracts and unit tests
+        run: |
+          node --check app/p8-projects.mjs
+          node --check app/p8-workflow.mjs
+          node --check app/environments-ui.mjs
+          node --check app/app.mjs
+          npm test
+      - name: CSS and static output
+        run: |
+          python3 scripts/build-css.py
+          git diff --exit-code -- app/styles-bundle.css
+          node scripts/build-vercel.mjs
+          test -f dist/app/index.html
+      - name: Install browser
+        run: |
+          python3 -m pip install playwright==1.56.0
+          python3 -m playwright install --with-deps chromium
+      - name: P8 interactive browser acceptance
+        run: python3 tests/p8_workspace_browser.py
