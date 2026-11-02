@@ -31,7 +31,9 @@ function environmentDemo(){
 }
 const saveIndicator=$('#save-status');
 try{const data=localStorage.getItem(KEY);doc=data?JSON.parse(data):environmentDemo();ensureRoomModel(doc);validateDocument(doc)}catch(e){console.warn('Projeto local inválido, abrindo exemplo',e);doc=environmentDemo()}
-const projectStore=makeProjectStore(localStorage,doc);
+let projectStorage;
+try{projectStorage=localStorage}catch{projectStorage={getItem:()=>null,setItem:()=>{}}}
+const projectStore=makeProjectStore(projectStorage,doc);
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(doc));projectStore.save(doc);saveIndicator.classList.remove('is-error');saveIndicator.textContent='● Salvo às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});saveIndicator.setAttribute('aria-label','Projeto salvo automaticamente')}catch(e){saveIndicator.classList.add('is-error');saveIndicator.innerHTML='⚠ Não foi possível salvar <button type="button" class="save-backup" data-save-backup>Baixar backup</button>';saveIndicator.setAttribute('aria-label','Erro no salvamento automático. Baixe um backup do projeto.');notice('Espaço de armazenamento indisponível. Use “Baixar backup” para não perder o projeto.',true)}}
 function commit(){undo.push(JSON.stringify(doc));if(undo.length>70)undo.shift();redo.length=0}
 function revert(direction){let from=direction==='undo'?undo:redo,to=direction==='undo'?redo:undo;if(!from.length)return;to.push(JSON.stringify(doc));doc=JSON.parse(from.pop());selection=null;pendingLink=null;persist();renderAll();notice(direction==='undo'?'Ação desfeita.':'Ação refeita.')}
