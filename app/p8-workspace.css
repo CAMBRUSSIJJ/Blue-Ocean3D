@@ -172,3 +172,86 @@ body.bo-ocean #p8-projects-home .p8-project-dialog-actions button[type="submit"]
  body.bo-ocean #p8-projects-home .p8-home-header{align-items:flex-start;flex-direction:column}
  body.bo-ocean #p8-projects-home{padding:15px}
 }
+
+/* P8.1 — Funcionamento uses one continuous workspace. Legacy drawers stay mounted
+   for data/actions but must not occupy layout space or clip the operational map. */
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"].rooms-view{
+ display:flex!important;
+ flex-direction:column!important;
+ height:calc(100dvh - 61px)!important;
+ min-height:0!important;
+ overflow:hidden!important;
+ padding:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] :is(
+ .rooms-hero,.room-how,.room-check,.room-stats,.p8-space-tabs
+){display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-shell{
+ display:flex!important;
+ flex:1 1 auto!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ height:auto!important;
+ overflow:hidden!important;
+ padding:12px clamp(12px,1.2vw,22px)!important;
+ margin:0!important;
+ gap:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main{
+ display:flex!important;
+ flex:1 1 auto!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ height:100%!important;
+ overflow:hidden!important;
+ padding:0!important;
+ gap:0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main > :is(
+ .p71-dock-actions,.hybrid-mobile-panels,.room-main-toolbar,.room-tab-nav,
+ .room-mode-switch,.floor-editor,.room-workflow-drawer,.room-connections,
+ .site-overview
+){display:none!important}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main > .p71-dock-actions:has(.workspace-reopen:not([hidden])){
+ display:none!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .hybrid-journey,
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .hybrid-journey.is-expanded{
+ display:none!important;
+ flex:0 0 0!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-main > .p8-flow-surface{
+ display:flex!important;
+ flex:1 1 auto!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ height:100%!important;
+ max-height:100%!important;
+ width:100%!important;
+ overflow:hidden!important;
+ margin:0!important;
+ border:1px solid #dce6f4!important;
+ background:#fff!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-head{
+ flex:0 0 auto!important;
+ padding:15px clamp(12px,2vw,25px)!important;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-board{
+ flex:1 1 auto!important;
+ min-height:0!important;
+ overflow:auto!important;
+ scrollbar-gutter:stable;
+ overscroll-behavior:contain;
+}
+body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .p8-flow-footer{
+ flex:0 0 auto!important;
+}
+@media(max-width:720px){
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"].rooms-view{
+  height:calc(100dvh - 105px)!important;
+ }
+ body.bo-ocean.sb-hybrid-active #rooms-view[data-workflow-step="service"] .rooms-shell{
+  padding:8px!important;
+ }
+}
