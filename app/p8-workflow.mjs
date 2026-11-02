@@ -1,6 +1,6 @@
 import {buildJourneyGraph} from './journey-flow.mjs';
-const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const short=(v,n=75)=>String(v||'').length>n?String(v).slice(0,n-1)+'…':String(v||'');
+const p8Esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const p8Short=(v,n=75)=>String(v||'').length>n?String(v).slice(0,n-1)+'…':String(v||'');
 /** Read-only view of the canonical journey; controls dispatch to the editor, not a copied model. */
 export function workflowModel(doc){
  const graph=buildJourneyGraph(doc),steps=graph.steps.filter(step=>['activity','decision'].includes(step.type));
@@ -14,7 +14,7 @@ export function renderWorkflowBoard(doc){
   const room=step.room?.name||'Sem ambiente';
   const color=/^#[0-9a-fA-F]{6}$/.test(step.room?.color)?step.room.color:'#5b83b6';
   const minutes=step.duration>0?step.duration+' min previstos':'Sem duração definida';
-  return '<div class="p8-flow-row" style="--p8-accent:'+esc(color)+'"><div class="p8-flow-lane"><span class="p8-flow-lane-icon">▣</span><b>'+esc(room)+'</b><small>Etapa '+(i+1)+'</small></div><div class="p8-flow-path">'+(i?'<span class="p8-path-connector" aria-hidden="true"></span>':'')+'<button type="button" class="p8-flow-card" data-p8-flow="edit" data-id="'+esc(step.id)+'"><span class="p8-card-number">'+String(i+1).padStart(2,'0')+'</span><span class="p8-card-info"><strong>'+esc(short(step.title))+'</strong><small>'+esc(step.team||'Equipe não definida')+' · '+esc(minutes)+'</small></span><span class="p8-card-arrow" aria-hidden="true">↗</span></button>'+((i<model.steps.length-1)?'<span class="p8-flow-arrow" aria-hidden="true">↓</span>':'')+'</div></div>';
+  return '<div class="p8-flow-row" style="--p8-accent:'+p8Esc(color)+'"><div class="p8-flow-lane"><span class="p8-flow-lane-icon">▣</span><b>'+p8Esc(room)+'</b><small>Etapa '+(i+1)+'</small></div><div class="p8-flow-path">'+(i?'<span class="p8-path-connector" aria-hidden="true"></span>':'')+'<button type="button" class="p8-flow-card" data-p8-flow="edit" data-id="'+p8Esc(step.id)+'"><span class="p8-card-number">'+String(i+1).padStart(2,'0')+'</span><span class="p8-card-info"><strong>'+p8Esc(p8Short(step.title))+'</strong><small>'+p8Esc(step.team||'Equipe não definida')+' · '+p8Esc(minutes)+'</small></span><span class="p8-card-arrow" aria-hidden="true">↗</span></button>'+((i<model.steps.length-1)?'<span class="p8-flow-arrow" aria-hidden="true">↓</span>':'')+'</div></div>';
  }).join('')+'</div>'+(model.cyclic?'<p class="p8-flow-warning">⚠ Foi encontrado um ciclo. Revise as conexões antes da simulação.</p>':'<p class="p8-flow-disclaimer">A ordem acima segue as dependências registradas; atividades independentes podem executar em paralelo. A visualização não cria conexões automaticamente.</p>');
 }
 export function mountP8Workflow({root,getDocument,onEdit,onNew,onConnect}){
