@@ -56,6 +56,7 @@ with sync_playwright() as pw:
  assert 'is-expanded' in journey.get_attribute('class').split()
  expect(page.locator('#hybrid-journey-list [data-hybrid-step]').first).to_be_visible()
  page.locator('#hybrid-journey-expand').click()
+ page.locator('#hybrid-construct').click()
  page.locator('#bo-workflow-mount').click()
  # Previous scene modes and service data remain untouched.
  original=page.evaluate('doc.nodes.length')
