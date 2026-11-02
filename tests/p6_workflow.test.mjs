@@ -5,12 +5,14 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('P6: plan-first service stages are interactive, preserve all original scene modes',()=>{
  const ui=read('app/environments-ui.mjs'),markup=read('app/index.html');
  assert.match(ui,/display:'overview'/);
- for(const stage of ['plan','mount','service','scenario','analyze'])
+ for(const stage of ['spaces','service','scenario','analyze'])
   assert.match(ui,new RegExp('data-bo-stage="'+stage+'"'));
- for(const id of ['hybrid-construct','bo-workflow-mount','bo-workflow-service','hybrid-simulate','bo-workflow-analyze'])
+ for(const id of ['hybrid-construct','bo-workflow-service','hybrid-simulate','bo-workflow-analyze'])
   assert.ok(ui.includes('id="'+id+'"'),id);
  for(const mode of ['overview','three','visual','cards'])assert.ok(markup.includes('data-room-display="'+mode+'"'));
  assert.match(ui,/dataset\.workflowStep=step/);
+  assert.match(ui,/data-p8-space="three"/);
+  assert.match(ui,/data-p8-space="visual"/);
  assert.match(ui,/bo-workflow-navigate/);
 });
 test('P6: first physical map creates rooms without lost links',()=>{
@@ -41,5 +43,6 @@ test('P6: new 3D daylight floor checks Blue Ocean theme instead of legacy dark-m
  assert.match(room,/0xe2ebf6/);
  assert.match(room,/0xe0e9f5/);
  const files=JSON.parse(read('app/css-manifest.json'));
- assert.equal(files.at(-1),'p71-ux.css');
+ assert.ok(files.includes('p71-ux.css'));
+ assert.equal(files.at(-1),'p8-workspace.css');
 });
