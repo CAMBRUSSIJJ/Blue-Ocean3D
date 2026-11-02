@@ -10,6 +10,7 @@ import {confirmAction} from './confirm-dialog.mjs';
 import {initWorkspaceControls} from './workspace-controls.mjs';
 import {buildJourneyGraph} from './journey-flow.mjs';
 import {initLayoutReview} from './layout-review-ui.mjs';
+import {mountFlowBar} from './p72-flow.mjs';
 const $=q=>document.querySelector(q);
 const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const palette=['#1F927F','#587EB7','#B67E48','#9373B4','#D0748F','#5692AA','#7B9167'];
@@ -126,6 +127,18 @@ function renderHybridJourney(doc,selected){
 
 export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  const root=$('#rooms-view'),hybrid=installHybridLayout(root),ui={active:false,selected:null,editing:null,search:'',stage:0,kitTab:'catalog',display:'overview'};
+ const flowGuide=mountFlowBar({
+  root,getDocument,getDisplay:()=>ui.display,getSelected:()=>ui.selected,
+  onAction(action){
+   if(action==='create-room')return openCreateDialog();
+   if(action==='open-room')return openWorkflow('mount');
+   if(action==='furniture'){hybrid.workspace.setCollapsed('left',false);setFurniture(true);return;}
+   if(action==='building-tools'){hybrid.workspace.setCollapsed('left',false);setFurniture(true);root.querySelector('#floor-structure-tools')?.scrollIntoView({block:'nearest'});return;}
+   if(action==='new-activity')return openQuickActivityDialog();
+   if(action==='connect-activity'){const task=getDocument().nodes?.find(n=>n.type==='activity')||getDocument().nodes?.[0];if(task)openTask(task.id);return;}
+   if(action==='simulate')return openWorkflow('scenario');
+  }
+ });
  const layoutReview=initLayoutReview({root,getDocument,getRoomId:()=>ui.selected});
  root.querySelector('#hybrid-layout-compare').addEventListener('click',()=>layoutReview.open());
  root.querySelector('.rooms-shell').classList.add('studio-full','show-object-inspector');
@@ -197,7 +210,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   root.dataset.workflowStep=step;activeWorkflowStep(step);
   const journey=root.querySelector('#hybrid-journey');
   if(journey&&ui.display==='cards'){journey.classList.add('is-expanded');const toggle=journey.querySelector('#hybrid-journey-expand');toggle?.setAttribute('aria-expanded','true');if(toggle)toggle.textContent='Recolher';}
-  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}else{setFurniture(true);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
+  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
    if(is3d)studio3d.activate();else studio3d.deactivate();if(isCards){floor.hide();root.querySelector('.room-workflow-drawer').open=true;}else if(isOverview){floor.hide();overview.render()}else floor.show();
  }
  function renderTabs(){const d=getDocument(),nav=$('#room-tab-nav');nav.innerHTML=(d.environments||[]).map(r=>`<button type="button" data-room-tab="${esc(r.id)}" class="room-tab ${ui.selected===r.id?'active':''}" role="tab" aria-selected="${ui.selected===r.id?'true':'false'}" tabindex="${ui.selected===r.id?0:-1}" aria-controls="floor-editor"><span class="room-tab-icon" style="--tab-color:${esc(r.color||'#228b75')}">${esc(r.icon)}</span>${esc(short(r.name,23))}<small>${d.nodes.filter(n=>n.environmentId===r.id).length} atividades</small></button>`).join('')+`<button type="button" class="room-tab-add" id="room-tab-add">＋ Novo ambiente</button>`;
@@ -211,8 +224,46 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  function setDetails(open){const shell=root.querySelector('.rooms-shell');if(open){hybrid.workspace.setCollapsed('right',false);root.querySelector('#bo-inspector-tool')?.setAttribute('aria-expanded','true');}if(open&&window.matchMedia('(max-width:900px)').matches){shell.classList.add('hybrid-mobile-right-open');shell.classList.remove('hybrid-mobile-left-open');}shell.classList.toggle('show-details',open);hybrid.rightTabs(open?'environment':'object');$('#room-toggle-details').setAttribute('aria-pressed',String(open));$('#room-toggle-details').textContent=open?'✕ Fechar detalhes':'⚙ Configurar ambiente';}
  function openCreateDialog(){const d=getDocument(),select=$('#room-create-mode');select.innerHTML='<option value="">Ambiente vazio</option>'+Object.entries(ROOM_PRESETS).map(([key,room])=>`<option value="${esc(key)}">Modelo: ${esc(room.name)}</option>`).join('')+(d.roomTemplates||[]).map(room=>`<option value="${esc(room.id)}">Meu modelo: ${esc(room.name)}</option>`).join('');const dialog=$('#room-create-dialog');if(!dialog.open)dialog.showModal();$('#room-create-dialog-name').focus();}
  
+ const quickDialog=document.createElement('dialog');
+ quickDialog.id='p72-activity-dialog';
+ quickDialog.className='room-create-dialog p72-activity-dialog';
+ quickDialog.setAttribute('aria-labelledby','p72-activity-heading');
+ quickDialog.innerHTML='<form id="p72-activity-form"><div class="room-create-top"><div><span class="panel-eyebrow">ATIVIDADE DO SERVIÇO</span><h2 id="p72-activity-heading">Nova atividade</h2><p>Crie agora; detalhes e conexões podem ser definidos depois.</p></div><button type="button" data-p72-cancel aria-label="Fechar">×</button></div><label>Ambiente<select name="room" id="p72-activity-room" required></select></label><label>O que acontece?<input name="title" id="p72-activity-title" maxlength="100" placeholder="Ex.: Receber cliente" required></label><label>Duração prevista (min)<input name="duration" type="number" min="0" max="100000" step="0.5" value="5" required></label><p class="p72-dialog-error" role="alert" hidden></p><div class="room-create-footer"><button type="button" class="button muted" data-p72-cancel>Cancelar</button><button type="submit" class="button primary">Adicionar atividade</button></div></form>';
+ root.append(quickDialog);
+ quickDialog.addEventListener('click',event=>{if(event.target.closest('[data-p72-cancel]'))quickDialog.close();});
+ function openQuickActivityDialog(roomId=ui.selected){
+  const d=getDocument(),rooms=d.environments||[];
+  if(!rooms.length){openCreateDialog();status('Crie um ambiente antes de adicionar atividades.');return;}
+  const form=quickDialog.querySelector('form');
+  form.reset();
+  const roomSelect=quickDialog.querySelector('#p72-activity-room');
+  roomSelect.replaceChildren(...rooms.map(room=>new Option(room.name,room.id)));
+  roomSelect.value=rooms.some(room=>room.id===roomId)?roomId:rooms[0].id;
+  quickDialog.querySelector('.p72-dialog-error').hidden=true;
+  if(!quickDialog.open)quickDialog.showModal();
+  quickDialog.querySelector('#p72-activity-title').focus();
+ }
+ quickDialog.querySelector('form').addEventListener('submit',event=>{
+  event.preventDefault();
+  const form=event.currentTarget,roomId=form.elements.room.value,title=form.elements.title.value.trim(),duration=Number(form.elements.duration.value);
+  const error=quickDialog.querySelector('.p72-dialog-error');
+  if(!title||!getDocument().environments.some(room=>room.id===roomId)||!Number.isFinite(duration)||duration<0||duration>100000){
+   error.textContent='Confira o ambiente, o nome e a duração.';error.hidden=false;return;
+  }
+  try{
+   mutate(doc=>{
+    const room=doc.environments.find(item=>item.id===roomId);
+    const {node}=insertComponent(doc,{type:'activity',stage:0,fields:{title,duration,team:room.team||''}});
+    assignRoom(doc,node.id,roomId);
+   });
+   ui.selected=roomId;
+   quickDialog.close();
+   draw();
+   status('Atividade criada. Abra-a no fluxo para editar ou conectar ao próximo passo.');
+  }catch(err){error.textContent='Não foi possível adicionar: '+err.message;error.hidden=false;}
+ });
  function apply(change,message){try{mutate(change);draw();status(message||'Ambientes atualizados.');}catch(e){status('Não foi possível: '+e.message);console.error('Erro ao atualizar ambiente:',e)}}
- function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(true);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
+ function select(id){if(ui.display==='overview'||ui.display==='cards'){ui.display='three';studioMode();}setFurniture(false);setObjectInspector(false);setDetails(false);root.querySelector('.rooms-shell').classList.remove('hybrid-mobile-left-open','hybrid-mobile-right-open');ui.selected=id;floor.state.selected=null;floor.state.placing=null;floor.state.structure=null;floor.setRoom(id);draw();}
  function roomCard(r,proj){const isUnassigned=r.id==='unassigned',selected=ui.selected===r.id;
    const names=r.nodes.filter(n=>!ui.search||[n.title,n.team,n.owner].join(' ').toLocaleLowerCase('pt-BR').includes(ui.search)).slice(0,12);
    const more=r.nodes.length-names.length;
@@ -310,15 +361,15 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    $('#room-stats').innerHTML=[['▦','Ambientes',d.environments?.length||0],['▣','Peças organizadas',proj.assigned],['◇','Sem ambiente',proj.unassigned],['↗','Ligações entre ambientes',proj.links.reduce((a,l)=>a+l.count,0)]].map(([icon,l,v])=>`<div class="room-stat"><span>${icon}</span><b>${v}</b><small>${l}</small></div>`).join('');
    $('#room-grid').innerHTML=shown.map(r=>roomCard(r,proj)).join('')+roomCard(proj.rooms.find(r=>r.id==='unassigned'),proj);
    $('#room-count-label').textContent=`${shown.length} ambientes • ${d.nodes.length} peças totais`;
-   renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
+   renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();flowGuide.render();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
  }
  root.addEventListener('click',async e=>{const kit=e.target.closest('[data-add-room-kit]'),remove=e.target.closest('[data-delete-template]'),sel=e.target.closest('[data-room-select]'),room=e.target.closest('.room-tile'),item=e.target.closest('[data-room-node]'),add=e.target.closest('[data-room-add]');
    const hybridRoom=e.target.closest('[data-hybrid-room]');if(hybridRoom&&!e.target.closest('[data-hybrid-step]')){select(hybridRoom.dataset.hybridRoom);return}const hybridStep=e.target.closest('[data-hybrid-step]');if(hybridStep){if(hybridStep.dataset.hybridRoomId&&ui.selected!==hybridStep.dataset.hybridRoomId)select(hybridStep.dataset.hybridRoomId);openTask(hybridStep.dataset.hybridStep);return}const review=e.target.closest('[data-room-review]');if(review){openTask(review.dataset.roomReview);return}
    if(remove){e.stopPropagation();if(!await confirmAction({title:'Excluir modelo?',message:'O modelo reutilizável será excluído, mas os ambientes existentes não serão alterados.',confirmLabel:'Excluir modelo'}))return;apply(d=>{d.roomTemplates=d.roomTemplates.filter(t=>t.id!==remove.dataset.deleteTemplate)},'Modelo removido.');return}
-   if(kit){const key=kit.dataset.addRoomKit;apply(d=>{const v=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,v.document);ui.selected=v.room.id},'Kit inserido: ambiente, peças e conexões criados.');return}
+   if(kit){const key=kit.dataset.addRoomKit;let createdId=null;apply(d=>{const v=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,v.document);createdId=v.room.id;ui.selected=createdId},'Kit inserido: ambiente, peças e conexões criados.');if(createdId&&getDocument().environments.some(r=>r.id===createdId))select(createdId);return}
    const move=e.target.closest('[data-room-move]');if(move){e.stopPropagation();const dialog=$('#room-move-dialog');dialog.dataset.node=move.dataset.roomMove;$('#room-move-to').innerHTML=`<option value="">Sem ambiente</option>`+(getDocument().environments||[]).map(r=>`<option value="${esc(r.id)}" ${getDocument().nodes.find(n=>n.id===move.dataset.roomMove)?.environmentId===r.id?'selected':''}>${esc(r.name)}</option>`).join('');dialog.showModal();return}
    if(sel){select(sel.dataset.roomSelect);return}
-   if(add){select(add.dataset.roomAdd);setDetails(true);setTimeout(()=>$('#room-new-part-type')?.focus(),0);return}
+   if(add){select(add.dataset.roomAdd);openQuickActivityDialog(add.dataset.roomAdd);return}
    if(item){openTask(item.dataset.roomNode);return}
    if(room){select(room.dataset.roomId==='unassigned'?null:room.dataset.roomId)}
  });
@@ -338,23 +389,15 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  $('#room-toggle-object-inspector').addEventListener('click',()=>setObjectInspector(!root.querySelector('.rooms-shell').classList.contains('show-object-inspector')));
  $('#room-create-close').addEventListener('click',()=>$('#room-create-dialog').close());
  $('#room-create-cancel').addEventListener('click',()=>$('#room-create-dialog').close());
- $('#room-create-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#room-create-dialog-name').value.trim(),key=$('#room-create-mode').value;if(!name){$('#room-create-dialog-name').focus();return}apply(d=>{if(key){const result=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,result.document);ui.selected=result.room.id;if(result.room.name!==name)updateRoom(d,result.room.id,{name});}else{ui.selected=createRoom(d,{name}).id;}},'Novo ambiente criado e aberto.');$('#room-create-dialog').close();e.target.reset();});
+ $('#room-create-form').addEventListener('submit',e=>{e.preventDefault();const name=$('#room-create-dialog-name').value.trim(),key=$('#room-create-mode').value;if(!name){$('#room-create-dialog-name').focus();return}let createdId=null;apply(d=>{if(key){const result=applyRoomTemplate(d,key,{startStage:0});Object.assign(d,result.document);createdId=result.room.id;ui.selected=createdId;if(result.room.name!==name)updateRoom(d,result.room.id,{name});}else{createdId=createRoom(d,{name}).id;ui.selected=createdId;}},'Novo ambiente criado e aberto.');if(createdId&&getDocument().environments.some(r=>r.id===createdId)){$('#room-create-dialog').close();e.target.reset();select(createdId);}});
  $('#floor-structure-tools').addEventListener('click',e=>{if(!e.target.closest('[data-floor-structure]')||ui.display==='visual')return;ui.display='visual';root.querySelectorAll('[data-room-display]').forEach(x=>{const yes=x.dataset.roomDisplay==='visual';x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes))});studioMode();draw();$('#floor-editor-notice').textContent='Edite paredes, portas e passagens com precisão na planta 2D.';});
  $('#room-kit-tabs').addEventListener('click',e=>{let button=e.target.closest('[data-room-template-tab]');if(button){ui.kitTab=button.dataset.roomTemplateTab;renderCatalog()}});
- $('#room-create-btn').addEventListener('click',()=>{const name=$('#room-create-name').value.trim();if(!name){$('#room-create-name').focus();return}apply(d=>{const r=createRoom(d,{name});ui.selected=r.id},'Ambiente vazio criado.');$('#room-create-name').value='';});
+ $('#room-create-btn').addEventListener('click',()=>{const name=$('#room-create-name').value.trim();if(!name){$('#room-create-name').focus();return}let createdId=null;apply(d=>{const r=createRoom(d,{name});createdId=r.id;ui.selected=r.id},'Ambiente vazio criado.');if(createdId&&getDocument().environments.some(r=>r.id===createdId)){select(createdId);$('#room-create-name').value='';}});
  $('#room-create-name').addEventListener('keydown',e=>{if(e.key==='Enter'){$('#room-create-btn').click();e.preventDefault()}});
  $('#room-search').addEventListener('input',e=>{ui.search=e.target.value.toLocaleLowerCase('pt-BR');draw()});
  $('#room-team-organize').addEventListener('click',()=>{const d=getDocument();const matches=d.nodes.filter(n=>!n.environmentId&&n.team?.trim()&&d.environments.some(r=>r.team?.trim()&&r.team.toLocaleLowerCase('pt-BR')===n.team.trim().toLocaleLowerCase('pt-BR')));if(!matches.length){status('Não há peças sem ambiente com equipe correspondente.');return;}apply(d=>{for(const n of matches){const room=d.environments.find(r=>r.team.toLocaleLowerCase('pt-BR')===n.team.trim().toLocaleLowerCase('pt-BR'));assignRoom(d,n.id,room.id)}},`${matches.length} peças organizadas por equipe.`);});
  $('#room-move-confirm').addEventListener('click',()=>{const dialog=$('#room-move-dialog'),node=dialog.dataset.node,target=$('#room-move-to').value;dialog.close();apply(d=>assignRoom(d,node,target),'Peça transferida, preservando suas conexões.');});
- $('#floor-add-task').addEventListener('click',()=>{
-   if(!getDocument().environments?.length){openCreateDialog();status('Crie um ambiente para adicionar atividades.');return;}
-   if(!roomById(getDocument(),ui.selected))ui.selected=getDocument().environments[0].id;
-   setFurniture(false);setObjectInspector(false);setDetails(true);
-   renderInspector();
-   $('#room-new-part-type').value='activity';
-   $('#room-new-part-type').focus();
-   status('Configure a atividade no painel do ambiente e clique em Adicionar peça.');
- });
+ $('#floor-add-task').addEventListener('click',()=>openQuickActivityDialog());
  $('#room-toggle-details').addEventListener('click',()=>{
    const open=!root.querySelector('.rooms-shell').classList.contains('show-details');
    if(open){setFurniture(false);setObjectInspector(false);}setDetails(open);
