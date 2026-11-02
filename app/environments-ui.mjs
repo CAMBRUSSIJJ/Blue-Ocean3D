@@ -170,6 +170,11 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
   hybrid.workspace.setCollapsed('right',false);
  });
  planInspector.querySelector('#p71-plan-edit').addEventListener('click',()=>select(ui.selected));
+ const p8Flow=mountP8Workflow({
+  root,getDocument,onEdit:id=>openTask(id),
+  onNew:()=>openQuickActivityDialog(),
+  onConnect:()=>{const step=getDocument().nodes?.find(n=>n.type==='activity')||getDocument().nodes?.[0];if(step)openTask(step.id);else openQuickActivityDialog();}
+ });
  const floor=initFloorEditor({getDocument,mutate,onEdit:id=>openTask(id),onSelectRoom:id=>{ui.selected=id;renderInspector();}});
  const studio3d=initRoom3D({element:$('#room-3d-stage'),getDocument,getRoomId:()=>ui.selected,getSelection:()=>floor.state.selected,getSelections:()=>[...floor.state.selectedIds],getPlacing:()=>floor.state.placing,mutate,onSelect:(id,additive=false)=>{floor.selectObject(id,additive);setObjectInspector(Boolean(floor.state.selected));},onPlaced:()=>{floor.state.placing=null;draw();},onCancel:()=>{floor.state.placing=null;floor.state.structure=null;floor.render();},onMessage:msg=>$('#floor-editor-notice').textContent=msg,onUnavailable:()=>{if(!ui.active||ui.display!=='three')return;ui.display='visual';root.querySelectorAll('[data-room-display]').forEach(x=>{const yes=x.dataset.roomDisplay==='visual';x.classList.toggle('active',yes);x.setAttribute('aria-pressed',String(yes))});studioMode();draw();$('#floor-editor-notice').textContent='3D indisponível neste navegador. A planta 2D permanece editável.';}});
  function syncTabState(){
@@ -196,13 +201,14 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  }
  function activeWorkflowStep(step){
    document.querySelectorAll('.bo-workflow-steps [data-bo-stage]').forEach(button=>{
-    const selected=button.dataset.boStage===step;
+    const selected=button.dataset.boStage===(['plan','mount','floor2d'].includes(step)?'spaces':step);
     button.classList.toggle('active',selected);
     if(selected)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
    });
  }
  function openWorkflow(step){
-  if(step==='scenario'||step==='analyze'){
+  if(step==='spaces')step=['overview','three','visual'].includes(ui.display)?({overview:'plan',three:'mount',visual:'floor2d'}[ui.display]):'plan';
+   if(step==='scenario'||step==='analyze'){
    document.querySelector('.rail-btn[data-view="simulation"]')?.click();
    document.querySelector('#simulation-view')?.dispatchEvent(new CustomEvent('p7-section',{detail:{mode:step==='analyze'?'analyze':'simulate'}}));
    activeWorkflowStep(step);
@@ -218,9 +224,15 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
  function studioMode(){root.querySelector('.rooms-shell').dataset.currentDisplay=ui.display;
   const step=ui.display==='overview'?'plan':ui.display==='cards'?'service':ui.display==='visual'?'floor2d':'mount';
   root.dataset.workflowStep=step;activeWorkflowStep(step);
+   spacesSubnav.hidden=ui.display==='cards';
+   spacesSubnav.querySelectorAll('[data-p8-space]').forEach(btn=>{
+    const active=btn.dataset.p8Space===ui.display;
+    btn.classList.toggle('active',active);
+    if(active)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current');
+   });
   const journey=root.querySelector('#hybrid-journey');
   if(journey&&ui.display==='cards'){journey.classList.add('is-expanded');const toggle=journey.querySelector('#hybrid-journey-expand');toggle?.setAttribute('aria-expanded','true');if(toggle)toggle.textContent='Recolher';}
-  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;
+  syncTabState();if(ui.display==='cards'||ui.display==='overview'){setFurniture(false);setObjectInspector(false);setDetails(false);}const is3d=ui.display==='three',is2d=ui.display==='visual',isCards=ui.display==='cards',isOverview=ui.display==='overview';$('#floor-editor').hidden=isCards||isOverview;$('#site-overview').hidden=!isOverview;$('#room-3d-stage').hidden=!is3d;$('#floor-editor-map').hidden=!is2d;$('#room-grid').hidden=!isCards;p8Flow.element.hidden=!isCards;
    if(is3d)studio3d.activate();else studio3d.deactivate();if(isCards){floor.hide();root.querySelector('.room-workflow-drawer').open=true;}else if(isOverview){floor.hide();overview.render()}else floor.show();
  }
  function renderTabs(){const d=getDocument(),nav=$('#room-tab-nav');nav.innerHTML=(d.environments||[]).map(r=>`<button type="button" data-room-tab="${esc(r.id)}" class="room-tab ${ui.selected===r.id?'active':''}" role="tab" aria-selected="${ui.selected===r.id?'true':'false'}" tabindex="${ui.selected===r.id?0:-1}" aria-controls="floor-editor"><span class="room-tab-icon" style="--tab-color:${esc(r.color||'#228b75')}">${esc(r.icon)}</span>${esc(short(r.name,23))}<small>${d.nodes.filter(n=>n.environmentId===r.id).length} atividades</small></button>`).join('')+`<button type="button" class="room-tab-add" id="room-tab-add">＋ Novo ambiente</button>`;
@@ -371,7 +383,7 @@ export function initRoomBuilder({getDocument,mutate,onEdit,onBack}){
    $('#room-stats').innerHTML=[['▦','Ambientes',d.environments?.length||0],['▣','Peças organizadas',proj.assigned],['◇','Sem ambiente',proj.unassigned],['↗','Ligações entre ambientes',proj.links.reduce((a,l)=>a+l.count,0)]].map(([icon,l,v])=>`<div class="room-stat"><span>${icon}</span><b>${v}</b><small>${l}</small></div>`).join('');
    $('#room-grid').innerHTML=shown.map(r=>roomCard(r,proj)).join('')+roomCard(proj.rooms.find(r=>r.id==='unassigned'),proj);
    $('#room-count-label').textContent=`${shown.length} ambientes • ${d.nodes.length} peças totais`;
-   renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();flowGuide.render();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
+   renderCatalog();renderFlow(proj);renderInspector();renderTabs();renderHybridJourney(d,ui.selected);syncTabState();flowGuide.render();p8Flow.render();if(ui.display==='overview')overview.render();else if(ui.display!=='cards')floor.render();if(ui.display==='three')studio3d.render();
  }
  root.addEventListener('click',async e=>{const kit=e.target.closest('[data-add-room-kit]'),remove=e.target.closest('[data-delete-template]'),sel=e.target.closest('[data-room-select]'),room=e.target.closest('.room-tile'),item=e.target.closest('[data-room-node]'),add=e.target.closest('[data-room-add]');
    const hybridRoom=e.target.closest('[data-hybrid-room]');if(hybridRoom&&!e.target.closest('[data-hybrid-step]')){select(hybridRoom.dataset.hybridRoom);return}const hybridStep=e.target.closest('[data-hybrid-step]');if(hybridStep){if(hybridStep.dataset.hybridRoomId&&ui.selected!==hybridStep.dataset.hybridRoomId)select(hybridStep.dataset.hybridRoomId);openTask(hybridStep.dataset.hybridStep);return}const review=e.target.closest('[data-room-review]');if(review){openTask(review.dataset.roomReview);return}
