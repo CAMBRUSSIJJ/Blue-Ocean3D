@@ -1,7 +1,7 @@
 /* v0.8: two modes only. Legacy implementation remains internal for backwards-compatible JSON. */
-#editor-view[hidden],#explore-view[hidden],#view3d-view[hidden],#cadcraft-view[hidden],#simulation-view[hidden],#rooms-view[hidden]{display:none!important}
-#editor-view{display:none!important} /* never expose the legacy blueprint view */
-#open-cadcraft{display:none!important}
+#editor-view[hidden],#explore-view[hidden],#view3d-view[hidden],#cadcraft-view[hidden],#simulation-view[hidden],#rooms-view[hidden]{display:none}
+#editor-view{display:none} /* never expose the legacy blueprint view */
+#open-cadcraft{display:none}
 .project-field{display:flex;flex-direction:column;gap:3px;min-width:175px;max-width:270px}
 .project-field span{font-size:10px;text-transform:uppercase;color:#829391;font-weight:750;letter-spacing:.08em}
 .project-field input{padding:5px 8px;width:100%;font-size:13px;font-weight:700;color:#1e4343;background:#fff;border:1px solid #dfebe7;border-radius:8px}

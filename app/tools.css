@@ -6,8 +6,8 @@
 .tool-strip i{height:1px;background:#e1ebe9;margin:3px 4px}
 .canvas-wrapper[data-tool=pan]{cursor:grab}.canvas-wrapper[data-tool=connect],.canvas-wrapper.linking{cursor:crosshair}.canvas-wrapper[data-tool=delete]{cursor:pointer}
 .canvas-wrapper[data-tool=pan] .canvas-node,.canvas-wrapper[data-tool=connect] .canvas-node{cursor:inherit}
-.canvas-wrapper[data-tool=delete] .canvas-node:hover .node-bg{stroke:#d64545!important;stroke-width:3}
-.canvas-wrapper[data-tool=delete] .map-edge:hover{stroke:#d64545!important}
+.canvas-wrapper[data-tool=delete] .canvas-node:hover .node-bg{stroke:#d64545;stroke-width:3}
+.canvas-wrapper[data-tool=delete] .map-edge:hover{stroke:#d64545}
 .node-port{fill:#fff;stroke:#168b86;stroke-width:3;opacity:0;cursor:crosshair;transition:opacity .15s}
 .canvas-node:hover .node-port,.canvas-node.selected .node-port,.canvas-wrapper[data-tool=connect] .node-port,.canvas-wrapper.linking .node-port{opacity:1}
 .node-port:hover{fill:#168b86}

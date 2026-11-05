@@ -41,7 +41,8 @@ export function buildJourneyGraph(doc){
   const room=rooms.get(n.environmentId);
   return {id:n.id,title:n.title,type:n.type,stage:n.stage,roomId:room?.id||null,
    roomName:room?.name||'Sem ambiente',roomColor:room?.color||'#81939b',
-   team:n.team||'',duration:Number(n.duration)||0,level:level.get(n.id),
+   team:n.team||'',duration:Number(n.duration)||0,
+   level:degrees.get(n.id)>0?null:level.get(n.id),blockedByCycle:degrees.get(n.id)>0,
    incoming:incoming.get(n.id).length,outgoing:outgoing.get(n.id).length,
    isolated:incoming.get(n.id).length===0&&outgoing.get(n.id).length===0};
  });

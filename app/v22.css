@@ -10,5 +10,5 @@
 .sim22-spatial-summary small{display:block;opacity:.78}
 .sim22-site-3d{height:min(62vh,610px);min-height:360px;background:#e8f2ed;position:relative;overflow:hidden;border-radius:12px}
 .sim22-overview-canvas{display:block;width:100%;height:100%;touch-action:none}
-.sim22-site-3d[hidden],.sim21-map[hidden]{display:none!important}
+.sim22-site-3d[hidden],.sim21-map[hidden]{display:none}
 @media(max-width:640px){.sim22-site-3d{min-height:290px;height:48vh}.sim22-spatial-fields label{max-width:100%}}

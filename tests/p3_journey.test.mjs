@@ -48,6 +48,9 @@ test('P3: imported cyclic graph remains visible and explicitly flagged',()=>{
  assert.equal(g.cyclic,true);
  assert.equal(g.tasks.length,5);
  assert.equal(g.steps.length,doc.nodes.length);
+ assert.equal(g.tasks.find(t=>t.id==='care').level,null);
+ assert.equal(g.tasks.find(t=>t.id==='invoice').blockedByCycle,true);
+ assert.equal(g.tasks.find(t=>t.id==='loose').blockedByCycle,false);
 });
 test('P3: events come from deterministic simulator and preserve planned minutes',()=>{
  const doc=fixture();

@@ -1,5 +1,24 @@
 # Service Builder v2.6 — Copiloto Ollama e Construção Completa
 
+## Baixar a versão com as correções de UX para Linux
+
+[**Baixar o ZIP para Linux**](https://github.com/CAMBRUSSIJJ/Blue-Ocean3D/raw/refs/heads/ux-auditoria-18-correcoes/downloads/Blue-Ocean3D-Linux-UX.zip)
+
+Extraia o pacote, abra um terminal na pasta `Blue-Ocean3D-Linux` e execute:
+
+```bash
+bash ABRIR-LINUX.sh
+```
+
+Depois abra `http://localhost:4173/app/`. Mantenha o terminal aberto; use `Ctrl+C`
+para encerrar. Para executar o aplicativo, bastam Python 3.9+ e um navegador
+atualizado. Node.js e Playwright são opcionais, usados apenas nos testes.
+
+Veja [as instruções completas para Linux](LEIA-PRIMEIRO-LINUX.txt) e
+[o relatório dos 18 itens de UX](docs/AUDITORIA_UX_18_CORRECOES.md).
+O ZIP inclui o código completo da aplicação, o Three.js, testes e documentação;
+o checksum está em `downloads/Blue-Ocean3D-Linux-UX.zip.sha256`.
+
 Abra **WINDOWS-LEIA-PRIMEIRO.txt** para Windows 10/11 e **docs/V2_6-AGENTE-CONSTRUCAO-WINDOWS.md** para detalhes.
 
 - **Windows**: extraia o ZIP; entre em `service-cad-lab`; abra `INICIAR-WINDOWS.bat` (Python 3.9+).

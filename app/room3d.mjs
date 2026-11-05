@@ -33,6 +33,8 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
  }
  function toggleStructure(mode){
   structureMode=structureMode===mode?null:mode;
+  element.querySelector('.room3d-wall-control').hidden=structureMode!=='wall';
+  element.querySelector('.hybrid-move')?.classList.toggle('active',!structureMode);
   hideGhost();hideStructurePreview();
   if(structureMode){onCancel?.();say(`Modo ${structureMode==='wall'?'Parede':structureMode==='door'?'Porta':'Passagem livre'}: clique próximo à linha da grade. Esc cancela.`)}
   else say('Modo de construção encerrado.');
@@ -109,9 +111,10 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
   if(!ready||!active)return;
   ghost=null;ghostKey='';structurePreview=null;structurePreviewKey='';resizePreview=null;disposeGroup(world);const doc=getDocument(),room=(doc.environments||[]).find(r=>r.id===getRoomId());
   if(!room){say('Adicione ou selecione um ambiente para iniciar a construção 3D.');renderer.render(scene,camera);return}
-  const dark=document.body.classList.contains('sb-hybrid-active');const base=new THREE.Color(room.color||'#278b77').lerp(new THREE.Color(dark?'#334e49':'#ffffff'),dark?.86:.88);
+  const theme=getComputedStyle(element);
+  const base=new THREE.Color(room.color||'#278b77').lerp(new THREE.Color(theme.getPropertyValue('--surface').trim()||'#ffffff'),.88);
   cub(world,GRID.columns,.12,GRID.rows,GRID.columns/2,-.08,GRID.rows/2,base);
-  const grid=new THREE.GridHelper(48,48,dark?0x365d58:0xc1d7cc,dark?0x284842:0xe0ece5);grid.scale.set(.25,1,.25);grid.position.set(GRID.columns/2,.004,GRID.rows/2);world.add(grid);
+  const grid=new THREE.GridHelper(48,48,theme.getPropertyValue('--border-strong').trim()||'#c8cdd6',theme.getPropertyValue('--border').trim()||'#e2e5ea');grid.scale.set(.25,1,.25);grid.position.set(GRID.columns/2,.004,GRID.rows/2);world.add(grid);
   for(const edge of roomEdges(doc,room.id))makeWall(edge,doc,room.id);
   const objects=validFurniture(doc).filter(o=>o.roomId===room.id);
  const selectedIds=getSelections?.()||[getSelection()];
@@ -215,9 +218,10 @@ export function initRoom3D({element,getDocument,getRoomId,getSelection,getSelect
  async function load(){if(ready||loading)return;loading=true;element.querySelector('.room3d-loading').hidden=false;
   try{
    THREE=await import('../vendor/three/three.module.min.js');
-   renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.setClearColor(document.body.classList.contains('sb-hybrid-active')?0x122b29:0xe8f1ec,1);
+   const background=getComputedStyle(element).getPropertyValue('--bg').trim()||'#f0f2f5';
+   renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.setClearColor(background,1);
    dom=renderer.domElement;dom.className='room3d-canvas';dom.tabIndex=0;dom.setAttribute('aria-label','Ambiente 3D interativo. Clique para selecionar móveis. Arraste para mover.');element.querySelector('.room3d-viewport').appendChild(dom);
-   scene=new THREE.Scene();scene.background=new THREE.Color(document.body.classList.contains('sb-hybrid-active')?'#122b29':'#e8f1ec');scene.add(new THREE.HemisphereLight(0xffffff,0x9fbab0,2.1));const sun=new THREE.DirectionalLight(0xffffff,1.6);sun.position.set(6,18,12);scene.add(sun);
+   scene=new THREE.Scene();scene.background=new THREE.Color(background);scene.add(new THREE.HemisphereLight(0xffffff,0x9fbab0,2.1));const sun=new THREE.DirectionalLight(0xffffff,1.6);sun.position.set(6,18,12);scene.add(sun);
    world=new THREE.Group();scene.add(world);camera=new THREE.OrthographicCamera(-10,10,10,-10,.1,150);ray.cast=new THREE.Raycaster();ray.ndc=new THREE.Vector2();ray.plane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
    dom.addEventListener('pointerdown',startPointer);dom.addEventListener('pointermove',movePointer);dom.addEventListener('pointerup',endPointer);dom.addEventListener('pointercancel',()=>{pointer.down=null;hideGhost();hideStructurePreview();hideResizePreview();renderRoom()});dom.addEventListener('pointerleave',()=>{if(!pointer.down){hoveredId=null;dom.style.cursor='default';hideGhost();hideStructurePreview();renderRoom();requestFrame()}});dom.addEventListener('dragover',e=>{if(![...e.dataTransfer.types].includes(FURNITURE_DRAG_TYPE))return;e.preventDefault();e.dataTransfer.dropEffect='copy';const kind=getPlacing();if(kind)previewAt(kind,hit(e).pos)});dom.addEventListener('dragleave',e=>{if(e.relatedTarget!==dom){hideGhost();requestFrame()}});dom.addEventListener('drop',e=>{if(![...e.dataTransfer.types].includes(FURNITURE_DRAG_TYPE))return;e.preventDefault();const kind=e.dataTransfer.getData(FURNITURE_DRAG_TYPE);if(FURNITURE[kind]&&kind!=='door')placeFromPoint(kind,hit(e).pos)});dom.addEventListener('contextmenu',e=>e.preventDefault());dom.addEventListener('wheel',e=>{e.preventDefault();view.zoom=clamp(view.zoom*(e.deltaY<0?1.12:1/1.12),.6,2.8);requestFrame()},{passive:false});
    ro=new ResizeObserver(resize);ro.observe(element);ready=true;element.querySelector('.room3d-loading').hidden=true;resize();renderRoom();

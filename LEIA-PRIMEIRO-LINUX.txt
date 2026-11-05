@@ -1,0 +1,47 @@
+BLUE OCEAN 3D — LINUX
+Versão local com Blue Ocean Light e as correções da auditoria UX.
+
+COMO ABRIR
+1. Extraia o ZIP (não execute diretamente de dentro do arquivo compactado).
+2. Abra um terminal na pasta Blue-Ocean3D-Linux.
+3. Execute:
+
+   bash ABRIR-LINUX.sh
+
+4. O navegador deve abrir automaticamente. Caso não abra, digite:
+
+   http://localhost:4173/app/
+
+5. Mantenha o terminal aberto. Para encerrar, pressione Ctrl+C.
+
+REQUISITOS
+- Python 3.9 ou superior (confira com: python3 --version).
+- Um navegador atualizado, como Firefox ou Chromium/Chrome.
+- Não precisa instalar Node.js, npm ou dependências Python para abrir o aplicativo.
+- O Three.js e os demais arquivos necessários estão incluídos no pacote.
+
+SE A PORTA 4173 ESTIVER OCUPADA
+Execute:
+
+   SERVICE_BUILDER_PORT=4174 bash ABRIR-LINUX.sh
+
+Depois abra http://localhost:4174/app/.
+
+SE O PYTHON NÃO ESTIVER INSTALADO
+No Ubuntu, Debian ou Linux Mint, instale com:
+
+   sudo apt update
+   sudo apt install python3
+
+SEUS PROJETOS
+Os projetos ficam no armazenamento local do navegador. Para guardar uma cópia,
+use o menu Projeto para exportar JSON. Antes de trocar navegador ou porta,
+exporte o projeto e importe-o no novo endereço.
+
+COPILOTO IA (OPCIONAL)
+O editor e a simulação funcionam sem Ollama. O chat com IA real requer Ollama
+local em localhost:11434 e um modelo instalado (por exemplo qwen3:4b).
+
+DETALHES DAS ALTERAÇÕES
+Veja docs/AUDITORIA_UX_18_CORRECOES.md.
+Este pacote contém a versão atual do ambiente, inclusive alterações locais.

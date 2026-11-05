@@ -1,0 +1,120 @@
+/* Blue Ocean Light: shared palette for the existing editor and its controls. */
+:root {
+  color-scheme: light;
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #f7f8fa;
+  --border: #e2e5ea;
+  --border-strong: #c8cdd6;
+  --text: #1a1d23;
+  --text2: #4a5060;
+  --text3: #8891a0;
+  --blue: #1a6fd4;
+  --blue-light: #e8f0fc;
+  --blue-mid: #b3d0f5;
+  --green: #0f7a4a;
+  --green-light: #e3f5ec;
+  --red: #c0392b;
+  --red-light: #fcecea;
+  --amber: #b45309;
+  --amber-light: #fef3e2;
+  --radius: 10px;
+  --shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Keep the existing component margins, padding and touch targets. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+}
+
+/* .button is the application's existing button class. */
+.button {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text2);
+}
+.button.muted { background: var(--surface); }
+.button.outline {
+  background: var(--blue-light);
+  border-color: var(--blue-mid);
+  color: var(--blue);
+}
+.btn:hover, .button:hover {
+  background: var(--surface2);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.btn-primary, .button.primary {
+  background: var(--blue);
+  color: #ffffff;
+  border-color: var(--blue);
+}
+.btn-primary:hover, .button.primary:hover {
+  background: var(--blue);
+  color: #ffffff;
+  border-color: var(--blue);
+  box-shadow: var(--shadow);
+}
+.btn-danger, .button.danger {
+  border-color: #fcc;
+  color: var(--red);
+  background: var(--red-light);
+}
+.btn-danger:hover, .button.danger:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: var(--red-light);
+}
+.btn:focus-visible, .button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.chip {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--text3);
+}
+.chip-blue {
+  background: var(--blue-light);
+  border-color: var(--blue-mid);
+  color: var(--blue);
+}
+
+#rooms-view [role="tab"][aria-selected="true"] {
+  box-shadow: inset 0 -3px var(--blue);
+}
+#hybrid-journey-expand, #hybrid-layout-compare {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text2);
+}
+#hybrid-journey-expand:hover, #hybrid-layout-compare:hover {
+  border-color: var(--border-strong);
+  background: var(--surface2);
+  color: var(--text);
+}

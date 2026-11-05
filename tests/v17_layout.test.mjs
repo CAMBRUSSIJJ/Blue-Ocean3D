@@ -5,8 +5,8 @@ const html=readFileSync(new URL('../app/index.html',import.meta.url),'utf8');
 const style=readFileSync(new URL('../app/v17.css',import.meta.url),'utf8');
 const ui=readFileSync(new URL('../app/environments-ui.mjs',import.meta.url),'utf8');
 test('v1.7: construção usa uma área ampla sem coluna fixa de catálogo',()=>{
- assert.match(style,/\.rooms-catalog\{display:none!important\}/);
- assert.match(style,/\.floor-editor-content\{[\s\S]*?flex:1;min-height:0!important;height:auto!important/);
+ assert.match(style,/\.rooms-catalog\{display:none\}/);
+ assert.match(style,/\.floor-editor-content\{[\s\S]*?flex:1;min-height:0;height:auto/);
  assert.match(style,/\.room-studio-center\{[\s\S]*?position:absolute;inset:0/);
 });
 test('v1.7: as salas continuam em abas internas e novo ambiente tem diálogo próprio',()=>{

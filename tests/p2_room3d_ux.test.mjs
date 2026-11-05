@@ -35,7 +35,9 @@ test('P2: complete CSS bundle remains reproducible',()=>{
  const manifest=JSON.parse(code('app/css-manifest.json'));
  assert.ok(manifest.includes('room3d-ux.css'));
  assert.ok(manifest.indexOf('room3d-ux.css')>manifest.indexOf('v27.css'));
- const expected=['/* Service Builder v2.3.2 | generated file; edit individual CSS source files. */',
-  ...manifest.map(file=>'\n/* SOURCE: '+file+' */\n'+code('app/'+file))].join('\n')+'\n';
+ const expected=['/* Service Builder | generated file; edit CSS sources listed in css-manifest.json. */',
+  '@layer '+manifest.map(f=>'sb-'+f.replace(/\.css$/,'')).join(', ')+';',
+  ...manifest.map(file=>'\n/* SOURCE: '+file+' */\n@layer sb-'+file.replace(/\.css$/,'')+' {\n'+code('app/'+file)+'\n}'),
+  '\n/* HTML visibility invariant */\n[hidden] { display: none !important; }'].join('\n')+'\n';
  assert.equal(code('app/styles-bundle.css'),expected);
 });
