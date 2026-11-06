@@ -21,6 +21,7 @@ try:
  for suffix in ('/','/app/','/app/styles-bundle.css','/app/app.mjs','/vendor/three/three.module.min.js'):
   with urlopen(url+suffix,timeout=10) as response:
    assert response.status==200,(suffix,response.status)
+   assert response.read(),suffix
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True,args=['--no-sandbox','--disable-dev-shm-usage','--enable-unsafe-swiftshader'])
   page=browser.new_page(viewport={'width':1366,'height':768})

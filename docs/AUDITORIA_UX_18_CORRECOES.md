@@ -14,11 +14,11 @@ As alterações do tema Blue Ocean Light feitas anteriormente foram preservadas.
 | 5. Alça de resize 3D | Já resolvido; validado | Continua contextual, para seleção/hover ou arraste ativo; atalhos, seleção e foco de câmera continuam funcionando. |
 | 6. Biblioteca reabrindo | Corrigido | Trocar entre 2D, 3D e simulação preserva a escolha da biblioteca; foram removidos fechamentos automáticos por largura e entrada na área. O recolhimento dos docks continua persistido. |
 | 7. Cabeçalhos sobrepostos | Corrigido | Cabeçalhos dos docks distribuem abas e controles em linhas separadas; nomes longos ficam contidos. A miniatura física não contém botão de edição: a ação está no inspetor do ambiente. |
-| 8. Criação no editor errado | Corrigido | Confirmar a criação abre imediatamente a nova sala no editor 3D, mesmo se a criação começou em outro modo. Modelos e criação vazia usam o mesmo destino. |
+| 8. Criação no editor errado | Corrigido | No fluxo atual, criar salas na planta ou nas atividades mantém o planejamento. O 3D abre por ação explícita. Criação iniciada no editor continua abrindo a sala em 3D. Veja PLANEJAMENTO_SERVICO_E_3D.md. |
 | 9. Hierarquia de ações | Corrigido | Criar ambiente é a ação principal da toolbar. Adicionar atividade, mobiliar e cancelar seleção ficam em “Mais”, com os mesmos nós, IDs e handlers. |
 | 10. Ferramentas 2D no 3D | Corrigido | As ferramentas estruturais 2D só aparecem na planta 2D; os objetos da biblioteca continuam disponíveis nos dois editores. |
 | 11. Inspetor expandido | Corrigido | Dimensões, posição e ajuste fino começam recolhidos; escolhas de expansão continuam preservadas durante a sessão do editor. |
-| 12. Jornada alta | Corrigido | Prévia compacta de 112 px no desktop e 144 px no celular, expansível. Todos os componentes continuam no DOM e podem ser percorridos horizontalmente. |
+| 12. Jornada alta | Corrigido | Prévia compacta de 132 px no desktop e 160 px no celular, expansível. Todos os componentes continuam no DOM e podem ser percorridos horizontalmente. |
 | 13. Altura fora de contexto | Corrigido | O controle 3D só aparece com a ferramenta Parede ativa. Na planta 2D, a altura fica no contexto de construção de paredes. |
 | 14. Conexão A→B | Corrigido | Modo “Conectar salas” permite escolher origem e destino pela miniatura ou pelo teclado, com marcação e confirmação explícita. Formulário avançado começa recolhido. |
 | 15. Inspetor de sala | Corrigido | Selecionar sala na visão geral limpa seleção de móveis e mostra nome, área estimada, atividades, conexões e móveis do ambiente, com acesso ao editor 3D. |

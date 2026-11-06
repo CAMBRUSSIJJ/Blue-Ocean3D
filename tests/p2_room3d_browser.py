@@ -11,6 +11,7 @@ with sync_playwright() as pw:
  errors=[]
  page.on('pageerror',lambda error:errors.append(str(error)))
  page.set_content(inline_app(ROOT),wait_until='domcontentloaded')
+ page.locator('[data-room-display=three]').click()
  stage=page.locator('#room-3d-stage')
  expect(stage).to_be_visible(timeout=12000)
  controls=stage.locator('[data-room3d-control="help"]')

@@ -26,6 +26,8 @@ try:
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.goto(f'http://127.0.0.1:{server.server_port}/app/', wait_until='networkidle')
+        expect(page.locator('#site-overview')).to_be_visible()
+        page.locator('[data-room-display=three]').click()
         expect(page.locator('canvas.room3d-canvas')).to_be_visible()
         assert page.locator('link[rel=stylesheet]').count() == 1
         assert page.locator('.floor-inspector-empty').is_visible()

@@ -14,10 +14,16 @@ Depois abra `http://localhost:4173/app/`. Mantenha o terminal aberto; use `Ctrl+
 para encerrar. Para executar o aplicativo, bastam Python 3.9+ e um navegador
 atualizado. Node.js e Playwright são opcionais, usados apenas nos testes.
 
+O início agora é a **Planta do serviço**: crie e organize as salas, passe para
+**Atividades e fluxo** e depois abra a **Sala em 3D** que deseja mobiliar.
+A tela de atividades ocupa toda a altura disponível, permite buscar salas ou
+atividades e mantém todas as atividades acessíveis por rolagem.
+
 Veja [as instruções completas para Linux](LEIA-PRIMEIRO-LINUX.txt) e
 [o relatório dos 18 itens de UX](docs/AUDITORIA_UX_18_CORRECOES.md).
 O ZIP inclui o código completo da aplicação, o Three.js, testes e documentação;
 o checksum está em `downloads/Blue-Ocean3D-Linux-UX.zip.sha256`.
+Para reconstruir o pacote após alterações: `python3 scripts/package-linux.py`.
 
 Abra **WINDOWS-LEIA-PRIMEIRO.txt** para Windows 10/11 e **docs/V2_6-AGENTE-CONSTRUCAO-WINDOWS.md** para detalhes.
 

@@ -14,6 +14,13 @@ COMO ABRIR
 
 5. Mantenha o terminal aberto. Para encerrar, pressione Ctrl+C.
 
+ORDEM DE TRABALHO
+1. Planta do serviço: crie as salas e organize os percursos entre elas.
+2. Atividades e fluxo: defina o atendimento e suas conexões. Use a busca e a
+   rolagem para percorrer todas as atividades.
+3. Sala em 3D: selecione uma sala e abra seu editor para organizar os móveis.
+   A criação de salas na planta mantém você no planejamento.
+
 REQUISITOS
 - Python 3.9 ou superior (confira com: python3 --version).
 - Um navegador atualizado, como Firefox ou Chromium/Chrome.
